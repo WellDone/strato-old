@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>WellDone Mobile Monitor</title>
+		
+		<script type="text/javascript" 
+			src="https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmmEu6a3sbSjVYgFVWbB_c&sensor=false">
+    </script>
+    <script type="text/javascript" src="/resources/js/app/map.js" ></script>
+
+    <link rel="stylesheet" href="/resources/css/base.css">
+	</head>
+	<body onload="loadMap()">
+		<header>
+			<a href="/"><img id="logo" src="/resources/images/welldone_logo.gif"></img></a>
+			<section id="link_section">
+				<a href="#download">Download</a>
+			</section>
+			<nav>
+
+			</nav>
+		</header>
+		<div id="content">
+			<section id="left_section" >
+				<a onclick="javascript:goToOverview();" href="#overview">&#60-BACK</a>
+			</section>
+			<section id="map_section">
+				<div id="map_canvas"></div>
+			</section>
+		</div>
+		<footer>
+			<div id="copyright">
+			copyright <a href="http://www.welldone.org">WellDone</a>.
+			</div>
+		</footer>
+	</body>
+</html>
