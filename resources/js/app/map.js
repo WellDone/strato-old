@@ -76,8 +76,8 @@ function MoMoCountryLayer( siteMap ) {
 	this._layer = new google.maps.FusionTablesLayer( {
 		query: {
 	    select: "'col29'",
-	    from: '1uKyspg-HkChMIntZ0N376lMpRzduIjr85UYPpQ',
-	    where: whereClause
+	    from: '1uKyspg-HkChMIntZ0N376lMpRzduIjr85UYPpQ'//,
+	    //where: whereClause
     },
     suppressInfoWindows: true
 	} );
@@ -92,22 +92,27 @@ MoMoCountryLayer.prototype = {
 		this._layer.setMap( null );
 	},
 	showCountry : function( countryName ) {
+		var whereClause = "name IN ('" + this.countryNameList.join("','") + "')";
 		this._layer.setOptions({
 	    styles: [ {
-		    	polygonOptions: { fillOpacity: 0.3 },
+	    	polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
+	    },{
+		    	polygonOptions: { fillOpacity: 0.3, fillColor: "#0000FF" },
 		    	where: "name = '" + countryName + "'"
 		    },{
-		    	polygonOptions: {fillOpacity: 0.1 },
-		    	where: "name NOT EQUAL TO '" + countryName + "'"
+		    	polygonOptions: {fillOpacity: 0.1, fillColor: "#0000FF" },
+		    	where: whereClause + "AND name NOT EQUAL TO '" + countryName + "'"
 		    }]
 	  });
 	},
 	showAllCountries : function() {
 		var whereClause = "name IN ('" + this.countryNameList.join("','") + "')";
-		this._layer.query.where = whereClause
 		this._layer.setOptions({
 	    styles: [ {
-	    	polygonOptions: { fillOpacity: 0.5 }
+	    	polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
+	    },{
+	    	polygonOptions: { fillOpacity: 0.4, fillColor: "#0000FF", strokeOpacity: 0.7 , strokeColor: "#000000" },
+	    	where: whereClause
 	    }]
 	  });
 	},
@@ -196,7 +201,7 @@ function loadMap()
 	    featureType: 'administrative.country',
 	    elementType: 'all',
 	    stylers: [
-	      { visibility: 'on' }
+	      { visibility: 'off' }
 	    ]
 	  },
 	  {
