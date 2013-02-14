@@ -10,14 +10,22 @@ function MoMoSite( siteName, countryName, monitorList ) {
 		}
 	}
 }
+window.waterMarkerImage = new google.maps.MarkerImage(
+    '/resources/images/icons/water-droplet.png',
+    new google.maps.Size(18,26)   // size of the image
+    //new google.maps.Point(0,0), // origin, in this case top-left corner
+    //new google.maps.Point(9, 13)    // anchor, i.e. the point half-way along the bottom of the image
+);
 MoMoSite.prototype = {
 	addMonitor : function( monitor ) {
 		if ( !monitor.name || !monitor.loc )
 			return;
 		this.monitors.push( monitor );
+	
 		this._markers.push( new google.maps.Marker({
 	    position: monitor.loc,
-	    title: monitor.name
+	    title: monitor.name,
+	    icon: window.waterMarkerImage
 		}) );
 	},
 	getCenter : function() {
