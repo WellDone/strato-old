@@ -1,8 +1,29 @@
+/*
+ * Import nib
+ */
+@import 'nib'
+
+/*
+ * Grab a custom font from Google
+ */
+@import url('http://fonts.googleapis.com/css?family=Quicksand')
+
+/*
+ * Nib provides a CSS reset
+ */
+global-reset()
+
+chrome-bg-color = #C1C7C7
+header-height = 60px
+footer-height = 20px
+sidebar-width = 200px
+
 /* Shared things */
 html, body, section, header, footer {
 	margin:0 0 0 0;
 	padding:0 0 0 0;
 	font-size:100%;
+	font-family 'Georgia'
 }
 
 html, body {
@@ -10,15 +31,11 @@ html, body {
 	min-width:100%;
 }
 
-body {
-	background-color: #EEEEEE;
-}
-
 /* HEADER */
 header {
-	background-color:#C1C7C7;
+	background-color:chrome-bg-color;
 	text-align:left;
-	height:60px;
+	height:header-height;
 	vertical-align: bottom;
 }
 #logo {
@@ -34,8 +51,8 @@ header {
 footer {
 	text-align:right;
 	font-size:60%;
-	height:20px;
-	background-color: #C1C7C7;
+	height:footer-height;
+	background-color: chrome-bg-color;
 	position:absolute;
 	bottom:0px;
 	width:100%;
@@ -49,21 +66,23 @@ footer {
 /* CONTENT */
 #content {
 	position:absolute;
-	top:60px;
+	top:header-height;
 	width:100%;
-	bottom:20px;
+	bottom:footer-height;
 }
 #left_section {
 	height:100%;
-	width:20%;
-	float:left;
+	width:sidebar-width;
+	background-color:chrome-bg-color
 }
 
 /* MAP */
 #map_section {
-	height:100%;
-	width:80%;
-	float:right;
+	bottom:0px;
+	top:0px;
+	left:sidebar-width;
+	right:0px;
+	position:absolute;
 }
 
 #map_canvas {
