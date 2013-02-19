@@ -1,86 +1,27 @@
-function MoMoSite( siteName, countryName, monitorList ) {
-	this.name = siteName;
-	this.country = countryName;
-	this.monitors = [];
-	this._markers = [];
+/*global WD: false, google: false, $: false*/
 
-	if ( monitorList ) {
-		for ( var i=0; i<monitorList.length; ++i ) {
-			this.addMonitor( monitorList[i] );
-		}
-	}
-}
-window.waterMarkerImage = new google.maps.MarkerImage(
-    '/resources/images/icons/water-droplet.png',
-    new google.maps.Size(18,26)   // size of the image
-    //new google.maps.Point(0,0), // origin, in this case top-left corner
-    //new google.maps.Point(9, 13)    // anchor, i.e. the point half-way along the bottom of the image
-);
-MoMoSite.prototype = {
-	addMonitor : function( monitor ) {
-		if ( !monitor.name || !monitor.loc )
-			return;
-		this.monitors.push( monitor );
-	
-		this._markers.push( new google.maps.Marker({
-	    position: monitor.loc,
-	    title: monitor.name,
-	    icon: window.waterMarkerImage
-		}) );
-	},
-	getCenter : function() {
-		var alat = 0,
-		    alng = 0;
-		for ( var i=0; i<this.monitors.length; ++i ) {
-			alat += this.monitors[i].loc.lat();
-			alng += this.monitors[i].loc.lng();
-		}
-		alat /= this.monitors.length;
-		alng /= this.monitors.length;
-		return new google.maps.LatLng( alat, alng );
-	},
-	makeBounds : function() {
-		var TL = {lat: null, lng:null};
-		var BR = {lat: null, lng:null};
-		for ( var i=0; i<this.monitors.length; ++i ) {
-			var loc = this.monitors[i].loc;
-			TL.lat = (TL.lat)? Math.min( TL.lat,loc.lat() ) : loc.lat();
-			TL.lng = (TL.lng)? Math.min( TL.lng,loc.lng() ) : loc.lng();
-			BR.lat = (BR.lat)? Math.max( BR.lat,loc.lat() ) : loc.lat();
-			BR.lng = (BR.lng)? Math.max( BR.lng,loc.lng() ) : loc.lng();
-		}
-		return new google.maps.LatLngBounds( new google.maps.LatLng( TL.lat, TL.lng ),
-																				 new google.maps.LatLng( BR.lat, BR.lng ) );
-	},
-	showMarkers : function( _map ) {
-		for ( var i=0; i<this._markers.length; ++i ) {
-			this._markers[i].setMap( _map );
-		}
-	},
-	hideMarkers : function() {
-		for ( var i=0; i<this._markers.length; ++i ) {
-			this._markers[i].setMap( null );
-		}
-	}
-}
+WD.map = {
+	_markers : []
+};
 
-function MoMoCountryLayer( siteMap ) {
-	this.sitesByCountry = {}
+WD.map.CountryLayer = function( siteMap ) {
+	var siteName, site, countryName, whereClause;
+	this.sitesByCountry = {};
 	this.countryNameList = [];
-	for ( var siteName in siteMap )
+	for ( siteName in siteMap )
 	{
-		if ( !siteMap.hasOwnProperty( siteName ) )
-			continue;
+		if ( siteMap.hasOwnProperty( siteName ) ) {
+			site = siteMap[siteName];
+			countryName = site.country;
+			if ( !this.sitesByCountry[ countryName ] ) {
+				this.sitesByCountry[ countryName ] = [];
+			}
 
-		var site = siteMap[siteName];
-		var countryName = site.country;
-		if ( !this.sitesByCountry[ countryName ] )
-			this.sitesByCountry[ countryName ] = [];
-
-		this.sitesByCountry[ countryName ].push( site )
-		this.countryNameList.push( countryName ); // The case must match exactly
+			this.sitesByCountry[ countryName ].push( site );
+			this.countryNameList.push( countryName ); // The case must match exactly
+		}
 	}
-	var whereClause = "name IN ('" + this.countryNameList.join("','") + "')";
+	whereClause = "name IN ('" + this.countryNameList.join("','") + "')";
 	this._layer = new google.maps.FusionTablesLayer( {
 		query: {
 	    select: "'col29'",
@@ -90,9 +31,9 @@ function MoMoCountryLayer( siteMap ) {
     suppressInfoWindows: true
 	} );
 	google.maps.event.addListener(this._layer, 'click', this.onClick.bind(this) );
-}
+};
 
-MoMoCountryLayer.prototype = {
+WD.map.CountryLayer.prototype = {
 	show : function( _map ) {
 		this._layer.setMap( _map );
 	},
@@ -126,56 +67,34 @@ MoMoCountryLayer.prototype = {
 	},
 	onClick : function(e) {
 		this.hide();
-		var countryName = e.row["name"].value;
-		var sites = this.sitesByCountry[ countryName ];
-		var monitorCount = 0;
-		var siteLinks = [];
+		var countryName = e.row.name.value
+		  , sites = this.sitesByCountry[ countryName ]
+		  , monitorCount = 0
+		  , siteLinks = []
+		  , i;
 
-		hideAllSites();
-		goToCountry( countryName );
-		for ( var i=0; i<sites.length; ++i ) {
+		WD.map.hideAllSites();
+		WD.map.goToCountry( countryName );
+		for (i=0; i<sites.length; ++i ) {
 			monitorCount += sites[i].monitors.length;
 			siteLinks.push( "<a href='#' onClick='javascript:goToSite(window.sites[\"" + sites[i].name + "\"]);'>" + sites[i].name + "</a>" );
-			showSite( sites[i] );
+			WD.map.showSite( sites[i] );
 		}
 		/*e.infoWindowHtml = "<strong>" + countryName + "</strong><br/>"
 		                  + sites.length + " monitoring sites.<br/>"
 		                  + monitorCount + " sensor units<br/><br/>"
 		                  + siteLinks.join("<br/>");*/
-		if ( monitorCount == 0 )
+		if ( monitorCount === 0 ) {
 			console.log( "No monitors at this site!" );
+		}
 
-		setTimeout( this.show.bind(this, map), 200);
+		setTimeout( this.show.bind(this, WD.map._map), 200);
 	}
-}
+};
 
-function MoMo( monitorName, monitorLocation )
+WD.map.loadMap = function()
 {
-	this.name = monitorName;
-	this.loc = monitorLocation;
-}
-
-window.sites = {};
-function AddSite( name, country, monitors )
-{
-	if ( window.sites[name] )
-		return;
-	window.sites[name] = new MoMoSite( name, country, monitors );
-}
-AddSite( "Some Kenyan Village", "Kenya", [
-			new MoMo( "Olenguruone District Hospital", new google.maps.LatLng(-0.59103333333, 35.68551667) ),
-			new MoMo( "Mogotio Clinic", new google.maps.LatLng(-0.024783, 35.966767) ),
-			new MoMo( "ABC Kanyuuni School", new google.maps.LatLng(1.10015, 38.07315) )
-		]);
-AddSite( "Charity:Water Pilot 2013", "Ethiopia", [
-			
-		]);
-AddSite( "Nepal Pilot 2013", "Nepal", [
-			
-		]);
-
-function loadMap()
-{
+	$("#data_section").hide();
 	var overviewStyle = [
 	  {
 	    featureType: 'all',
@@ -255,11 +174,11 @@ function loadMap()
 	    ]
 	  }
 	];
-	window.overviewOptions = {
+	WD.map.overviewOptions = {
 	  center: new google.maps.LatLng(9.4969, 36.8961),
-	  zoom: 2,
+	  zoom: 3,
 	  mapTypeId: 'overview-style',
-	  draggable:true,	
+	  draggable:true,
 	  streetViewControl:false,
 	  mapTypeControl:false,
 	  zoomControl:false,
@@ -267,51 +186,62 @@ function loadMap()
 	  disableDoubleClickZoom:true
 	};
 
-	window.map = new google.maps.Map(document.getElementById("map_canvas"), overviewOptions);
+	WD.map._map = new google.maps.Map(document.getElementById("map_canvas"), WD.map.overviewOptions);
 	var styledOverviewMapType = new google.maps.StyledMapType(overviewStyle, {
-	  map: map,
+	  map: WD.map._map,
 	  name: 'Styled Map'
 	});
-	map.mapTypes.set('overview-style', styledOverviewMapType);
-	window.countryLayer = new MoMoCountryLayer( window.sites );
-	window.currentSites = [];
+	WD.map._map.mapTypes.set('overview-style', styledOverviewMapType);
+	WD.map._CountryLayer = new WD.map.CountryLayer( WD.data.sites );
+	WD.currentSites = [];
 
-	goToOverview();
-}
+	WD.map.goToOverview();
+};
 
-function goToOverview()
+WD.map.goToOverview = function()
 {
-	hideAllSites();
-	window.countryLayer.showAllCountries();
-	window.map.setOptions(overviewOptions);
-	window.countryLayer.show( map );
-}
+	WD.map.hideAllSites();
+	WD.map._CountryLayer.showAllCountries();
+	WD.map._map.setOptions(WD.map.overviewOptions);
+	WD.map._CountryLayer.show( WD.map._map );
+};
 
-function goToCountry( countryName )
+WD.map.goToCountry = function( countryName )
 {
 	var geocoder = new google.maps.Geocoder();
    geocoder.geocode( { 'address': countryName}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        map.setCenter(results[0].geometry.location);
-        map.fitBounds(results[0].geometry.viewport);
+      if (status === google.maps.GeocoderStatus.OK) {
+        WD.map._map.setCenter(results[0].geometry.location);
+        WD.map._map.fitBounds(results[0].geometry.viewport);
       }
     });
-	window.map.setOptions({draggable:false});
-	window.countryLayer.showCountry( countryName );
-}
+	WD.map._map.setOptions({draggable:false});
+	WD.map._CountryLayer.showCountry( countryName );
+};
 
-function hideAllSites()
+WD.map.hideAllSites = function()
 {
-	for ( var i=0; i<window.currentSites.length; ++i ) {
-		window.currentSites[i].hideMarkers();
+	var i;
+	for ( i=0; i<WD.map._markers.length; ++i ) {
+		WD.map._markers[i].setMap( null );
 	}
-	window.currentSites = [];
-}
+	WD.map.currentSites = [];
+	WD.map._markers = [];
+};
 
-function showSite( site )
+WD.map.showSite = function( site )
 {
-	window.currentSites.push( site );
-	site.showMarkers( map );
-}
+	WD.map.currentSites.push( site );
+	var marker = new google.maps.Marker({
+    position: site.getCenter(),
+    title: site.name,
+    map: WD.map._map
+	});
 
-//var zoomIn = function(){ window.map.setZoom(window.map.getZoom() + 1); }
+	WD.map._markers.push( marker );
+	google.maps.event.addListener(marker, 'click', function() {
+		$("#map_section").hide();
+		$("#data_section").show();
+		WD.templates.renderDataPage( WD.data.getData( site ) );
+	}.bind( site ) );
+};
