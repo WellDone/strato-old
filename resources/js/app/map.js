@@ -246,3 +246,5 @@ WD.map.showSite = function( site )
 		WD.templates.renderDataPage( site );
 	}.bind( site ) );
 };
+
+$(document).ready(WD.map.loadMap);
