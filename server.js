@@ -39,10 +39,6 @@ app.get( '/templates.json', function( req, res ) {
   res.write( JSON.stringify( templates ) );
   res.end();
 });
-app.post( '/post/report', function( req, res ) {
-  var gsm_id = req.query["From"];
-  var
-});
 
 var port = process.env.PORT || 3000;
 app.listen( port );
