@@ -183,6 +183,7 @@ WD.map.loadMap = function()
 	  mapTypeControl:false,
 	  zoomControl:false,
 	  panControl:false,
+	  scrollwheel:false,
 	  disableDoubleClickZoom:true
 	};
 
@@ -242,6 +243,6 @@ WD.map.showSite = function( site )
 	google.maps.event.addListener(marker, 'click', function() {
 		$("#map_section").hide();
 		$("#data_section").show();
-		WD.templates.renderDataPage( WD.data.getData( site ) );
+		WD.templates.renderDataPage( site );
 	}.bind( site ) );
 };

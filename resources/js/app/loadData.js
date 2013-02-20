@@ -12,7 +12,7 @@ WD.data.AddMoMoSite = function(name, country, monitors) {
 
 // Dummy data for testing purposes.
 // TODO: Load this data from the server.
-WD.data.AddMoMoSite("Some Kenyan Village", "Kenya", [
+WD.data.AddMoMoSite("Charity:Water Kenya Pilot 2013", "Kenya", [
 			new WD.MoMo.Monitor("Olenguruone District Hospital",
 				                   new google.maps.LatLng(-0.59103333333, 35.68551667)),
 			new WD.MoMo.Monitor("Mogotio Clinic",

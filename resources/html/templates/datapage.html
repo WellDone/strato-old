@@ -1,70 +1,19 @@
-<div id="titular">
-	<h1>{{name}}</h1>
-</div>
-
-<div id="map_clip">
-	<iframe width="200" height="150" frameborder="0" scrolling="yes" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=Tigray,+Ethiopia&amp;aq=0&amp;oq=tigray&amp;sll=37.269174,-119.306607&amp;sspn=11.828223,16.984863&amp;ie=UTF8&amp;hq=&amp;hnear=Tigray,+Ethiopia&amp;t=m&amp;ll=13.774066,37.990723&amp;spn=3.200724,4.394531&amp;z=6&amp;output=embed"></iframe><br /><small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=Tigray,+Ethiopia&amp;aq=0&amp;oq=tigray&amp;sll=37.269174,-119.306607&amp;sspn=11.828223,16.984863&amp;ie=UTF8&amp;hq=&amp;hnear=Tigray,+Ethiopia&amp;t=m&amp;ll=13.774066,37.990723&amp;spn=3.200724,4.394531&amp;z=6" style="color:#0000FF;text-align:left">View Larger Map</a></small>
-</div>
-
-<div id="graph_img"></div>
-
-<div id="status-table">
-  <table>
-		<tr>
-			<th>Waterpoint</th>
-			<th>Status</th>
-		</tr>
-
-		{{#waterpoints}}
-			<tr>
-				<td>{{name}}</td>
-				<td>{{status}}</td>
-			</tr>
-		{{/waterpoints}}
-		</tr>
-	</table>
-</div>
-
-<div id="water-health-rating">
-<table>
-	<tr>
-		<th>Water Health Rating</th>
-	</tr>
-	<tr>
-		<td>{{waterHealthRating}}</td>
-	</tr>
-</table>
-</div>
-
-<div id="water-per-person">
- <table>
-	<tr>
-		<th>Water/person</th>
-	</tr>
-	<tr>
-		<td>{{waterPerPerson}}</td>
-	</tr>
-</table>
-</div>
-
-<div id="precipitation-last-month">
- <table>
-	<tr>
-		<th>Precipitation (last month)</th>
-	</tr>
-	<tr>
-		<td>[value]</td>
-	</tr>
-</table>
-</div>
-
-<div id="events-per-person">
- <table>
-	<tr>
-		<th>Events/person</th>
-	</tr>
-	<tr>
-		<td>[value]</td>
-	</tr>
-</table>
+<h1 class="datapage_title">{{name}}</h1>
+<div id="datapage_content">
+	<div id="datapage_left">
+		<div id="datapage_map"></div>
+		<div id="datapage_monitorList">
+			<ul>
+			{{#monitors}}
+				<li>
+					<strong>{{name}}</strong>
+				</li>
+			{{/monitors}}
+			</ul>
+		</div>
+	</div>
+	<div id="datapage_right">
+		<div id="datapage_visualization"></div>
+		<div id="datapage_stats"></div>
+	</div>
 </div>

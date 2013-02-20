@@ -1,75 +1,47 @@
-#titular {
-	color: blue;
-	font-size: 80%;
-	text-align: center;
-}
-/* TABLES */
-
-#water-health-rating {
-	position:absolute;
-	top:350px;
-	left:250px;
-	height:25px;
-	width:100%;
+.datapage_title {
+	font-size: 16pt;
 }
 
-#water-per-person {
-	position:absolute;
-	top:425px;
-	left:250px;
-	height:25px;
-	width:100%;
+#datapage_content {
+	margin-top:10px;
+	height:600px;
 }
 
-#precipitation-last-month {
-	position:absolute;
-	top:350px;
-	left:625px;
-	height:25px;
-	width:100%;
+#datapage_left {
+	width:29%;
+	height:600px;
+	float:left;
+}
+#datapage_map {
+	height:200px;
+	border-style:solid;
+	border-width:1px;
+}
+#datapage_monitorList {
+	margin-top:10px;
+	height:390px;
+	border-style:solid;
+	border-width:1px;
 }
 
-#events-per-person {
-	position:absolute;
-	top:425px;
-	left:625px;
-	height:25px;
-	width:100%;
+#datapage_right {
+	width:69%;
+	height:600px;
+	float:right;
+}
+#datapage_visualization {
+	height:420px;
+	border-style:solid;
+	border-width:1px;
+	overflow:hidden;
+}
+#datapage_stats {
+	border-style: solid;
+	border-width: 1px;
+	height:170px;
+	margin-top:10px;
 }
 
-/* MAP */
-#graph_img{
-	position:absolute;
-	top:50px;
-	left:250px;
-	height:250px;
-}
-
-#map_clip{
-	position:absolute;
-	top:20px;
-	left:20px;
-	size: 50%;
-}
-#status-table{
-	position:absolute;
-	top: 220px;
-	left:20px;
-	width:100%;
-}
-/*iframe map*/
-
-iframe-rwd  {
-position: relative;
-padding-bottom: 65.25%;
-padding-top: 30px;
-height: 0;
-overflow: hidden;
-}
-iframe-rwd iframe {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
+svg {
+	font-size:10px;
 }
