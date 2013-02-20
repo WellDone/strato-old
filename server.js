@@ -3,7 +3,8 @@ var app = express()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server)
   , stylus = require( 'stylus' )
-  , nib = require( 'nib' );
+  , nib = require( 'nib' )
+  , fs = require( 'fs' );
 
 //var DEBUG = process.env.NODE_DEVELOPMENT_MACHINE ? true : false;
 
@@ -16,12 +17,28 @@ function compileCSS(str, path) {
 app.use( stylus.middleware({
 	src: __dirname,
 	compile: compileCSS
-}))
+}));
 
 app.get( '/', function( req, res ) {
 	res.sendfile( __dirname + "/resources/html/index.html" );
 });
 app.use( '/resources', express.static( __dirname + "/resources" ) );
+app.get( '/templates.json', function( req, res ) {
+  var templateDir = __dirname + "/resources/html/templates",
+      fileNames = fs.readdirSync( templateDir ),
+      templates = {},
+      i;
+  for ( i=0; i<fileNames.length; ++i ) {
+    var templateName = fileNames[i].substring( 0, fileNames[i].length - 5 ),
+        template = fs.readFileSync( templateDir + "/" + fileNames[i], "utf8" );
+    if ( template && template.length > 0 ) {
+      templates[templateName] = template;
+    }
+  }
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write( JSON.stringify( templates ) );
+  res.end();
+});
 
 var port = process.env.PORT || 3000;
 app.listen( port );

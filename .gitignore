@@ -6,6 +6,11 @@ lib-cov
 *.out
 *.pid
 *.gz
+*.css
+.vagrant
+Vagrantfile
+cookbooks
+script
 
 pids
 logs

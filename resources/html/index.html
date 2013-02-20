@@ -3,17 +3,28 @@
 	<head>
 		<meta charset="utf-8">
 		<title>WellDone Mobile Monitor</title>
-		
-		<script type="text/javascript" 
+
+		<script type="text/javascript"
 			src="https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmmEu6a3sbSjVYgFVWbB_c&sensor=false">
     </script>
+    <script type="text/javascript" src="/resources/js/lib/jquery-1.9.1.js" ></script>
+    <script type="text/javascript" src="/resources/js/lib/handlebars.js" ></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+		<script type="text/javascript" src="/resources/js/app/WD.js" ></script>
+		<script type="text/javascript" src="/resources/js/app/MoMo.js" ></script>
+		<script type="text/javascript" src="/resources/js/app/loadData.js" ></script>
     <script type="text/javascript" src="/resources/js/app/map.js" ></script>
 
+    <script type="text/javascript" src="/resources/js/app/template.js" ></script>
+    <script type="text/javascript" src="/resources/js/app/datapage.js" ></script>
+
     <link rel="stylesheet" href="/resources/css/base.css">
+    <link rel="stylesheet" href="/resources/css/datapage.css">
 	</head>
-	<body onload="loadMap()">
+	<body onload="WD.map.loadMap();">
 		<header>
-			<a href="/"><img id="logo" src="/resources/images/welldone_logo.gif"></img></a>
+			<a href="/"><img id="logo" src="/resources/images/welldone_logo.gif" /></a>
 			<section id="link_section">
 				<a href="#download">Download</a>
 			</section>
@@ -23,10 +34,12 @@
 		</header>
 		<div id="content">
 			<section id="left_section" >
-				<a onclick="javascript:goToOverview();" href="#overview">&#60-BACK</a>
+				<a onclick="javascript:WD.map.goToOverview();" href="#overview">&#60-BACK</a>
 			</section>
 			<section id="map_section">
 				<div id="map_canvas"></div>
+			</section>
+			<section id="data_section">
 			</section>
 		</div>
 		<footer>
