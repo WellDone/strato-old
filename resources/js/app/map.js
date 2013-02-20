@@ -1,4 +1,4 @@
-/*global WD: false, google: false, $: false*/
+/*global WD: false, google: false, $: false */
 
 WD.map = {
 	_markers : []
@@ -6,18 +6,12 @@ WD.map = {
 
 WD.map.CountryLayer = function( siteMap ) {
 	var siteName, site, countryName, whereClause;
-	this.sitesByCountry = {};
 	this.countryNameList = [];
 	for ( siteName in siteMap )
 	{
 		if ( siteMap.hasOwnProperty( siteName ) ) {
 			site = siteMap[siteName];
 			countryName = site.country;
-			if ( !this.sitesByCountry[ countryName ] ) {
-				this.sitesByCountry[ countryName ] = [];
-			}
-
-			this.sitesByCountry[ countryName ].push( site );
 			this.countryNameList.push( countryName ); // The case must match exactly
 		}
 	}
@@ -66,35 +60,16 @@ WD.map.CountryLayer.prototype = {
 	  });
 	},
 	onClick : function(e) {
-		this.hide();
-		var countryName = e.row.name.value
-		  , sites = this.sitesByCountry[ countryName ]
-		  , monitorCount = 0
-		  , siteLinks = []
-		  , i;
-
-		WD.map.hideAllSites();
-		WD.map.goToCountry( countryName );
-		for (i=0; i<sites.length; ++i ) {
-			monitorCount += sites[i].monitors.length;
-			siteLinks.push( "<a href='#' onClick='javascript:goToSite(window.sites[\"" + sites[i].name + "\"]);'>" + sites[i].name + "</a>" );
-			WD.map.showSite( sites[i] );
+		var countryName = e.row.name.value;
+		if ( WD.map.currentCountry != countryName ) {
+			WD.map.hideAllSites();
+			WD.router.setRoute( "country/" + countryName );
 		}
-		/*e.infoWindowHtml = "<strong>" + countryName + "</strong><br/>"
-		                  + sites.length + " monitoring sites.<br/>"
-		                  + monitorCount + " sensor units<br/><br/>"
-		                  + siteLinks.join("<br/>");*/
-		if ( monitorCount === 0 ) {
-			console.log( "No monitors at this site!" );
-		}
-
-		setTimeout( this.show.bind(this, WD.map._map), 200);
 	}
 };
 
 WD.map.loadMap = function()
 {
-	$("#data_section").hide();
 	var overviewStyle = [
 	  {
 	    featureType: 'all',
@@ -195,8 +170,6 @@ WD.map.loadMap = function()
 	WD.map._map.mapTypes.set('overview-style', styledOverviewMapType);
 	WD.map._CountryLayer = new WD.map.CountryLayer( WD.data.sites );
 	WD.currentSites = [];
-
-	WD.map.goToOverview();
 };
 
 WD.map.goToOverview = function()
@@ -205,11 +178,13 @@ WD.map.goToOverview = function()
 	WD.map._CountryLayer.showAllCountries();
 	WD.map._map.setOptions(WD.map.overviewOptions);
 	WD.map._CountryLayer.show( WD.map._map );
+	WD.map.currentCountry = null;
 };
 
 WD.map.goToCountry = function( countryName )
 {
-	var geocoder = new google.maps.Geocoder();
+	var i,
+	    geocoder = new google.maps.Geocoder();
    geocoder.geocode( { 'address': countryName}, function(results, status) {
       if (status === google.maps.GeocoderStatus.OK) {
         WD.map._map.setCenter(results[0].geometry.location);
@@ -218,6 +193,19 @@ WD.map.goToCountry = function( countryName )
     });
 	WD.map._map.setOptions({draggable:false});
 	WD.map._CountryLayer.showCountry( countryName );
+	WD.map._CountryLayer.show( WD.map._map );
+
+	var monitorCount = 0;
+	WD.data.sites.forEach( function( site ) {
+		if ( site.country === countryName ) {
+			monitorCount += site.monitors.length;
+			WD.map.showSite( site );
+		}
+	});
+	if ( monitorCount === 0 ) {
+		console.log( "No monitors at this site!" );
+	}
+	WD.map.currentCountry = countryName;
 };
 
 WD.map.hideAllSites = function()
@@ -232,7 +220,7 @@ WD.map.hideAllSites = function()
 
 WD.map.showSite = function( site )
 {
-	WD.map.currentSites.push( site );
+	WD.currentSites.push( site );
 	var marker = new google.maps.Marker({
     position: site.getCenter(),
     title: site.name,
@@ -241,10 +229,7 @@ WD.map.showSite = function( site )
 
 	WD.map._markers.push( marker );
 	google.maps.event.addListener(marker, 'click', function() {
-		$("#map_section").hide();
-		$("#data_section").show();
-		WD.templates.renderDataPage( site );
-	}.bind( site ) );
-};
+		WD.router.setRoute( "site/" + site.id );
 
-$(document).ready(WD.map.loadMap);
+	} );
+};

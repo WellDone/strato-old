@@ -1,13 +1,12 @@
 /*global WD: false, google: false */
 
 WD.data = {};
-WD.data.sites = {};
+WD.data.sites = [];
 
 WD.data.AddMoMoSite = function(name, country, monitors) {
-  if (WD.data.sites[name]) {
-    return;
-  }
-  WD.data.sites[name] = new WD.MoMo.Site(name, country, monitors);
+	var site = new WD.MoMo.Site(name, country, monitors);
+	site.id = WD.data.sites.length;
+  WD.data.sites.push( site );
 };
 
 // Dummy data for testing purposes.

@@ -11,11 +11,13 @@
     <script type="text/javascript" src="/resources/js/lib/handlebars.js" ></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="/resources/js/lib/d3/d3.v3.js"></script>
+    <script type="text/javascript" src="/resources/js/lib/director.min.js"></script>
 
 		<script type="text/javascript" src="/resources/js/app/WD.js" ></script>
 		<script type="text/javascript" src="/resources/js/app/momo.js" ></script>
 		<script type="text/javascript" src="/resources/js/app/loadData.js" ></script>
     <script type="text/javascript" src="/resources/js/app/map.js" ></script>
+    <script type="text/javascript" src="/resources/js/app/routes.js"></script>
 
     <script type="text/javascript" src="/resources/js/app/template.js" ></script>
     <script type="text/javascript" src="/resources/js/app/datapage.js" ></script>
@@ -26,9 +28,9 @@
 	</head>
 	<body>
 		<header>
-			<a href="/"><img id="logo" src="/resources/images/welldone_logo.gif" /></a>
+			<a href="#/overview"><img id="logo" src="/resources/images/welldone_logo.gif" /></a>
 			<section id="link_section">
-				<a href="#download">Download</a>
+				<a href="#/download">Download</a>
 			</section>
 			<nav>
 
@@ -36,7 +38,7 @@
 		</header>
 		<div id="content">
 			<section id="left_section" >
-				<a onclick="javascript:WD.map.goToOverview();" href="#overview">&#60-BACK</a>
+				<a onclick="javascript:WD.map.goToOverview();" href="#/overview">&#60-BACK</a>
 			</section>
 			<section id="map_section">
 				<div id="map_canvas"></div>
