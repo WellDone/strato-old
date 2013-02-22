@@ -1,25 +1,6 @@
 /*global WD: false, google: false, $: false */
-//google.load('visualization', '1.0', {'packages': ['imageareachart']});
 
 WD.data.drawVisualization = function () {
-  /*var query = new google.visualization.Query(
-      'http://docs.google.com/a/welldone.org/spreadsheet/tq?key=0Au25JOPkzeVadGxsOWpKQmFyWHhJZHg1NDU0RVRYQ2c&gid=5&headers=-1');
-
-  query.setQuery('SELECT C,D');
-
-  function handleQueryResponse(response) {
-    if (response.isError()) {
-      console.log('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-      return;
-    }
-
-    var data = response.getDataTable();
-    WD.data._visualization = new google.visualization.ImageAreaChart( $("#graph_img").get(0) );
-    WD.data._visualization.draw(data, {legend: 'bottom'});
-  }
-
-  query.send(handleQueryResponse);
-  */
   var container = "#datapage_visualization";
 
   var margin = {top: 20, right: 80, bottom: 30, left: 50},
