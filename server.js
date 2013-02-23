@@ -4,9 +4,22 @@ var app = express()
   , io = require('socket.io').listen(server)
   , stylus = require( 'stylus' )
   , nib = require( 'nib' )
-  , fs = require( 'fs' );
+  , fs = require( 'fs' )
+  , winston = require( 'winston' );
 
-//var DEBUG = process.env.NODE_DEVELOPMENT_MACHINE ? true : false;
+var DEBUG = process.env.NODE_DEVELOPMENT_MACHINE ? true : false;
+
+var logger = new (winston.Logger)({
+  transports: [
+    new winston.transports.File({ filename: __dirname + "/debug/debug.log" })
+  ]
+});
+if ( DEBUG ) {
+  logger.add(winston.transports.Console);
+  logger.log("debug", "Staring in DEBUG mode.");
+} else {
+  logger.log("Starting...");
+}
 
 function compileCSS(str, path) {
 	return stylus(str)
@@ -42,11 +55,11 @@ app.get( '/templates.json', function( req, res ) {
 
 var port = process.env.PORT || 3000;
 app.listen( port );
-console.log( "Listening on port " + port + "." );
+logger.log( "Listening on port " + port + "." );
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
-    console.log(data);
+    logger.log(data);
   });
 });

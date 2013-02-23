@@ -4,7 +4,7 @@ WD.templates.renderDataPage = function( data )
 {
 	WD.templates.renderTemplate( "datapage", function(template) {
   	$("#data_section").html( template( data ) );
-  	WD.data.drawVisualization();
+  	setTimeout( WD.data.drawVisualization, 100 );
   }, function(err){alert(err);});
 };
 
