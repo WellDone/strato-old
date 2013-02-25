@@ -1,6 +1,6 @@
 # WellDone Mobile Monitoring Framework
 
-Demo site available at http://welldone.herokuapp.com
+Demo site available at http://welldone.herokuapp.com.  It may be slightly out of date.
 
 ## Configuration
 
