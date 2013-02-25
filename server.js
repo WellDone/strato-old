@@ -8,7 +8,7 @@ var config = {
   logFile: process.env.WD_LOG_PATH || __dirname + "/debug"
 };
 
-var logger = require( './lib/logger' )( config.logFile, config.DEBUG )
+var logger = new (require( './lib/logger' ))( config.logFile, config.DEBUG )
 logger.info( "Configuration: ", config );
 
 var dbEngine = require( './lib/db.js' )
@@ -23,6 +23,7 @@ var resourceServer = new (require( './lib/resourceServer.js' ))( app )
 resourceServer.serve( "/resources", __dirname + "/resources", __dirname );
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );
 dataServer.serve( "/data" );
+logger.serve( app, "/debug" );
 
 app.get( '/', function( req, res ) {
   res.sendfile( __dirname + "/resources/html/index.html" );
