@@ -3,8 +3,11 @@
 		<div id="datapage_map"></div>
 		<div id="datapage_monitorList">
 			<ul>
+				<li class="header">
+					Monitors
+				</li>
 			{{#monitors}}
-				<li>
+				<li class="monitor">
 					<span>{{name}}</span>
 				</li>
 			{{/monitors}}
@@ -13,6 +16,8 @@
 	</div>
 	<div id="datapage_right">
 		<div id="datapage_visualization"></div>
-		<div id="datapage_stats"></div>
+		<div id="datapage_stats">
+			<h1 class="datapage-title">{{name}}</h1>
+		</div>
 	</div>
 </div>

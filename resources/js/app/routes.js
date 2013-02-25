@@ -1,22 +1,35 @@
 /*global WD: false, Router: false, $: false, alert: false*/
 
 var showMap = function() {
-  $("#data_section").hide(250);
-  $("#map_section").show(250);
+  $("#data_section").hide();
+  $("#map_section").show();
 };
 var showDataPage = function() {
-  $("#map_section").hide(250);
-  $("#data_section").show(250);
+  $("#map_section").hide();
+  $("#data_section").show();
 };
+var mapLoaded = false;
+var loadMap = function() {
+  if (!mapLoaded) {
+    WD.map.loadMap();
+    mapLoaded = true;
+  };
+}
 
 WD.routes = {
   '/overview': function() {
       showMap();
-      WD.map.goToOverview();
+      setTimeout( function() {
+        loadMap();
+        WD.map.goToOverview();
+      }, 250);
     },
   '/country/:countryName': function( countryName ) {
       showMap();
-      WD.map.goToCountry( countryName );
+      setTimeout( function() {
+        loadMap();
+        WD.map.goToCountry( countryName );
+      }, 250);
     },
   '/site/:siteID': function( siteID ) {
       showDataPage();
@@ -25,11 +38,8 @@ WD.routes = {
 };
 
 $(document).ready( function() {
-  setTimeout( function() {
-    WD.map.loadMap();
-    WD.data.sites.load( function() {
-      WD.router = new Router(WD.routes);
-      WD.router.init( "/overview" );
-    } );
-  }, 100 );
+  WD.data.sites.load( function() {
+    WD.router = new Router(WD.routes);
+    WD.router.init( "/overview" );
+  } );
 } );

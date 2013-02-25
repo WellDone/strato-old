@@ -144,11 +144,13 @@ WD.dataPage.loadMap = function( siteData ) {
 WD.dataPage.render = function( siteID ) {
   WD.data.sites.get( siteID, function( siteData ) {
     WD.util.templates.renderTemplate( "datapage", function(data, template) {
+      $("#data_section").hide();
       $("#data_section").html( template( data ) );
+      setTimeout( function(){ $("#data_section").show(); }, 100);
       setTimeout( function( data ) {
         WD.dataPage.drawVisualization( data );
         WD.dataPage.loadMap( data );
-      }.bind(null, data), 250 );
+      }.bind(null, data), 200 );
     }.bind(null, siteData), function(err){alert(err);});
 
     $("#country-link").html(siteData.country).attr("href", "#/country/" + siteData.country);
