@@ -128,7 +128,7 @@ WD.dataPage.loadMap = function( siteData ) {
   for ( i=0; i<siteData.monitors.length; ++i ) {
     var momo = siteData.monitors[i];
     var marker = new google.maps.Marker({
-      position: momo.loc,
+      position: new google.maps.LatLng( momo.loc.lat, momo.loc.lng ),
       title: momo.name,
       map: WD.dataPage._map
     });

@@ -32,8 +32,8 @@ WD.MoMo.Site.prototype = {
 		    alng = 0,
 		    i;
 		for ( i=0; i<this.monitors.length; ++i ) {
-			alat += this.monitors[i].loc.lat();
-			alng += this.monitors[i].loc.lng();
+			alat += this.monitors[i].loc.lat;
+			alng += this.monitors[i].loc.lng;
 		}
 		alat /= this.monitors.length;
 		alng /= this.monitors.length;
@@ -45,10 +45,10 @@ WD.MoMo.Site.prototype = {
 		    i;
 		for ( i=0; i<this.monitors.length; ++i ) {
 			var loc = this.monitors[i].loc;
-			TL.lat = (TL.lat)? Math.min( TL.lat,loc.lat() ) : loc.lat();
-			TL.lng = (TL.lng)? Math.min( TL.lng,loc.lng() ) : loc.lng();
-			BR.lat = (BR.lat)? Math.max( BR.lat,loc.lat() ) : loc.lat();
-			BR.lng = (BR.lng)? Math.max( BR.lng,loc.lng() ) : loc.lng();
+			TL.lat = (TL.lat)? Math.min( TL.lat,loc.lat ) : loc.lat;
+			TL.lng = (TL.lng)? Math.min( TL.lng,loc.lng ) : loc.lng;
+			BR.lat = (BR.lat)? Math.max( BR.lat,loc.lat ) : loc.lat;
+			BR.lng = (BR.lng)? Math.max( BR.lng,loc.lng ) : loc.lng;
 		}
 		return new google.maps.LatLngBounds( new google.maps.LatLng( TL.lat, TL.lng ),
 																				 new google.maps.LatLng( BR.lat, BR.lng ) );

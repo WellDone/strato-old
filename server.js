@@ -5,10 +5,12 @@ var app = express()
   , stylus = require( 'stylus' )
   , nib = require( 'nib' )
   , fs = require( 'fs' )
-  , winston = require( 'winston' ),
-  , pg = require( 'pg' );
+  , winston = require( 'winston' )
+  , pg = require( 'pg' )
+  , startDate = new Date();
 
-var DEBUG = process.env.NODE_DEVELOPMENT_MACHINE ? true : false;
+var DEBUG = process.env.NODE_DEBUG_MODE ? true : false;
+var pgConnectionString = process.env.DATABASE_URL;
 
 var logger = new (winston.Logger)({
   transports: [
@@ -17,10 +19,19 @@ var logger = new (winston.Logger)({
 });
 if ( DEBUG ) {
   logger.add(winston.transports.Console);
-  logger.log("debug", "Starting in DEBUG mode.");
-} else {
-  logger.log("Starting...");
+  logger.log( "debug", "DEBUG MODE!");
 }
+
+logger.log( "info", "Server started at " + startDate.toTimeString() + " on " + startDate.toDateString() + ".");
+
+var pgClient = new pg.Client( pgConnectionString );
+pgClient.connect(function(err) {
+  if (err) {
+    logger.log( "error", "An error occurred attempting to connect to the database", error )
+  } else {
+    logger.log( "info", "Successfully connected to the database!" );
+  }
+});
 
 function compileCSS(str, path) {
 	return stylus(str)
@@ -53,6 +64,25 @@ app.get( '/templates.json', function( req, res ) {
   res.write( JSON.stringify( templates ) );
   res.end();
 });
+app.get( '/sites.json', function( req, res ) {
+  var sites = [
+    {
+      id: 0,
+      name: "Test Site",
+      country: "Kenya",
+      monitors: [
+        { name: "Olenguruone District Hospital",
+          loc: { lat: -0.59103333333, lng: 35.68551667} },
+        { name: "Mogotio Clinic",
+          loc: { lat: -0.024783, lng: 35.966767 } },
+        { name: "ABC Kanyuuni School CHANGED!!!",
+          loc: { lat: 1.10015, lng:38.07315 } } ]
+    }
+  ];
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write( JSON.stringify( sites ) );
+  res.end();
+})
 
 var port = process.env.PORT || 3000;
 app.listen( port );
