@@ -19,18 +19,17 @@ WD.routes = {
       WD.map.goToCountry( countryName );
     },
   '/site/:siteID': function( siteID ) {
-      if ( WD.data.sites[siteID] )
-      {
-        showDataPage();
-        WD.templates.renderDataPage( WD.data.sites[siteID] );
-      } else {
-        alert( "Site not found!" );
-      }
+      showDataPage();
+      WD.dataPage.render( siteID );
     }
 };
 
 $(document).ready( function() {
-  WD.map.loadMap();
-  WD.router = new Router(WD.routes);
-  WD.router.init( "/overview" );
+  setTimeout( function() {
+    WD.map.loadMap();
+    WD.data.sites.load( function() {
+      WD.router = new Router(WD.routes);
+      WD.router.init( "/overview" );
+    } );
+  }, 100 );
 } );

@@ -1,8 +1,10 @@
-/*global WD: false, google: false, $: false */
+/*global WD: false, google: false, $: false, d3: false, alert: false */
 
-WD.data.drawVisualization = function () {
-  var container = "#datapage_visualization";
-
+WD.dataPage = {};
+WD.dataPage.visualizationContainer = "#datapage_visualization";
+WD.dataPage._resizeTimer = null;
+WD.dataPage.drawVisualization = function () {
+  var container = WD.dataPage.visualizationContainer;
   var margin = {top: 20, right: 80, bottom: 30, left: 50},
       width = $(container)[0].offsetWidth - margin.left - margin.right,
       height = $(container)[0].offsetHeight - margin.top - margin.bottom;
@@ -38,15 +40,7 @@ WD.data.drawVisualization = function () {
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  //TODO: Load the data beforehand so we don't have to do
-  //      another HTTP request every time the browser is resized
-  d3.tsv("/resources/dummy_data.tsv", function(error, data) {
-    color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-
-    data.forEach(function(d) {
-      d.date = parseDate(d.date);
-    });
-
+  function redraw( data ) {
     var cities = color.domain().map(function(name) {
       return {
         name: name,
@@ -94,10 +88,74 @@ WD.data.drawVisualization = function () {
         .attr("x", 3)
         .attr("dy", ".35em")
         .text(function(d) { return d.name; });
+  }
+
+  //TODO: Load the data beforehand so we don't have to do
+  //      another HTTP request every time the browser is resized
+  d3.tsv("/resources/dummy_data.tsv", function(error, data) {
+    color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
+    data.forEach(function(d) {
+      d.date = parseDate(d.date);
+    });
+
+    redraw( data );
   });
-  var resizeTimer;
   $(window).resize( function() {
-    clearTimeout( resizeTimer );
-    resizeTimer = setTimeout( WD.data.drawVisualization, 100 );
+    clearTimeout( WD.dataPage._resizeTimer );
+    WD.dataPage._resizeTimer = setTimeout( WD.dataPage.drawVisualization, 100);
   });
+};
+
+WD.dataPage._markers = [];
+WD.dataPage.loadMap = function( siteData ) {
+  var i;
+  var mapOptions = {
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    draggable:false,
+    streetViewControl:false,
+    mapTypeControl:false,
+    zoomControl:false,
+    panControl:false,
+    scrollwheel:false,
+    disableDoubleClickZoom:true
+  };
+  WD.dataPage._map = new google.maps.Map(document.getElementById("datapage_map"), mapOptions);
+
+  WD.dataPage._map.setCenter( siteData.getCenter() );
+  WD.dataPage._map.fitBounds( siteData.makeBounds() );
+
+  for ( i=0; i<siteData.monitors.length; ++i ) {
+    var momo = siteData.monitors[i];
+    var marker = new google.maps.Marker({
+      position: momo.loc,
+      title: momo.name,
+      map: WD.dataPage._map
+    });
+
+    WD.dataPage._markers.push( marker );
+    google.maps.event.addListener(marker, 'click', function() {
+      //TODO
+
+    } );
+  }
+};
+
+WD.dataPage.render = function( siteID ) {
+  WD.data.sites.get( siteID, function( siteData ) {
+    WD.util.templates.renderTemplate( "datapage", function(data, template) {
+      $("#data_section").html( template( data ) );
+      setTimeout( function( data ) {
+        WD.dataPage.drawVisualization( data );
+        WD.dataPage.loadMap( data );
+      }.bind(null, data), 250 );
+    }.bind(null, siteData), function(err){alert(err);});
+
+    $("#country-link").html(siteData.country).attr("href", "#/country/" + siteData.country);
+    $("#country-link-container").show();
+    $("#site-link").html(siteData.name).attr("href", "#/site/" + siteData.id);
+    $("#site-link-container").show();
+  }, function() {
+    alert( "Site not found!" );
+  } );
 };

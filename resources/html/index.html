@@ -15,7 +15,7 @@
 
 		<script type="text/javascript" src="/resources/js/app/WD.js" ></script>
 		<script type="text/javascript" src="/resources/js/app/momo.js" ></script>
-		<script type="text/javascript" src="/resources/js/app/loadData.js" ></script>
+		<script type="text/javascript" src="/resources/js/app/data.js" ></script>
     <script type="text/javascript" src="/resources/js/app/map.js" ></script>
     <script type="text/javascript" src="/resources/js/app/routes.js"></script>
 
@@ -28,29 +28,32 @@
     <link rel="stylesheet" href="/resources/css/visualization.css">
 	</head>
 	<body>
-		<header>
-			<a href="#/overview"><img id="logo" src="/resources/images/welldone_logo.gif" /></a>
-			<section id="link_section">
-				<a href="#/download">Download</a>
-			</section>
-			<nav>
-
-			</nav>
-		</header>
-		<div id="content">
-			<section id="left_section" >
-				<a href="#/overview">Overview</a>
-			</section>
-			<section id="map_section">
-				<div id="map_canvas"></div>
-			</section>
-			<section id="data_section">
-			</section>
-		</div>
-		<footer>
-			<div id="copyright">
-			copyright <a href="http://www.welldone.org">WellDone</a>.
+		<div id="wrapper">
+			<header>
+				<a href="#/overview"><img id="logo" src="/resources/images/welldone_logo.gif" /></a>
+				<!--<section id="link_section">
+					<a href="#/download">Download</a>
+				</section>-->
+				<nav>
+					<span><a href="#/overview">Overview</a></span>
+					<span id="country-link-container">&nbsp;&nbsp;|&nbsp;&nbsp;<a id="country-link" href="#"></a></span>
+					<span id="site-link-container">&nbsp;&nbsp;|&nbsp;&nbsp;<a id="site-link" href="#"></a></span>
+				</nav>
+			</header>
+			<div id="content">
+				<!--<section id="left_section" >
+				</section>-->
+				<section id="map_section">
+					<div id="map_canvas"></div>
+				</section>
+				<section id="data_section">
+				</section>
 			</div>
-		</footer>
+			<!--<footer>
+				<div id="copyright">
+				copyright <a href="http://www.welldone.org">WellDone</a>.
+				</div>
+			</footer>-->
+		</div>
 	</body>
 </html>

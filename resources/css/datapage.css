@@ -3,43 +3,85 @@
 }
 
 #datapage_content {
-	margin-top:10px;
-	height:600px;
+	position:absolute;
+	top:10px;
+	left:10px;
+	right:10px;
+	bottom:10px;
 }
 
 #datapage_left {
-	width:29%;
-	height:600px;
-	float:left;
+	width:240px;
+	position:absolute;
+	left:0px;
+	top:0px;
+	bottom:0px;
 }
 #datapage_map {
-	height:200px;
+	height:240px;
+	width:240px;
 	border-style:solid;
 	border-width:1px;
 }
 #datapage_monitorList {
 	margin-top:10px;
-	height:390px;
+	position:absolute;
+	left:0px;
+	top:240px;
+	width:240px;
 	border-style:solid;
 	border-width:1px;
+	border-bottom:none;
 }
 
 #datapage_right {
-	width:69%;
-	height:600px;
+	position:absolute;
+	left:250px;
+	right:0px;
+	top:0px;
+	bottom:0px;
 	float:right;
 }
 #datapage_visualization {
-	height:420px;
+	position:absolute;
+	left:0px;
+	top:0px;
+	bottom:180px;
+	right:0px;
 	border-style:solid;
 	border-width:1px;
 	overflow:hidden;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+
+	/*
+	 Introduced in IE 10.
+	 See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+	*/
+	-ms-user-select: none;
+	user-select: none;
 }
 #datapage_stats {
 	border-style: solid;
 	border-width: 1px;
 	height:170px;
-	margin-top:10px;
+	position:absolute;
+	left:0px;
+	bottom:0px;
+	right:0px;
+}
+ul {
+	list-style: none;
+}
+li {
+	border-bottom: solid 1px;
+	background-color: #FFFFCC;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+li span {
+	vertical-align: middle;
 }
 
 svg {

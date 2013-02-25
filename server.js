@@ -5,7 +5,8 @@ var app = express()
   , stylus = require( 'stylus' )
   , nib = require( 'nib' )
   , fs = require( 'fs' )
-  , winston = require( 'winston' );
+  , winston = require( 'winston' ),
+  , pg = require( 'pg' );
 
 var DEBUG = process.env.NODE_DEVELOPMENT_MACHINE ? true : false;
 
@@ -16,7 +17,7 @@ var logger = new (winston.Logger)({
 });
 if ( DEBUG ) {
   logger.add(winston.transports.Console);
-  logger.log("debug", "Staring in DEBUG mode.");
+  logger.log("debug", "Starting in DEBUG mode.");
 } else {
   logger.log("Starting...");
 }

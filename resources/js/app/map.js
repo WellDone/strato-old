@@ -61,7 +61,8 @@ WD.map.CountryLayer.prototype = {
 	},
 	onClick : function(e) {
 		var countryName = e.row.name.value;
-		if ( WD.map.currentCountry != countryName ) {
+		if ( WD.map.currentCountry !== countryName &&
+			   $.inArray( countryName, this.countryNameList ) === 0 ) {
 			WD.map.hideAllSites();
 			WD.router.setRoute( "country/" + countryName );
 		}
@@ -163,40 +164,47 @@ WD.map.loadMap = function()
 	};
 
 	WD.map._map = new google.maps.Map(document.getElementById("map_canvas"), WD.map.overviewOptions);
-	var styledOverviewMapType = new google.maps.StyledMapType(overviewStyle, {
-	  map: WD.map._map,
+	WD.map.styledMapType = new google.maps.StyledMapType(overviewStyle, {
 	  name: 'Styled Map'
 	});
-	WD.map._map.mapTypes.set('overview-style', styledOverviewMapType);
-	WD.map._CountryLayer = new WD.map.CountryLayer( WD.data.sites );
+	WD.map._map.mapTypes.set('overview-style', WD.map.styledMapType);
 	WD.currentSites = [];
 };
 
+WD.map.initCountryLayer = function() {
+	WD.map._CountryLayer = new WD.map.CountryLayer( WD.data.sites._siteData );
+};
 WD.map.goToOverview = function()
 {
 	WD.map.hideAllSites();
+	WD.map.initCountryLayer();
 	WD.map._CountryLayer.showAllCountries();
 	WD.map._map.setOptions(WD.map.overviewOptions);
 	WD.map._CountryLayer.show( WD.map._map );
 	WD.map.currentCountry = null;
+	$("#country-link").html("");
+	$("#country-link-container").hide();
+	$("#site-link").html("");
+	$("#site-link-container").hide();
 };
 
 WD.map.goToCountry = function( countryName )
 {
 	var i,
-	    geocoder = new google.maps.Geocoder();
-   geocoder.geocode( { 'address': countryName}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-        WD.map._map.setCenter(results[0].geometry.location);
-        WD.map._map.fitBounds(results[0].geometry.viewport);
-      }
-    });
+			geocoder = new google.maps.Geocoder();
+	WD.map.initCountryLayer();
+ 	geocoder.geocode( { 'address': countryName}, function(results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+      WD.map._map.setCenter(results[0].geometry.location);
+      WD.map._map.fitBounds(results[0].geometry.viewport);
+    }
+  });
 	WD.map._map.setOptions({draggable:false});
 	WD.map._CountryLayer.showCountry( countryName );
 	WD.map._CountryLayer.show( WD.map._map );
 
 	var monitorCount = 0;
-	WD.data.sites.forEach( function( site ) {
+	$.each( WD.data.sites._siteData, function( id, site ) {
 		if ( site.country === countryName ) {
 			monitorCount += site.monitors.length;
 			WD.map.showSite( site );
@@ -206,6 +214,10 @@ WD.map.goToCountry = function( countryName )
 		console.log( "No monitors at this site!" );
 	}
 	WD.map.currentCountry = countryName;
+	$("#country-link").html(countryName).attr("href", "#/country/" + countryName);
+	$("#country-link-container").show();
+	$("#site-link").html("");
+	$("#site-link-container").hide();
 };
 
 WD.map.hideAllSites = function()

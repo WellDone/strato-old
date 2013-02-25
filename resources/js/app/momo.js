@@ -52,17 +52,5 @@ WD.MoMo.Site.prototype = {
 		}
 		return new google.maps.LatLngBounds( new google.maps.LatLng( TL.lat, TL.lng ),
 																				 new google.maps.LatLng( BR.lat, BR.lng ) );
-	},
-	showMarkers : function( _map ) {
-		var i;
-		for ( i=0; i<this._markers.length; ++i ) {
-			this._markers[i].setMap( _map );
-		}
-	},
-	hideMarkers : function() {
-		var i;
-		for ( i=0; i<this._markers.length; ++i ) {
-			this._markers[i].setMap( null );
-		}
 	}
 };
