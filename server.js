@@ -20,7 +20,7 @@ var resourceServer = new (require( './lib/resourceServer.js' ))( app )
   , templateServer = new (require( './lib/templateServer.js' ))( app )
   , dataServer = new (require( './lib/dataServer.js' ))( app, db );
 
-resourceServer.serve( "/resources", __dirname + "/resources");
+resourceServer.serve( "/resources", __dirname + "/resources", __dirname );
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );
 dataServer.serve( "/data" );
 
