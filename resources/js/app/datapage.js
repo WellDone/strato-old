@@ -3,7 +3,7 @@
 WD.dataPage = {};
 WD.dataPage.visualizationContainer = "#datapage_visualization";
 WD.dataPage._resizeTimer = null;
-WD.dataPage.drawVisualization = function () {
+WD.dataPage.drawVisualization = function ( siteID ) {
   var container = WD.dataPage.visualizationContainer;
   var margin = {top: 20, right: 80, bottom: 30, left: 50},
       width = $(container)[0].offsetWidth - margin.left - margin.right,
@@ -30,7 +30,7 @@ WD.dataPage.drawVisualization = function () {
   var line = d3.svg.line()
       .interpolate("basis")
       .x(function(d) { return x(d.date); })
-      .y(function(d) { return y(d.temperature); });
+      .y(function(d) { return y(d.volume); });
 
   $(container).html("");
 
@@ -41,11 +41,11 @@ WD.dataPage.drawVisualization = function () {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   function redraw( data ) {
-    var cities = color.domain().map(function(name) {
+    var monitors = color.domain().map(function(name) {
       return {
         name: name,
         values: data.map(function(d) {
-          return {date: d.date, temperature: +d[name]};
+          return {date: d.date, volume: +d[name]};
         })
       };
     });
@@ -53,8 +53,8 @@ WD.dataPage.drawVisualization = function () {
     x.domain(d3.extent(data, function(d) { return d.date; }));
 
     y.domain([
-      d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
-      d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
+      d3.min(monitors, function(c) { return 0;}),//d3.min(c.values, function(v) { return v.volume; }); }),
+      d3.max(monitors, function(c) { return d3.max(c.values, function(v) { return v.volume; }); })
     ]);
 
     svg.append("g")
@@ -70,10 +70,10 @@ WD.dataPage.drawVisualization = function () {
         .attr("y", 6)
         .attr("dy", "-3.5em")
         .style("text-anchor", "end")
-        .text("Temperature (ºF)");
+        .text("Volume (L)");
 
     var city = svg.selectAll(".city")
-        .data(cities)
+        .data(monitors)
       .enter().append("g")
         .attr("class", "city");
 
@@ -82,17 +82,21 @@ WD.dataPage.drawVisualization = function () {
         .attr("d", function(d) { return line(d.values); })
         .style("stroke", function(d) { return color(d.name); });
 
-    city.append("text")
+  /*city.append("text")
         .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
         .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
         .attr("x", 3)
         .attr("dy", ".35em")
-        .text(function(d) { return d.name; });
+        .text(function(d) { return d.name; });*/
   }
 
   //TODO: Load the data beforehand so we don't have to do
   //      another HTTP request every time the browser is resized
-  d3.tsv("/resources/dummy_data.tsv", function(error, data) {
+  d3.json("/data/sites/" + siteID + "/reports.json", function(error, data) {
+    if ( error ) {
+      console.log( error );
+      return;
+    }
     color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
     data.forEach(function(d) {
