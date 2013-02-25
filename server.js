@@ -5,7 +5,7 @@ var config = {
   databaseURL: process.env.DATABASE_URL,
   DEBUG: process.env.NODE_DEBUG_MODE? true:false,
   port: process.env.PORT || 3000,
-  logFile: process.env.WD_LOG_PATH || __dirname + "/debug/debug.log"
+  logFile: process.env.WD_LOG_PATH || __dirname + "/debug"
 };
 
 var logger = require( './lib/logger' )( config.logFile, config.DEBUG )
@@ -21,9 +21,7 @@ var resourceServer = new (require( './lib/resourceServer.js' ))( app )
   , dataServer = new (require( './lib/dataServer.js' ))( app, db );
 
 resourceServer.serve( "/resources", __dirname + "/resources");
-
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );
-
 dataServer.serve( "/data" );
 
 app.get( '/', function( req, res ) {
@@ -31,8 +29,7 @@ app.get( '/', function( req, res ) {
 });
 
 app.listen( config.port );
+logger.log( "info", "Listening on port " + config.port + "." );
 
 var startDate = new Date();
 logger.log( "info", "Server started at " + startDate.toTimeString() + " on " + startDate.toDateString() + ".");
-
-logger.log( "info", "Listening on port " + config.port + "." );
