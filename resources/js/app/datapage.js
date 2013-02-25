@@ -5,7 +5,7 @@ WD.dataPage.visualizationContainer = "#datapage_visualization";
 WD.dataPage._resizeTimer = null;
 WD.dataPage.drawVisualization = function ( siteID ) {
   var container = WD.dataPage.visualizationContainer;
-  var margin = {top: 20, right: 80, bottom: 30, left: 50},
+  var margin = {top: 20, right: 30, bottom: 30, left: 50},
       width = $(container)[0].offsetWidth - margin.left - margin.right,
       height = $(container)[0].offsetHeight - margin.top - margin.bottom;
 
