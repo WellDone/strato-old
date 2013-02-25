@@ -153,10 +153,7 @@ WD.dataPage.render = function( siteID ) {
       }.bind(null, data), 200 );
     }.bind(null, siteData), function(err){alert(err);});
 
-    $("#country-link").html(siteData.country).attr("href", "#/country/" + siteData.country);
-    $("#country-link-container").show();
-    $("#site-link").html(siteData.name).attr("href", "#/site/" + siteData.id);
-    $("#site-link-container").show();
+    WD.nav.set( siteData.country, siteData.name );
   }, function() {
     alert( "Site not found!" );
   } );

@@ -19,7 +19,7 @@ footer-height = 0px
 sidebar-width = 200px
 
 /* Shared things */
-html, body, section, header, footer {
+html, body, section, header, footer, div {
 	margin:0 0 0 0;
 	padding:0 0 0 0;
 	font-size:100%;
@@ -99,26 +99,22 @@ footer {
 	position:absolute;
 	min-width:820px;
 	min-height:620px;
-//	display:none;
 }
 
-/* MAP */
 #data_section {
-	bottom:0px;
-	top:0px;
-	left:0px;
-	right:0px;
-	position:absolute;
 	text-align:center;
-	min-width:800px;
-	min-height:600px;
+	width:100%;
+	height:100%
 	background-color:white;
-//	display:none;
 }
 
 #map_canvas {
 	height:100%;
 	width:100%;
+}
+
+#country-link-container,#site-link-container {
+	display:none;
 }
 
 /* fullscreen app */

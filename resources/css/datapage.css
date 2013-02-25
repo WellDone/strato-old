@@ -1,5 +1,5 @@
 h1.datapage-title {
-	margin-top:5px;
+	margin:5px;
 	font-size: 16pt;
 }
 
@@ -9,6 +9,7 @@ h1.datapage-title {
 	left:10px;
 	right:10px;
 	bottom:10px;
+	min-width: 1024px;
 }
 
 #datapage_left {
@@ -31,8 +32,8 @@ h1.datapage-title {
 	top:240px;
 	width:240px;
 	border-style:solid;
-	border-width:2px;
-	border-bottom:solid 1px;
+	border-width:1px;
+	border-bottom:solid 0px;
 }
 
 #datapage_right {
@@ -42,12 +43,22 @@ h1.datapage-title {
 	top:0px;
 	bottom:0px;
 	float:right;
+	max-width:1024px;
+}
+#datapage_visualization_container {
+	position:relative;
+	display:inline-block;
+	width:100%;
+	background-color: #F8F8FF;
+}
+#datapage_visualization_dummy {
+	padding-top:50%;
 }
 #datapage_visualization {
 	position:absolute;
 	left:0px;
 	top:0px;
-	bottom:180px;
+	bottom:0px;
 	right:0px;
 	border-style:solid;
 	border-width:1px;
@@ -64,25 +75,26 @@ h1.datapage-title {
 	user-select: none;
 }
 #datapage_stats {
-	height:170px;
-	position:absolute;
-	left:0px;
-	bottom:0px;
-	right:0px;
+	height:180px;
+	margin-top:10px;
 }
 ul {
 	list-style: none;
+	max-height:420px;
+	overflow:auto;
 }
-li.header {
+div.monitor-list-header {
 	background-color: #9999FF;
 	font-weight: bold;
-	border-bottom:solid 2px;
+	border-bottom:solid 1px;
 	padding-top:5px;
+	font-size:20px;
 	padding-bottom:5px;
+	height:20px;
 }
 li.monitor {
 	border-bottom: solid 1px;
-	background-color: #FFFFCC;
+	background-color: #F8F8FF;
 	padding-top:5px;
 	padding-bottom:5px;
 	cursor:default;

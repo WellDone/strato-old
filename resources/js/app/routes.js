@@ -1,11 +1,13 @@
 /*global WD: false, Router: false, $: false, alert: false*/
 
 var showMap = function() {
-  $("#data_section").hide();
+  $('#data_section').css('zIndex', 9999);
+  $("#data_section").hide(150);
   $("#map_section").show();
 };
 var showDataPage = function() {
-  $("#map_section").hide();
+  $('#map_section').css('zIndex', 9999);
+  $("#map_section").hide(150);
   $("#data_section").show();
 };
 var mapLoaded = false;

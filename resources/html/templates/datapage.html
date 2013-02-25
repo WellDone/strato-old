@@ -2,10 +2,10 @@
 	<div id="datapage_left">
 		<div id="datapage_map"></div>
 		<div id="datapage_monitorList">
+			<div class="monitor-list-header">
+				Monitors
+			</div>
 			<ul>
-				<li class="header">
-					Monitors
-				</li>
 			{{#monitors}}
 				<li class="monitor">
 					<span>{{name}}</span>
@@ -15,7 +15,10 @@
 		</div>
 	</div>
 	<div id="datapage_right">
-		<div id="datapage_visualization"></div>
+		<div id="datapage_visualization_container">
+			<div id="datapage_visualization_dummy"></div>
+			<div id="datapage_visualization"></div>
+		</div>
 		<div id="datapage_stats">
 			<h1 class="datapage-title">{{name}}</h1>
 		</div>

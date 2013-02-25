@@ -182,10 +182,7 @@ WD.map.goToOverview = function()
 	WD.map._map.setOptions(WD.map.overviewOptions);
 	WD.map._CountryLayer.show( WD.map._map );
 	WD.map.currentCountry = null;
-	$("#country-link").html("");
-	$("#country-link-container").hide();
-	$("#site-link").html("");
-	$("#site-link-container").hide();
+	WD.nav.set();
 };
 
 WD.map.goToCountry = function( countryName )
@@ -214,10 +211,7 @@ WD.map.goToCountry = function( countryName )
 		console.log( "No monitors at this site!" );
 	}
 	WD.map.currentCountry = countryName;
-	$("#country-link").html(countryName).attr("href", "#/country/" + countryName);
-	$("#country-link-container").show();
-	$("#site-link").html("");
-	$("#site-link-container").hide();
+	WD.nav.set( countryName );
 };
 
 WD.map.hideAllSites = function()
