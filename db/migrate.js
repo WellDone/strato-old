@@ -4,6 +4,11 @@ var config = require( '../lib/config.js' ),
     db = dbEngine.connect( { url: config.databaseURL, logger: logger } ),
     schema = require( "./schema.js" );
 
+var force = config.hasCLFlag( "--force", "-f" );
+if ( force ) {
+  logger.info( "Forcing recreation of the database.  All data will be lost." );
+}
+
 db.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
@@ -54,17 +59,47 @@ function createIndices() {
 }
 
 function updateVersion() {
+  q( "DELETE FROM DBINFO" );
+  q( "INSERT INTO DBINFO VALUES (" + schema.version + ")");
+}
 
+function doUpgradeFrom( currentVersion ) {
+  if ( currentVersion === schema.version ) {
+    logger.info( "Database up-to-date." );
+    return;
+  } else if ( currentVersion > schema.version ) {
+    logger.warn( "The database version is greater than the current schema version, something is probably whack." );
+    return;
+  }
+
+  // TODO: Do one upgrade
+
+  logger.info( currentVersion + " --> " + (currentVersion+1) + " SUCCESS" );
+  doUpgradeFrom( currentVersion+1 );
 }
 
 var query = q("SELECT count(*) AS count FROM information_schema.tables WHERE table_name = 'dbinfo';" );
 query.on( 'row', function(row) {
-  if ( row.count === 0 ) {
+  if ( row.count === 0 || force ) {
     dropAllTables();
     dropAllIndices();
     createTables();
     createIndices();
+    updateVersion();
   } else {
-    logger.info( "The database already exists." );
+    var upgraded = false;
+    q( "SELECT Version FROM DBINFO LIMIT 1" )
+      .on( "row", function( row ) {
+        logger.info( "Current DB Version: " + row.version );
+        logger.info( "Schema Version: " + schema.version );
+        doUpgradeFrom( row.version );
+        upgraded = true;
+      }).on( "end", function() {
+        if ( !upgraded ) {
+          logger.warn( "The DBINFO table may not have any entries.  Upgrade skipped." );
+        } else {
+          logger.info( "Upgrade complete!" );
+        }
+      });
   }
 });
