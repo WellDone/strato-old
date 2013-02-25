@@ -1,14 +1,9 @@
+var config = require('./lib/config');
+
 var express = require( 'express' ),
     app = express();
 
-var config = {
-  databaseURL: process.env.DATABASE_URL,
-  DEBUG: process.env.NODE_DEBUG_MODE? true:false,
-  port: process.env.PORT || 3000,
-  logFile: process.env.WD_LOG_PATH || __dirname + "/debug"
-};
-
-var logger = new (require( './lib/logger' ))( config.logFile, config.DEBUG )
+var logger = new (require( './lib/logger' ))( )
 logger.info( "Configuration: ", config );
 
 var dbEngine = require( './lib/db.js' )
