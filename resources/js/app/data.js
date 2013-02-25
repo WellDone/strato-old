@@ -4,7 +4,7 @@ WD.data = {};
 WD.data.sites = {
 	load: function( callback, errorCallback ) {
 
-		$.getJSON( "/sites.json", function( data ) {
+		$.getJSON( "/data/sites.json", function( data ) {
 			data.forEach( function(s) {
 				WD.data.sites._add( s.id, s.name, s.country, s.monitors);
 			});
