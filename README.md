@@ -1,6 +1,6 @@
 # WellDone Mobile Monitoring Framework
 
-Demo site available at http://welldone.herokuapp.com
+Demo site available at http://welldone.herokuapp.com.  It may be slightly out of date.
 
 ## Configuration
 
@@ -17,7 +17,7 @@ export WD_LOG_PATH     = /full/path/to/log/file
 To create or upgrade the database, simply run the following command.  Before attempting the migration, make sure your DATABASE_URL environment variable is set up properly.
 
 ```
-node db/migrate.db
+node db/migrate.js
 ```
 
 A migration log is stored at db/debug.log.
