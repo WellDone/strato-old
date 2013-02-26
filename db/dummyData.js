@@ -22,7 +22,7 @@ module.exports = [
       { name: "Ithanga Health Clinic",
         lat: -0.993566667,
         lng: 37.33958333,
-        _functionality: 0.5 },
+        _functionality: 0.4 },
       { name: "Kimbimbi Sub District Hospital",
         lat: 0.6197333333,
         lng: 37.36586667,
