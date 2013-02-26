@@ -169,8 +169,16 @@ WD.dataPage.deselectMonitor = function( i ) {
   }).select("path").style( "stroke-width", "1.5px" );
 }
 
+function extendSiteData( data ) {
+  data.volumePerCapita = (Math.random() * 6 + 17).toFixed(2);
+  data.population = Math.ceil( Math.random() * 15 + 20 );
+  data.averageVolume = Math.ceil( data.volumePerCapita * data.population );
+  data.health = Math.ceil( data.volumePerCapita / 25 * 100 );
+}
 WD.dataPage.render = function( siteID ) {
   WD.data.sites.get( siteID, function( siteData ) {
+    extendSiteData( siteData );
+
     WD.util.templates.renderTemplate( "datapage", function(data, template) {
       $("#data_section").hide();
       $("#data_section").html( template( data ) );
