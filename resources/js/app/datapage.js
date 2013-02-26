@@ -152,7 +152,7 @@ WD.dataPage.render = function( siteID ) {
       $("#data_section").html( template( data ) );
       setTimeout( function(){ $("#data_section").show(); }, 100);
       setTimeout( function( data ) {
-        WD.dataPage.drawVisualization( data );
+        WD.dataPage.drawVisualization( siteID );
         WD.dataPage.loadMap( data );
       }.bind(null, data), 200 );
     }.bind(null, siteData), function(err){alert(err);});
