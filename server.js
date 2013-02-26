@@ -3,6 +3,8 @@ var config = require('./lib/config');
 var express = require( 'express' ),
     app = express();
 
+app.use(express.bodyParser());
+
 var logger = new (require( './lib/logger' ))( )
 logger.info( "Configuration: ", config );
 
