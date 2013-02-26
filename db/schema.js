@@ -13,7 +13,7 @@ schema.tables = {
   "monitors":   "ID        SERIAL PRIMARY KEY," +
                 "Name      varchar(256)," +
                 "Location  point," +
-                "GSM_ID    varchar(10) UNIQUE NOT NULL," +
+//                "GSM_ID    varchar(10) UNIQUE NOT NULL," +
                 "SiteID    integer," +
                 "CONSTRAINT monitors_sites_fkey FOREIGN KEY (SiteID)" +
                 "    REFERENCES sites (ID) MATCH SIMPLE" +
