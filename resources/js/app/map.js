@@ -40,11 +40,11 @@ WD.map.CountryLayer.prototype = {
 	    styles: [ {
 	    	polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
 	    },{
-		    	polygonOptions: { fillOpacity: 0.3, fillColor: "#0000FF" },
-		    	where: "name = '" + countryName + "'"
+		    	polygonOptions: { fillOpacity: 0.3, fillColor: "#21ace3", strokeOpacity: 0.7 , strokeColor: "#000000" },
+		    	where: "name IN ('" + countryName + "')"
 		    },{
-		    	polygonOptions: {fillOpacity: 0.1, fillColor: "#0000FF" },
-		    	where: whereClause + "AND name NOT EQUAL TO '" + countryName + "'"
+		    	polygonOptions: {fillOpacity: 0.1, fillColor: "#21ace3", strokeOpacity: 0.7 , strokeColor: "#000000" },
+		    	where: whereClause + " AND name NOT EQUAL TO '" + countryName + "'"
 		    }]
 	  });
 	},
@@ -54,7 +54,7 @@ WD.map.CountryLayer.prototype = {
 	    styles: [ {
 	    	polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
 	    },{
-	    	polygonOptions: { fillOpacity: 0.4, fillColor: "#0000FF", strokeOpacity: 0.7 , strokeColor: "#000000" },
+	    	polygonOptions: { fillOpacity: 0.3, fillColor: "#21ace3", strokeOpacity: 0.7 , strokeColor: "#000000" },
 	    	where: whereClause
 	    }]
 	  });
@@ -185,6 +185,15 @@ WD.map.goToOverview = function()
 	WD.nav.set();
 };
 
+WD.map.markerImage = {
+  url: '/resources/images/icon1-blue.png',
+  // This marker is 20 pixels wide by 32 pixels tall.
+  size: new google.maps.Size(24, 24),
+  // The origin for this image is 0,0.
+  origin: new google.maps.Point(0,0),
+  // The anchor for this image is the base of the flagpole at 0,32.
+  anchor: new google.maps.Point(12, 12)
+};
 WD.map.goToCountry = function( countryName )
 {
 	var i,
@@ -230,12 +239,18 @@ WD.map.showSite = function( site )
 	var marker = new google.maps.Marker({
     position: site.getCenter(),
     title: site.name,
-    map: WD.map._map
+    map: WD.map._map,
+    icon: 'resources/images/icon2.png'
 	});
 
 	WD.map._markers.push( marker );
 	google.maps.event.addListener(marker, 'click', function() {
 		WD.router.setRoute( "site/" + site.id );
-
 	} );
+	google.maps.event.addListener(marker, 'mouseover', function() {
+    this.setIcon( 'resources/images/icon2-dark.png' );
+  }.bind(marker));
+  google.maps.event.addListener(marker, 'mouseout', function() {
+    this.setIcon( 'resources/images/icon2.png' );
+  }.bind(marker));
 };

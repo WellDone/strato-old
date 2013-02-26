@@ -1,6 +1,6 @@
 h1.datapage-title {
 	margin:5px;
-	font-size: 16pt;
+	font-size: 20pt;
 }
 
 #datapage_content {
@@ -84,24 +84,61 @@ ul {
 	overflow:auto;
 }
 div.monitor-list-header {
-	background-color: #9999FF;
-	font-weight: bold;
-	border-bottom:solid 1px;
+	background-color: #99a2a5;
+	color: white;
+	border-bottom:solid 1px black;
 	padding-top:5px;
 	font-size:20px;
 	padding-bottom:5px;
 	height:20px;
 }
 li.monitor {
-	border-bottom: solid 1px;
+	border-bottom: solid 1px black;
 	background-color: #F8F8FF;
 	padding-top:5px;
 	padding-bottom:5px;
 	cursor:default;
 }
+li.monitor.highlighted {
+	background-color: #99dcf8;
+}
 li.monitor span {
 	vertical-align: middle;
 	cursor: inherit;
+}
+
+div.stats-health {
+	float:left;
+	margin-left: 20px;
+	margin-top: -20px;
+	padding: 20px;
+	text-align:center;
+	font-size: 20px;
+	border: solid 1px;
+}
+span.stats-health-num {
+	color: #1240AB;
+	font-size:55px;
+}
+span.stats-health-demom {
+	color: #06266F;
+	font-size:40px;
+}
+
+div.stats {
+	float: right;
+	text-align:left;
+	margin-right:100px;
+	padding-top:10px;
+	font-size:20px;
+}
+
+span.stats-caption {
+
+}
+span.stats-value {
+	color: #1240AB;
+	font-size:30px;
 }
 
 svg {
