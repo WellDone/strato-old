@@ -129,6 +129,8 @@ WD.dataPage.loadMap = function( siteData ) {
   WD.dataPage._map.setCenter( siteData.getCenter() );
   WD.dataPage._map.fitBounds( siteData.makeBounds() );
 
+  WD.dataPage._markers.forEach( function( m ) { m.setMap( null ); });
+  WD.dataPage._markers = [];
   for ( i=0; i<siteData.monitors.length; ++i ) {
     var momo = siteData.monitors[i];
     var marker = new google.maps.Marker({
