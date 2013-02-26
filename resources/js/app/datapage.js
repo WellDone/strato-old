@@ -71,15 +71,17 @@ WD.dataPage.drawVisualization = function ( siteID ) {
         .style("text-anchor", "end")
         .text("Volume (L)");
 
-    var city = svg.selectAll(".city")
+    var monitor = svg.selectAll(".monitor")
         .data(monitors)
       .enter().append("g")
-        .attr("class", "city");
+        .attr("class", "monitor");
 
-    city.append("path")
+    monitor.append("path")
         .attr("class", "line")
         .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return WD.dataPage.color(d.name); });
+        .style("stroke", function(d) { return WD.dataPage.color(d.name); })
+        .on( "mouseover", function(d,i) { WD.dataPage.selectMonitor( i ); } )
+        .on( "mouseout", function(d,i) { WD.dataPage.deselectMonitor( i ); });
 
   /*city.append("text")
         .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
@@ -153,10 +155,16 @@ WD.dataPage.loadMap = function( siteData ) {
 WD.dataPage.selectMonitor = function( i ) {
   WD.dataPage._markers[i].setIcon( 'resources/images/icon2-dark.png' );
   $("ul li").eq(i).addClass("highlighted");
+  d3.selectAll( "g.monitor" ).filter( function(d, j){
+    return j===i?this:null;
+  }).select("path").style( "stroke-width", "3px" );
 }
 WD.dataPage.deselectMonitor = function( i ) {
   WD.dataPage._markers[i].setIcon( 'resources/images/icon2.png' );
   $("ul li").eq(i).removeClass("highlighted");
+  d3.selectAll( "g.monitor" ).filter( function(d, j){
+    return (j===i)?this:null;
+  }).select("path").style( "stroke-width", "1.5px" );
 }
 
 WD.dataPage.render = function( siteID ) {
