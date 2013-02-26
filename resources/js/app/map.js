@@ -240,7 +240,7 @@ WD.map.showSite = function( site )
     position: site.getCenter(),
     title: site.name,
     map: WD.map._map,
-    icon: 'resources/images/icon2.png'
+    icon: 'resources/images/icon2-dark.png'
 	});
 
 	WD.map._markers.push( marker );
@@ -248,9 +248,9 @@ WD.map.showSite = function( site )
 		WD.router.setRoute( "site/" + site.id );
 	} );
 	google.maps.event.addListener(marker, 'mouseover', function() {
-    this.setIcon( 'resources/images/icon2-dark.png' );
+    //this.setIcon( 'resources/images/icon2-dark.png' );
   }.bind(marker));
   google.maps.event.addListener(marker, 'mouseout', function() {
-    this.setIcon( 'resources/images/icon2.png' );
+    //this.setIcon( 'resources/images/icon2.png' );
   }.bind(marker));
 };

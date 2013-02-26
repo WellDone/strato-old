@@ -107,7 +107,7 @@ WD.dataPage.drawVisualization = function ( siteID ) {
   });
   $(window).resize( function() {
     clearTimeout( WD.dataPage._resizeTimer );
-    WD.dataPage._resizeTimer = setTimeout( WD.dataPage.drawVisualization, 100);
+    WD.dataPage._resizeTimer = setTimeout( WD.dataPage.drawVisualization.bind(null, siteID), 100);
   });
 };
 
