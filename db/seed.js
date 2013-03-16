@@ -1,8 +1,19 @@
+var seedFile;
+if ( process.argv.length == 1 ) {
+  seedFile = './data/test.seed';
+} else if ( process.argv.length == 2 ) {
+  seedFile = process.argv[1];
+} else {
+  console.log( "USAGE: node seed.js [opt:seedFile]" );
+  process.exit(1);
+}
+
 var config = require( '../lib/config.js' ),
     dbEngine = require( '../lib/db.js' ),
     logger = new (require( '../lib/logger.js' ))( __dirname ),
-    db = dbEngine.connect( { url: config.databaseURL, logger: logger } ),
-    data = require( './dummyData.js' );
+    db = dbEngine.connect( { url: config.databaseURL, logger: logger } );
+
+var data = require( seedFile );
 
 db.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
