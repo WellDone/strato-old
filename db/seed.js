@@ -18,7 +18,7 @@ var data = require( seedFile );
 console.log( seedFile );
 console.log( data );
 
-db.on( 'error', function( err ) {
+db.on( 'errow', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
