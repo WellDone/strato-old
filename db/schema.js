@@ -20,7 +20,7 @@ schema.tables = {
                 "    ON UPDATE NO ACTION ON DELETE NO ACTION",
 
   "aggregate_reports":
-                "Date           date NOT NULL," +
+                "Timestamp      timestamp NOT NULL," +
                 "MonitorID      integer NOT NULL," +
                 "Raw            varchar(160)," +
                 "BatteryVoltage real," +
@@ -29,14 +29,21 @@ schema.tables = {
                 "HourCount      integer," +
                 "EventCount     integer," +
                 "HourlyPulses   integer[24]," +
+                "created_at     timestamp NOT NULL DEFAULT now()," +
                 //"CONSTRAINT aggregate_reports_pkey PRIMARY KEY (Date, MonitorID)," +
                 "CONSTRAINT aggregate_reports_monitors_fkey FOREIGN KEY (MonitorID)" +
                 "    REFERENCES monitors (ID) MATCH SIMPLE" +
-                "    ON UPDATE NO ACTION ON DELETE NO ACTION"
+                "    ON UPDATE NO ACTION ON DELETE NO ACTION",
+
+  "malformed_reports":
+                "Timestamp        timestamp," +
+                "SMSFrom          varchar(20)," +
+                "Body             varchar(160)," +
+                "created_at       timestamp NOT NULL DEFAULT now()"
 };
 
 schema.indices = {
-  "index_aggregateReportData":   "ON aggregate_reports USING btree (MonitorID, Date)"
+  "index_aggregateReportData":   "ON aggregate_reports USING btree (MonitorID, Timestamp)"
 }
 
 module.exports = schema;

@@ -64,11 +64,11 @@ setTimeout( function() {
       if ( !m.breakdown ) {
         m.breakdown = dates.length;
       }
-      q( "INSERT INTO monitors( id, name, location, siteid ) VALUES (" + j + ",'" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
+      q( "INSERT INTO monitors( name, location, siteid ) VALUES ('" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
       .on( 'end', function( j, av, breakdown ) {
         for ( var k=0; k<dates.length; ++k ) {
           var v = (k>=breakdown)?4:av + Math.random() * 30 - 15;
-          q( "INSERT INTO reports( date, volume, monitorid ) VALUES ('" + dates[k] + "'," + v + "," + j + ")");
+          q( "INSERT INTO reports( timestamp, eventcount, monitorid ) VALUES ('" + dates[k] + "'," + v + "," + j + ")");
         }
       }.bind( null, j, av, m.breakdown ) );
     }
