@@ -38,7 +38,7 @@ var old = [
         _functionality: 0.9 }
     ]
   }
-]
+];
 
 module.exports = [
   { name: "Test Site",
