@@ -52,6 +52,9 @@ function dropAllFromTable( table) {
 
 setTimeout( function() {
   console.log( "Seeding database.  " + data.length + " site." );
+  dropAllFromTable( "sites" );
+  dropAllFromTable( "monitors" );
+  dropAllFromTable( "aggregate_reports" );
   for ( var i=0; i<data.length; ++i ) {
     q("INSERT INTO sites( name, country ) VALUES ('" + data[i].name + "','" + data[i].country + "')" )
     for ( var j=0; j<data[i].monitors.length; ++j ) {
