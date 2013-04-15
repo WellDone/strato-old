@@ -1,6 +1,6 @@
 var config = require( '../lib/config.js' ),
+    logger = require( '../lib/logger.js' ).start( __dirname ),
     dbEngine = require( '../lib/db.js' ),
-    logger = new (require( '../lib/logger.js' ))( __dirname ),
     db = dbEngine.connect( { url: config.databaseURL, logger: logger } ),
     schema = require( "./schema.js" );
 

@@ -1,4 +1,4 @@
-module.exports = [
+var old = [
   { name: "WellDone Kenya Pilot",
     country: "Kenya",
     monitors: [
@@ -37,5 +37,12 @@ module.exports = [
         lng: 37.8358,
         _functionality: 0.9 }
     ]
+  }
+]
+
+module.exports = [
+  { name: "Test Site",
+    country: "Ethiopia",
+    monitors: []
   }
 ]
