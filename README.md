@@ -24,7 +24,6 @@ node db/migrate.js
 ```
 
 A migration log is stored at db/debug.log.
-
 The schema is kept at db/schema.js and migration steps will (eventually) be stored in db/migrations.
 
 To clear all data from the main tables, use AT YOUR OWN RISK:
