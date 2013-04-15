@@ -51,9 +51,9 @@ function dropAllFromTable( table) {
 }
 
 setTimeout( function() {
-  console.log( "Seeding database.  " + data.length );
+  console.log( "Seeding database.  " + data.length + " site." );
   for ( var i=0; i<data.length; ++i ) {
-    q("INSERT INTO sites( id, name, country ) VALUES (" + i + ",'" + data[i].name + "','" + data[i].country + "')" )
+    q("INSERT INTO sites( name, country ) VALUES ('" + data[i].name + "','" + data[i].country + "')" )
     for ( var j=0; j<data[i].monitors.length; ++j ) {
       var m = data[i].monitors[j];
       var av = 650 / 8 + Math.random() * 20 - 10;

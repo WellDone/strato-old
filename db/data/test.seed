@@ -41,7 +41,7 @@ var old = [
 ];
 
 module.exports = [
-  { name: "Test Site",
+  { name: "Charity:Water Ethiopia Pilot",
     country: "Ethiopia",
     monitors: []
   }
