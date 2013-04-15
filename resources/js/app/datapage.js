@@ -69,7 +69,7 @@ WD.dataPage.drawVisualization = function ( siteID ) {
         .attr("y", 6)
         .attr("dy", "-3.5em")
         .style("text-anchor", "end")
-        .text("Volume (L)");
+        .text("Event Count");
 
     var monitor = svg.selectAll(".monitor")
         .data(monitors)
