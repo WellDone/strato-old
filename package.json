@@ -9,7 +9,8 @@
     "nib": "*",
     "socket.io": "0.9.x",
     "winston":"x",
-    "pg":"x"
+    "pg":"x",
+    "twilio":"x"
   },
   "engines": {
   	"node": "0.8.x",
