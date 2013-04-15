@@ -13,6 +13,8 @@ var config = require( '../lib/config.js' ),
     dbEngine = require( '../lib/db.js' ),
     db = dbEngine.connect( { url: config.databaseURL, logger: logger } );
 
+var clean = config.hasCLFlag( "clean" );
+
 var data = require( seedFile );
 
 console.log( seedFile );
@@ -50,11 +52,17 @@ function dropAllFromTable( table) {
   q( "DELETE FROM " + table );
 }
 
-setTimeout( function() {
-  console.log( "Seeding database.  " + data.length + " site." );
+if ( clean ) {
+  console.log( "Cleaning the DB.  Goodbye." );
+  dropAllFromTable( "malformed_reports" );
   dropAllFromTable( "aggregate_reports" );
   dropAllFromTable( "monitors" );
   dropAllFromTable( "sites" );
+  return;
+}
+
+setTimeout( function() {
+  console.log( "Seeding database.  " + data.length + " site." );
   for ( var i=0; i<data.length; ++i ) {
     q("INSERT INTO sites( name, country ) VALUES ('" + data[i].name + "','" + data[i].country + "')" )
     for ( var j=0; j<data[i].monitors.length; ++j ) {
