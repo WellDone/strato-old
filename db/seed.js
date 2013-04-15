@@ -1,26 +1,11 @@
-var seedFile;
-if ( process.argv.length == 2 ) {
-  seedFile = './data/test.seed';
-} else if ( process.argv.length == 3 ) {
-  seedFile = process.argv[2];
-} else {
-  console.log( "USAGE: node seed.js [opt:seedFile]" );
-  process.exit(1);
-}
-
 var config = require( '../lib/config.js' ),
     logger = require( '../lib/logger.js' ).start( __dirname ),
     dbEngine = require( '../lib/db.js' ),
     db = dbEngine.connect( { url: config.databaseURL, logger: logger } );
 
-var clean = config.hasCLFlag( "clean" );
+var clean = config.hasCLFlag( "--clean" );
 
-var data = require( seedFile );
-
-console.log( seedFile );
-console.log( data );
-
-db.on( 'errow', function( err ) {
+db.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
@@ -52,16 +37,32 @@ function dropAllFromTable( table) {
   q( "DELETE FROM " + table );
 }
 
+setTimeout( function() {
 if ( clean ) {
+  if ( process.argv.length != 3 ) {
+    console.log( "USAGE: node seed.js --clean" );
+    console.log( "       node seed.js [seedFile]" );
+    process.exit(1);
+  }
   console.log( "Cleaning the DB.  Goodbye." );
   dropAllFromTable( "malformed_reports" );
   dropAllFromTable( "aggregate_reports" );
   dropAllFromTable( "monitors" );
   dropAllFromTable( "sites" );
   return;
-}
+} else {
+  var seedFile;
+  if ( process.argv.length == 2 ) {
+    seedFile = './data/test.seed';
+  } else if ( process.argv.length == 3 ) {
+    seedFile = process.argv[2];
+  } else {
+    console.log( "USAGE: node seed.js --clean" );
+    console.log( "       node seed.js [seedFile]" );
+    process.exit(1);
+  }
+  var data = require( seedFile );
 
-setTimeout( function() {
   console.log( "Seeding database.  " + data.length + " site." );
   for ( var i=0; i<data.length; ++i ) {
     q("INSERT INTO sites( name, country ) VALUES ('" + data[i].name + "','" + data[i].country + "')" )
@@ -81,4 +82,5 @@ setTimeout( function() {
       }.bind( null, j, av, m.breakdown ) );
     }
   }
-}, 1000 );
+}
+}, 500 );
