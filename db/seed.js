@@ -38,12 +38,19 @@ function dropAllFromTable( table) {
 }
 
 setTimeout( function() {
+if ( clean ) {
+  if ( process.argv.length != 3 ) {
+    console.log( "USAGE: node seed.js --clean" );
+    console.log( "       node seed.js [seedFile]" );
+    process.exit(1);
+  }
   console.log( "Cleaning the DB.  Goodbye." );
   dropAllFromTable( "malformed_reports" );
   dropAllFromTable( "aggregate_reports" );
   dropAllFromTable( "monitors" );
   dropAllFromTable( "sites" );
-
+  return;
+} else {
   var seedFile;
   if ( process.argv.length == 2 ) {
     seedFile = './data/test.seed';
@@ -55,9 +62,11 @@ setTimeout( function() {
     process.exit(1);
   }
   var data = require( seedFile );
-  console.log( "Seeding database.  " + data.length + " sites." );
+  console.log( "Seeding database.  " + data.length + " site." );
   for ( var i=0; i<data.length; ++i ) {
     q("INSERT INTO sites( id, name, country ) VALUES (" + i + ",'" + data[i].name + "','" + data[i].country + "')" ).on( 'end', function(i) {
+      console.log(data);
+      console.log(i);
       for ( var j=0; j<data[i].monitors.length; ++j ) {
         var m = data[i].monitors[j];
         var av = 650 / 8 + Math.random() * 20 - 10;
@@ -75,4 +84,5 @@ setTimeout( function() {
       }
     }.bind(null, i) )
   }
+}
 }, 500 );
