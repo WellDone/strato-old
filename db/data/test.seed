@@ -40,9 +40,4 @@ var old = [
   }
 ];
 
-module.exports = [
-  { name: "Charity:Water Ethiopia Pilot",
-    country: "Ethiopia",
-    monitors: []
-  }
-]
+module.exports = old;
