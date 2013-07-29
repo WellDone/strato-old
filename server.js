@@ -6,17 +6,14 @@ var express = require( 'express' ),
 app.use(express.bodyParser());
 
 var logger = require( './lib/logger' ).start();
+logger.info("CONFIG LOADED", JSON.stringify( config, null, 2 ) );
+var db = require( './lib/db' )(config.dbConfig, logger);
 
-var dbEngine = require( './lib/db.js' )
-  , db;
+var momoData = new (require( './lib/momoData' ))( db );
 
-db = dbEngine.connect( { url: config.databaseURL } );
-
-var momoData = new (require( './lib/momoData.js' ))( db );
-
-var resourceServer = new (require( './lib/resourceServer.js' ))( app )
-  , templateServer = new (require( './lib/templateServer.js' ))( app )
-  , dataServer = new (require( './lib/dataServer.js' ))( app, momoData );
+var resourceServer = new (require( './lib/resourceServer' ))( app )
+  , templateServer = new (require( './lib/templateServer' ))( app )
+  , dataServer = new (require( './lib/dataServer' ))( app, momoData );
 
 resourceServer.serve( "/resources", __dirname + "/resources", __dirname );
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );

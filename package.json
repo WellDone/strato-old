@@ -10,7 +10,8 @@
     "socket.io": "0.9.x",
     "winston":"x",
     "pg":"x",
-    "twilio":"x"
+    "twilio":"x",
+    "nano":"x"
   },
   "engines": {
   	"node": "0.8.x",
