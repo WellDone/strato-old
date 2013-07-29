@@ -13,7 +13,7 @@ var queryCount = 0;
 function q( query ) {
   ++queryCount;
   logger.info( query );
-  var _q = db.query( query );
+  var _q = db.core.query( query );
   _q.on( 'end', function() {
     --queryCount;
     if ( queryCount === 0 ) {

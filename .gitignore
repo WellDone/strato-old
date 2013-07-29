@@ -11,6 +11,7 @@ lib-cov
 Vagrantfile
 cookbooks
 script
+node_modules
 
 pids
 logs
