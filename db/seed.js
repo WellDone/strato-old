@@ -1,11 +1,10 @@
 var config = require( '../lib/config.js' ),
     logger = require( '../lib/logger.js' ).start( __dirname ),
-    dbEngine = require( '../lib/db.js' ),
-    db = dbEngine.connect( { url: config.databaseURL, logger: logger } );
+    db = require( '../lib/db.js' )( config.dbConfig, logger )
 
 var clean = config.hasCLFlag( "--clean" );
 
-db.on( 'error', function( err ) {
+db.core.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
@@ -19,7 +18,7 @@ function q( query ) {
     if ( queryCount === 0 ) {
       setTimeout( function() {
         if ( queryCount === 0 ) {
-          db.end();
+          db.core.end();
         }
       }, 500 );
     }
