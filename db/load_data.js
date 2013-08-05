@@ -70,7 +70,7 @@ setTimeout( function() {
   var monitors = require( './data/monitors.json' );
   console.log( "Importing " + monitors.length + " monitors." );
   for ( var i=0; i<monitors.length; ++i ) {
-    q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + monitors[i].ID + "," + i + ",'" + monitors[i].Name + "','(" + monitors[i].Lon + "," + monitors[i].Lat + ")'," + monitors[i].SiteID + ")" )
+    q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + monitors[i].ID + "," + i + ",'" + monitors[i].Name + "','(" + monitors[i].Lat + "," + monitors[i].Lon + ")'," + monitors[i].SiteID + ")" )
   };
 
   // Import reports data into postgres SQL DB  
