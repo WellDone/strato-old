@@ -1,6 +1,6 @@
 var old = [
-  { name: "WellDone Kenya Pilot",
-    country: "Kenya",
+  { name: "WellDone Tanzania",
+    country: "Tanzania",
     monitors: [
       { name: "Demomo",
         lat: -6.8167,
