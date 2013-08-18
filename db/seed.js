@@ -3,6 +3,7 @@ var config = require( '../lib/config.js' ),
     db = require( '../lib/db.js' )( config.dbConfig, logger )
 
 var clean = config.hasCLFlag( "--clean" );
+var noReports = config.hasCLFlag( "--noReports", "-n" );
 
 db.core.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
@@ -51,9 +52,9 @@ if ( clean ) {
   return;
 } else {
   var seedFile;
-  if ( process.argv.length == 2 ) {
+  if ( process.argv.length == 2 || process.argv.length==3 && noReports ) {
     seedFile = './data/test.seed';
-  } else if ( process.argv.length == 3 ) {
+  } else if ( process.argv.length == 3 || process.argv.length == 4 && noReports ) {
     seedFile = process.argv[2];
   } else {
     console.log( "USAGE: node seed.js --clean" );
@@ -73,8 +74,11 @@ if ( clean ) {
         if ( !m.breakdown ) {
           m.breakdown = dates.length;
         }
-        q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + j + "," + j + ",'" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
+        q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + j + ",'" + (m.gsmid||j) + "','" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
         .on( 'end', function( j, av, breakdown ) {
+          if (noReports) {
+            return;
+          }
           for ( var k=0; k<dates.length; ++k ) {
             var v = (k>=breakdown)?4:av + Math.random() * 30 - 15;
             q( "INSERT INTO aggregate_reports( timestamp, eventcount, monitorid ) VALUES ('" + dates[k] + "'," + v + "," + j + ")");

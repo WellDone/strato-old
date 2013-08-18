@@ -10,8 +10,10 @@ WD.dataPage.drawVisualization = function ( siteID ) {
       width = $(container)[0].offsetWidth - margin.left - margin.right,
       height = $(container)[0].offsetHeight - margin.top - margin.bottom;
 
-  var parseDate = d3.time.format("%Y%m%d").parse;
-
+  function parseDate(date) {
+    return new Date(date);
+  }
+//Sun Aug 18 2013 14:00:16 GMT+0300 (EAT)
   var x = d3.time.scale()
       .range([0, width]);
 
@@ -155,14 +157,16 @@ WD.dataPage.loadMap = function( siteData ) {
 };
 
 WD.dataPage.selectMonitor = function( i ) {
-  WD.dataPage._markers[i].setIcon( 'resources/images/icon2-dark.png' );
+  if ( WD.dataPage._markers[i] ) // Don't break if we don't have an internet connection
+    WD.dataPage._markers[i].setIcon( 'resources/images/icon2-dark.png' );
   $("ul li").eq(i).addClass("highlighted");
   d3.selectAll( "g.monitor" ).filter( function(d, j){
     return j===i?this:null;
   }).select("path").style( "stroke-width", "3px" );
 }
 WD.dataPage.deselectMonitor = function( i ) {
-  WD.dataPage._markers[i].setIcon( 'resources/images/icon2.png' );
+  if ( WD.dataPage._markers[i] ) // Don't break if we don't have an internet connection
+    WD.dataPage._markers[i].setIcon( 'resources/images/icon2.png' );
   $("ul li").eq(i).removeClass("highlighted");
   d3.selectAll( "g.monitor" ).filter( function(d, j){
     return (j===i)?this:null;
