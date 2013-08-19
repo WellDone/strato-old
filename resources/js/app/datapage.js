@@ -113,7 +113,7 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData ) {
     if ( WD.dataPage.socket ) {
       WD.dataPage.socket.emit( 'clear monitors' );
     } else {
-      WD.dataPage.socket = io.connect('http://localhost');
+      WD.dataPage.socket = io.connect(window.location.hostname);
     }
     for ( i=0; i<siteData.monitors.length; ++i ) {
       WD.dataPage.socket.emit( 'watch monitor', siteData.monitors[i].id );
