@@ -2,8 +2,9 @@
 
 WD.MoMo = {};
 
-WD.MoMo.Monitor = function( monitorName, monitorLocation )
+WD.MoMo.Monitor = function( id, monitorName, monitorLocation )
 {
+	this.id = id,
 	this.name = monitorName;
 	this.loc = monitorLocation;
 };
@@ -22,7 +23,7 @@ WD.MoMo.Site = function( siteName, countryName, monitorList ) {
 };
 WD.MoMo.Site.prototype = {
 	addMonitor : function( monitor ) {
-		if ( !monitor.name || !monitor.loc ) {
+		if ( (!monitor.id && monitor.id != 0) || !monitor.name || !monitor.loc ) {
 			return;
 		}
 		this.monitors.push( monitor );

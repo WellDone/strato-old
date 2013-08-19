@@ -4,15 +4,11 @@ WD.dataPage = {};
 WD.dataPage.visualizationContainer = "#datapage_visualization";
 WD.dataPage._resizeTimer = null;
 WD.dataPage.color = d3.scale.category10();
-WD.dataPage.drawVisualization = function ( siteID ) {
+WD.dataPage.drawVisualization = function () {
   var container = WD.dataPage.visualizationContainer;
   var margin = {top: 20, right: 30, bottom: 30, left: 50},
       width = $(container)[0].offsetWidth - margin.left - margin.right,
       height = $(container)[0].offsetHeight - margin.top - margin.bottom;
-
-  function parseDate(date) {
-    return new Date(date);
-  }
 //Sun Aug 18 2013 14:00:16 GMT+0300 (EAT)
   var x = d3.time.scale()
       .range([0, width]);
@@ -41,17 +37,17 @@ WD.dataPage.drawVisualization = function ( siteID ) {
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  function redraw( data ) {
+  WD.dataPage.redraw = function() {
     var monitors = WD.dataPage.color.domain().map(function(name) {
       return {
         name: name,
-        values: data.map(function(d) {
+        values: WD.dataPage.data.map(function(d) {
           return {date: d.date, volume: +d[name]};
         })
       };
     });
 
-    x.domain(d3.extent(data, function(d) { return d.date; }));
+    x.domain(d3.extent(WD.dataPage.data, function(d) { return d.date; }));
 
     y.domain([
       d3.min(monitors, function(c) { return 0;}),//d3.min(c.values, function(v) { return v.volume; }); }),
@@ -92,9 +88,15 @@ WD.dataPage.drawVisualization = function ( siteID ) {
         .attr("dy", ".35em")
         .text(function(d) { return d.name; });*/
   }
+  WD.dataPage.redraw();
 
-  //TODO: Load the data beforehand so we don't have to do
-  //      another HTTP request every time the browser is resized
+  $(window).resize( function() {
+    clearTimeout( WD.dataPage._resizeTimer );
+    WD.dataPage._resizeTimer = setTimeout( WD.dataPage.drawVisualization, 100);
+  });
+};
+
+WD.dataPage.loadDataForVisualization = function( siteID, siteData ) {
   d3.json("/data/sites/" + siteID + "/reports.json", function(error, data) {
     if ( error ) {
       console.log( error );
@@ -102,16 +104,39 @@ WD.dataPage.drawVisualization = function ( siteID ) {
     }
 
     data.forEach(function(d) {
-      d.date = parseDate(d.date);
+      d.date = new Date(d.date);
     });
 
-    redraw( data );
+    WD.dataPage.data = data;
+    WD.dataPage.drawVisualization();
+
+    if ( WD.dataPage.socket ) {
+      WD.dataPage.socket.emit( 'clear monitors' );
+    } else {
+      WD.dataPage.socket = io.connect('http://localhost');
+    }
+    for ( i=0; i<siteData.monitors.length; ++i ) {
+      WD.dataPage.socket.emit( 'watch monitor', siteData.monitors[i].id );
+    }
+    
+    WD.dataPage.socket.on('newReport', function (newData) {
+      newData.date = new Date( newData.date );
+      var i;
+      for ( i = 0; i < WD.dataPage.data.length; ++i ) {
+        if ( WD.dataPage.data[i].date == newData.date ) {
+          WD.dataPage.data[i][newData.monitor] = newData.eventCount;
+          break;
+        }
+      }
+      if ( i == WD.dataPage.data.length ) {
+        var obj = { date: newData.date };
+        obj[newData.monitor] = newData.eventCount;
+        WD.dataPage.data.push( obj );
+      }
+      WD.dataPage.drawVisualization();
+    });
   });
-  $(window).resize( function() {
-    clearTimeout( WD.dataPage._resizeTimer );
-    WD.dataPage._resizeTimer = setTimeout( WD.dataPage.drawVisualization.bind(null, siteID), 100);
-  });
-};
+}
 
 WD.dataPage._markers = [];
 WD.dataPage.loadMap = function( siteData ) {
@@ -199,7 +224,7 @@ WD.dataPage.render = function( siteID ) {
           }.bind(null, i))
 
         }
-        WD.dataPage.drawVisualization( siteID );
+        WD.dataPage.loadDataForVisualization( siteID, siteData );
         WD.dataPage.loadMap( data );
       }.bind(null, data), 200 );
     }.bind(null, siteData), function(err){alert(err);});

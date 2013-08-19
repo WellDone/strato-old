@@ -2,6 +2,8 @@ var config = require('./lib/config');
 
 var express = require( 'express' ),
     app = express();
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(server);
 
 app.use(express.bodyParser());
 
@@ -17,7 +19,7 @@ var resourceServer = new (require( './lib/resourceServer' ))( app )
 
 resourceServer.serve( "/resources", __dirname + "/resources", __dirname );
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );
-dataServer.serve( "/data" );
+dataServer.serve( "/data", io );
 dataServer.listen( "/sms" );
 logger.serve( app, "/debug" );
 
@@ -25,7 +27,7 @@ app.get( '/', function( req, res ) {
   res.sendfile( __dirname + "/resources/html/index.html" );
 });
 
-app.listen( config.port );
+server.listen( config.port );
 logger.log( "info", "Listening on port " + config.port + "." );
 
 var startDate = new Date();
