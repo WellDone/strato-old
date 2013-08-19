@@ -132,6 +132,7 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData, callback ) {
         obj[newData.monitor] = newData.eventCount;
         WD.dataPage.data.push( obj );
       }
+      WD.dataPage.drawVisualization();
     });
 
     callback( WD.dataPage.data );
@@ -255,7 +256,9 @@ WD.dataPage.render = function( siteID ) {
             }.bind(null, i))
             WD.dataPage.drawVisualization();
           }
-          WD.dataPage.loadMap( data );
+          if ( window.google ) {
+            WD.dataPage.loadMap( data );
+          }
         }.bind(null, data), 200 );
       }.bind(null, siteData), function(err){alert(err);});
     } );
