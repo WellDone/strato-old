@@ -6,8 +6,12 @@ var old = [
         lat: -6.8167,
         lng: 39.2839,
         gsmid: "+255714238477",
-        _functionality: 0.9 }
-      /*{ name: "Olenguruone District Hospital",
+        _noreports: true }
+    ] },
+  { name: "WellDone Kenya",
+    country: "Kenya",
+    monitors: [
+      { name: "Olenguruone District Hospital",
         lat: -0.59103333333,
         lng: 35.68551667,
         _functionality: 0.9 },
@@ -40,7 +44,7 @@ var old = [
       { name: "Tunyai Dispensary",
         lat: -0.176016667,
         lng: 37.8358,
-        _functionality: 0.9 }*/
+        _functionality: 0.9 }
     ]
   }
 ];

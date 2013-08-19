@@ -96,7 +96,7 @@ WD.dataPage.drawVisualization = function () {
   });
 };
 
-WD.dataPage.loadDataForVisualization = function( siteID, siteData ) {
+WD.dataPage.loadDataForVisualization = function( siteID, siteData, callback ) {
   d3.json("/data/sites/" + siteID + "/reports.json", function(error, data) {
     if ( error ) {
       console.log( error );
@@ -108,7 +108,6 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData ) {
     });
 
     WD.dataPage.data = data;
-    WD.dataPage.drawVisualization();
 
     if ( WD.dataPage.socket ) {
       WD.dataPage.socket.emit( 'clear monitors' );
@@ -133,8 +132,9 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData ) {
         obj[newData.monitor] = newData.eventCount;
         WD.dataPage.data.push( obj );
       }
-      WD.dataPage.drawVisualization();
     });
+
+    callback( WD.dataPage.data );
   });
 }
 
@@ -198,36 +198,67 @@ WD.dataPage.deselectMonitor = function( i ) {
   }).select("path").style( "stroke-width", "1.5px" );
 }
 
-function extendSiteData( data ) {
-  data.volumePerCapita = (Math.random() * 6 + 17).toFixed(2);
-  data.population = Math.ceil( Math.random() * 15 + 20 );
-  data.averageVolume = Math.ceil( data.volumePerCapita * data.population );
-  data.health = Math.ceil( data.volumePerCapita / 25 * 100 );
+function extendSiteData( siteData, monitorData ) {
+  siteData.runningAverage = 0;
+  var dates = {};
+  var dateCount = 0;
+  for ( var i = 0; i < monitorData.length; ++i ) {
+    var data = monitorData[i]
+    var date = data.date;//{year: data.date.getYear(), month: data.date.getMonth(), day: data.date.getDate() };
+    if ( !dates[date] ) {
+      dates[date] = [];
+      dateCount++;
+    }
+    for (m in data) {
+      if ( m != "date" )
+        dates[date].push( data[m] );
+    }
+  }
+  for (d in dates) {
+    var sum = 0;
+    for ( v in dates[d] ) {
+      sum += dates[d][v];
+    }
+    dates[d] = sum / dates[d].length;
+    siteData.runningAverage += dates[d];
+  }
+  if ( dateCount > 0 )
+    siteData.runningAverage /= dateCount;
+  siteData.runningAverage = siteData.runningAverage.toFixed(2);
+
+  //siteData.volumePerCapita = siteData.runningAverage * 1.5; // assumes //(Math.random() * 6 + 17).toFixed(2);
+  siteData.averageVolume = (siteData.runningAverage * 1.5).toFixed(2); //Math.ceil( siteData.volumePerCapita * siteData.population );
+  if ( !siteData.population ) {
+    siteData.population = Math.ceil( Math.random() * 15 );
+  }
+  siteData.volumePerCapita = (siteData.averageVolume / siteData.population).toFixed(2);
+  siteData.health = Math.ceil( siteData.volumePerCapita / 3 * 100 );
 }
 WD.dataPage.render = function( siteID ) {
   WD.data.sites.get( siteID, function( siteData ) {
-    extendSiteData( siteData );
+    WD.dataPage.loadDataForVisualization( siteID, siteData, function(data) {
+      extendSiteData( siteData, WD.dataPage.data );
 
-    WD.util.templates.renderTemplate( "datapage", function(data, template) {
-      $("#data_section").hide();
-      $("#data_section").html( template( data ) );
-      setTimeout( function(){ $("#data_section").show(); }, 100);
-      setTimeout( function( data ) {
-        WD.dataPage.color.domain( d3.range( data.monitors.length ) );
-        for ( var i=0; i<data.monitors.length; ++i ) {
-          var el = $("ul li").eq(i);
-          el.css( "color", WD.dataPage.color(i) );
-          el.mouseover( function(i) {
-            WD.dataPage.selectMonitor( i );
-          }.bind(null, i)).mouseout( function(i) {
-            WD.dataPage.deselectMonitor( i );
-          }.bind(null, i))
-
-        }
-        WD.dataPage.loadDataForVisualization( siteID, siteData );
-        WD.dataPage.loadMap( data );
-      }.bind(null, data), 200 );
-    }.bind(null, siteData), function(err){alert(err);});
+      WD.util.templates.renderTemplate( "datapage", function(data, template) {
+        $("#data_section").hide();
+        $("#data_section").html( template( data ) );
+        setTimeout( function(){ $("#data_section").show(); }, 100);
+        setTimeout( function( data ) {
+          WD.dataPage.color.domain( d3.range( data.monitors.length ) );
+          for ( var i=0; i<data.monitors.length; ++i ) {
+            var el = $("ul li").eq(i);
+            el.css( "color", WD.dataPage.color(i) );
+            el.mouseover( function(i) {
+              WD.dataPage.selectMonitor( i );
+            }.bind(null, i)).mouseout( function(i) {
+              WD.dataPage.deselectMonitor( i );
+            }.bind(null, i))
+            WD.dataPage.drawVisualization();
+          }
+          WD.dataPage.loadMap( data );
+        }.bind(null, data), 200 );
+      }.bind(null, siteData), function(err){alert(err);});
+    } );
 
     WD.nav.set( siteData.country, siteData.name );
   }, function() {

@@ -28,8 +28,8 @@ function q( query ) {
 }
 
 dates = [];
-for ( var i=5; i<26; ++i ) {
-  dates.push( "2013-02-" + String(i) );
+for ( var i=5; i<18; ++i ) {
+  dates.push( "2013-08-" + String(i) );
 }
 
 function dropAllFromTable( table) {
@@ -44,7 +44,7 @@ if ( clean ) {
     console.log( "       node seed.js [seedFile]" );
     process.exit(1);
   }
-  console.log( "Cleaning the DB.  Goodbye." );
+  console.log( "Cleaning the DB." );
   dropAllFromTable( "malformed_reports" );
   dropAllFromTable( "aggregate_reports" );
   dropAllFromTable( "monitors" );
@@ -63,6 +63,7 @@ if ( clean ) {
   }
   var data = require( seedFile );
   console.log( "Seeding database.  " + data.length + " site." );
+  var monitorCount = 0;
   for ( var i=0; i<data.length; ++i ) {
     q("INSERT INTO sites( id, name, country ) VALUES (" + i + ",'" + data[i].name + "','" + data[i].country + "')" ).on( 'end', function(i) {
       console.log(data);
@@ -70,20 +71,24 @@ if ( clean ) {
       for ( var j=0; j<data[i].monitors.length; ++j ) {
         var m = data[i].monitors[j];
         var av = 650 / 8 + Math.random() * 20 - 10;
-        av *= m._functionality;
+        if ( m._functionality )
+          av *= m._functionality;
+        else
+          av = 0;
         if ( !m.breakdown ) {
           m.breakdown = dates.length;
         }
-        q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + j + ",'" + (m.gsmid||j) + "','" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
-        .on( 'end', function( j, av, breakdown ) {
+        q( "INSERT INTO monitors( id, GSMID, name, location, siteid ) VALUES (" + monitorCount++ + ",'" + (m.gsmid||j) + "','" + m.name + "','(" + m.lat + "," + m.lng + ")'," + i + ")" )
+        .on( 'end', function( j, av, breakdown, noReports ) {
           if (noReports) {
+            console.log( "No reports for monitor " + j );
             return;
           }
           for ( var k=0; k<dates.length; ++k ) {
             var v = (k>=breakdown)?4:av + Math.random() * 30 - 15;
             q( "INSERT INTO aggregate_reports( timestamp, eventcount, monitorid ) VALUES ('" + dates[k] + "'," + v + "," + j + ")");
           }
-        }.bind( null, j, av, m.breakdown ) );
+        }.bind( null, monitorCount-1, av, m.breakdown, m._noreports||noReports ) );
       }
     }.bind(null, i) )
   }

@@ -6,7 +6,7 @@ WD.data.sites = {
 
 		$.getJSON( "/data/sites.json", function( data ) {
 			data.forEach( function(s) {
-				WD.data.sites._add( s.id, s.name, s.country, s.monitors);
+				WD.data.sites._add( s.id, s.name, s.country, s.population, s.monitors);
 			});
 			callback( WD.data.sites._siteData );
 		});
@@ -27,8 +27,8 @@ WD.data.sites = {
 		}
 		callback( WD.data.sites._siteData[ id ] );
 	},
-	_add: function( id, name, country, monitors ) {
-		var site = new WD.MoMo.Site(name, country, monitors);
+	_add: function( id, name, country, population, monitors ) {
+		var site = new WD.MoMo.Site(name, country, population, monitors);
 		site.id = id;
 		if ( ( !id && id !== 0 ) || WD.data.sites._siteData[id] ) {
 			return false;

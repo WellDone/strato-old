@@ -9,11 +9,12 @@ WD.MoMo.Monitor = function( id, monitorName, monitorLocation )
 	this.loc = monitorLocation;
 };
 
-WD.MoMo.Site = function( siteName, countryName, monitorList ) {
+WD.MoMo.Site = function( siteName, countryName, population, monitorList ) {
 	var i;
 	this.name = siteName;
 	this.country = countryName;
 	this.monitors = [];
+	this.population = population;
 
 	if ( monitorList ) {
 		for ( i=0; i<monitorList.length; ++i ) {

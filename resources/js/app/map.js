@@ -1,6 +1,7 @@
 /*global WD: false, google: false, $: false */
 
 WD.map = {
+	currentSites : [],
 	_markers : []
 };
 
@@ -65,7 +66,7 @@ WD.map.CountryLayer.prototype = {
 	onClick : function(e) {
 		var countryName = e.row.name.value;
 		if ( WD.map.currentCountry !== countryName &&
-				 $.inArray( countryName, WD.map.countryNameList ) === 0 ) {
+				 $.inArray( countryName, WD.map.countryNameList ) !== -1 ) {
 			WD.map.hideAllSites();
 			WD.router.setRoute( "country/" + countryName );
 		}
@@ -75,20 +76,27 @@ WD.map.CountryLayer.prototype = {
 WD.map.ShowFallbackCountriesList = function( siteData )
 {
 	this.PopulateCountriesList( siteData );
-	$("map_canvas").html("");
-	var list = "";
+	$("#map_canvas").html("");
+	var list = "<div class=\"fallback_list\"><h1>Countries</h1>";
 	for ( country in this.countryNameList ) {
-		list += "<a href=\"#/country/" + country + "\">" + country + "</a><br/>";
+		list += "<a href=\"#/country/" + this.countryNameList[country] + "\">" + this.countryNameList[country] + "</a><br/>";
 	}
-	$("map_canvas").html(list);
+	list += "</div>";
+	$("#map_canvas").html(list);
 }
 WD.map.ShowFallbackSitesList = function()
 {
-	$("map_canvas").innerHTML( "")
+	$("#map_canvas").html( "" )
+	var list = "<div class=\"fallback_list\"><h1>Sites</h1>";
+	for ( site in this.currentSites ) {
+		console.log( site );
+		list += "<a href=\"#/site/" + this.currentSites[site].id + "\">" + this.currentSites[site].name + "</a><br/>";
+	}
+	$("#map_canvas").html(list);
 }
 WD.map.loadMap = function()
 {
-	if (!google)
+	if (!window.google)
 		return;//WD.map.showFallbackCountrriesList();
 
 	var overviewStyle = [
@@ -198,27 +206,29 @@ WD.map.goToOverview = function()
 {
 	WD.map.currentCountry = null;
 	WD.nav.set();
+	WD.map.hideAllSites();
 	if (!WD.map._map)
 	{
-		this.ShowFallbackCountrriesList( WD.data.sites._siteData );
+		WD.map.ShowFallbackCountriesList( WD.data.sites._siteData );
 		return;
 	}
-	WD.map.hideAllSites();
 	WD.map.initCountryLayer();
 	WD.map._CountryLayer.showAllCountries();
 	WD.map._map.setOptions(WD.map.overviewOptions);
 	WD.map._CountryLayer.show( WD.map._map );
 };
 
-WD.map.markerImage = {
-	url: '/resources/images/icon1-blue.png',
-	// This marker is 20 pixels wide by 32 pixels tall.
-	size: new google.maps.Size(24, 24),
-	// The origin for this image is 0,0.
-	origin: new google.maps.Point(0,0),
-	// The anchor for this image is the base of the flagpole at 0,32.
-	anchor: new google.maps.Point(12, 12)
-};
+if ( window.google ) {
+	WD.map.markerImage = {
+		url: '/resources/images/icon1-blue.png',
+		// This marker is 20 pixels wide by 32 pixels tall.
+		size: new google.maps.Size(24, 24),
+		// The origin for this image is 0,0.
+		origin: new google.maps.Point(0,0),
+		// The anchor for this image is the base of the flagpole at 0,32.
+		anchor: new google.maps.Point(12, 12)
+	};
+}
 WD.map.goToCountry = function( countryName )
 {
 	var monitorCount = 0;
@@ -233,9 +243,9 @@ WD.map.goToCountry = function( countryName )
 	}
 	WD.map.currentCountry = countryName;
 	WD.nav.set( countryName );
-	if (!WD.map)
+	if (!WD.map._map)
 	{
-		this.ShowFallbackSitesList( WD.currentSites );
+		WD.map.ShowFallbackSitesList( WD.currentSites );
 		return;
 	}
 	var i,
@@ -266,7 +276,7 @@ WD.map.hideAllSites = function()
 
 WD.map.showSite = function( site )
 {
-	WD.currentSites.push( site );
+	WD.map.currentSites.push( site );
 	if (!WD.map._map) {
 		return;
 	}
