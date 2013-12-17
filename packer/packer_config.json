@@ -3,6 +3,8 @@
     "aws_access_key": "",
     "aws_secret_key": "",
 
+    "allow_vagrant_pubkey": "true",
+
     "ssh_name": "wdadmin",
     "ssh_pass": "wdadminpass",
     "hostname": "packer-test"
@@ -57,18 +59,27 @@
 
   "provisioners": [
     {
+      "type": "file",
+      "source": "./ssh_keys",
+      "destination": "/tmp"
+    },
+    {
       "type": "shell",
       "scripts": [
+        "provisioning/base.sh",
         "provisioning/provision_appserver.sh", 
         "provisioning/provision_proxyserver.sh",
         "provisioning/provision_dbserver.sh"
       ],
+      "environment_vars": [
+        "ALLOW_VAGRANT_PUBKEY={{user `allow_vagrant_pubkey`}}"
+      ],
       "override": {
         "virtualbox": {
-          "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'"
+          "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'"
         }
       }
-    },
+    }
   ],
 
   "post-processors": ["vagrant"]

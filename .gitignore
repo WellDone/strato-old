@@ -1,5 +1,6 @@
 .vagrant
 packer_cache
+packer/*.box
 
 *.sublime-project
 *.sublime-workspace

@@ -2,12 +2,12 @@
 
 CODENAME=$(lsb_release -cs 2>/dev/null) # Should be 'precise'
 echo "deb http://apt.postgresql.org/pub/repos/apt/ $CODENAME-pgdg main" > ~/pgdg.list
-sudo mv -f ~/pgdg.list /etc/apt/sources.list.d/pgdg.list
+mv -f ~/pgdg.list /etc/apt/sources.list.d/pgdg.list
 
 echo "Importing repository signing key ..."
 KEYRING="/etc/apt/trusted.gpg.d/apt.postgresql.org.gpg"
 test -e $KEYRING || sudo touch $KEYRING
-sudo apt-key --keyring $KEYRING add - <<EOF
+apt-key --keyring $KEYRING add - <<EOF
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.12 (GNU/Linux)
 
@@ -52,5 +52,5 @@ VPZ67j5UMxqtT/Y4+NHcQGgwF/1i
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 
-sudo apt-get update
-sudo apt-get install -y postgresql-9.3 pgadmin3
+apt-get update
+apt-get install -y postgresql-9.3 pgadmin3
