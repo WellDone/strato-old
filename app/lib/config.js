@@ -20,7 +20,7 @@ var config = {
   },
   DEBUG: ( hasFlag( "--debug", "-d" ) || ENV('NODE_DEBUG_MODE') )?true:false,
   port: ENV('PORT', 3000),
-  logDir: ENV('WD_LOG_PATH', './log' ),
+  logDir: ENV('WD_LOG_PATH', '/var/log/welldone_server.log' ),
   twilioConfig: { account_sid: ENV('TWILIO_ACCOUNT_SID'),
                   auth_token:  ENV('TWILIO_AUTH_TOKEN'),
                   number:      ENV('TWILIO_NUMBER') }

@@ -1,10 +1,11 @@
 #!/bin/bash
 
+echo "Installing Postgres 9.3 and pgadmin3..."
+
 CODENAME=$(lsb_release -cs 2>/dev/null) # Should be 'precise'
 echo "deb http://apt.postgresql.org/pub/repos/apt/ $CODENAME-pgdg main" > ~/pgdg.list
 mv -f ~/pgdg.list /etc/apt/sources.list.d/pgdg.list
 
-echo "Importing repository signing key ..."
 KEYRING="/etc/apt/trusted.gpg.d/apt.postgresql.org.gpg"
 test -e $KEYRING || sudo touch $KEYRING
 apt-key --keyring $KEYRING add - <<EOF
@@ -54,3 +55,10 @@ EOF
 
 apt-get update
 apt-get install -y postgresql-9.3 pgadmin3
+
+#TODO: Customize where stuff goes on the box
+
+echo "Creating 'dbadmin' user..."
+useradd dbadmin
+echo $'7FIopgbW1is2\n7FIopgbW1is2' | passwd dbadmin
+

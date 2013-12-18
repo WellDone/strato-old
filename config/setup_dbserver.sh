@@ -1,3 +1,5 @@
 #!/bin/bash
 
-# create the database if it doesn't exist, migrate it if it does.
+# Create and initialize the database
+
+sudo -upostgres createdb -O dbadmin welldone

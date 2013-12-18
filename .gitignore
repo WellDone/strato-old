@@ -1,6 +1,7 @@
 .vagrant
-packer_cache
-packer/*.box
+packer/packer_cache
+*.box
+packer/ssh_keys
 
 *.sublime-project
 *.sublime-workspace

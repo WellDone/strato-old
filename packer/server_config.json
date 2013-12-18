@@ -6,8 +6,8 @@
     "allow_vagrant_pubkey": "true",
 
     "ssh_name": "wdadmin",
-    "ssh_pass": "wdadminpass",
-    "hostname": "packer-test"
+    "ssh_pass": "KwRirc0YC1Ob",
+    "hostname": "welldone-server"
   },
   "builders": [
   {
@@ -38,8 +38,8 @@
     "http_port_min" : 9001,
     "http_port_max" : 9001,
 
-    "ssh_username": "{{user `ssh_name`}}",
-    "ssh_password": "{{user `ssh_pass`}}",
+    "ssh_username": "wdadmin",
+    "ssh_password": "KwRirc0YC1Ob",
     "ssh_wait_timeout": "20m",
 
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
@@ -59,28 +59,52 @@
 
   "provisioners": [
     {
+      "type": "shell",
+      "override": {
+        "virtualbox": {
+          "inline": [
+            "echo Setting up password-less sudo...",
+            "echo KwRirc0YC1Ob | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
+            "echo KwRirc0YC1Ob | sudo -S chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}"
+          ],
+          "inline_shebang": "/bin/bash"
+        }
+      }
+    },
+
+    {
       "type": "file",
       "source": "./ssh_keys",
       "destination": "/tmp"
     },
     {
       "type": "shell",
+      "environment_vars": [ 
+        "ALLOW_VAGRANT_PUBKEY={{user `allow_vagrant_pubkey`}}"
+      ],
+      "script": "provisioning/install_ssh_keys.sh",
+      "execute_command": "{{ .Vars }} sudo -E bash '{{.Path}}'"
+    },
+
+    {
+      "type": "shell",
       "scripts": [
-        "provisioning/base.sh",
         "provisioning/provision_appserver.sh", 
         "provisioning/provision_proxyserver.sh",
         "provisioning/provision_dbserver.sh"
       ],
-      "environment_vars": [
-        "ALLOW_VAGRANT_PUBKEY={{user `allow_vagrant_pubkey`}}"
+      "execute_command": "{{.Vars}} sudo -E bash '{{.Path}}'"
+    },
+
+    {
+      "type": "shell",
+      "inline": [
+        "echo Updating the \"wdadmin\" password to be something secure...",
+        "echo $'{{user `ssh_pass`}}\n{{user `ssh_pass`}}' | sudo passwd {{user `ssh_name`}}"
       ],
-      "override": {
-        "virtualbox": {
-          "execute_command": "echo {{user `ssh_pass`}} | {{ .Vars }} sudo -E -S sh '{{.Path}}'"
-        }
-      }
+      "inline_shebang": "/bin/bash"
     }
   ],
 
-  "post-processors": ["vagrant"]
+  "post-processors": [ "vagrant" ]
 }

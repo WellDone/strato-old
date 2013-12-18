@@ -31,7 +31,7 @@ do
 		PUBKEY=$OPTARG
 		;;
 	v)
-		PACKER_OPTIONS = "$PACKER_OPTIONS -var 'allow_vagrant_pubkey=$OPTARG'"
+		PACKER_OPTIONS="$PACKER_OPTIONS -var 'allow_vagrant_pubkey=$OPTARG'"
 		;;
 	p)
 		echo "Options -p is currently unsupported"
@@ -47,6 +47,14 @@ do
 	esac
 done
 
+# Useless for VirtualBox
+#if [ -n "$AWS_ACCESS_KEY" ]; then
+#	PACKER_OPTIONS="$PACKER_OPTIONS -var 'aws_access_key=$AWS_ACCESS_KEY'"
+#fi
+#if [ -n "$AWS_SECRET_KEY" ]; then
+#	PACKER_OPTIONS="$PACKER_OPTIONS -var 'aws_secret_key=$AWS_SECRET_KEY'"
+#fi
+
 set -e
 if [ $DEBUG -eq 1 ]; then
 	export PACKER_LOG=1
@@ -56,10 +64,9 @@ if [ -e "$PUBKEY" ]; then
 	cp $PUBKEY ./ssh_keys
 fi
 
-if [ -e welldone_server.box ]; then
-	rm welldone_server.box || true
+if [ -e packer_virtualbox_virtualbox.box ]; then
+	rm packer_virtualbox_virtualbox.box || true
 fi
-echo "packer build --only=virtualbox packer_config.json $PACKER_OPTIONS" | sh
-mv packer_virtualbox_virtualbox.box welldone_server.box
+echo "packer build --only=virtualbox server_config.json $PACKER_OPTIONS" | sh
 vagrant box remove welldone_server || true
-vagrant box add welldone_server welldone_server.box
+vagrant box add welldone_server ./packer_virtualbox_virtualbox.box
