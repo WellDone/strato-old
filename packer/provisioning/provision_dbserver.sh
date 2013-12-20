@@ -62,3 +62,5 @@ echo "Creating 'dbadmin' user..."
 useradd dbadmin
 echo $'7FIopgbW1is2\n7FIopgbW1is2' | passwd dbadmin
 
+sudo -upostgres createuser dbadmin #Create the postgres user
+

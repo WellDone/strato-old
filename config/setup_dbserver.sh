@@ -1,5 +1,8 @@
 #!/bin/bash
 
-# Create and initialize the database
+# Create the database
 
-sudo -upostgres createdb -O dbadmin welldone
+echo "Setting up postgres database 'welldone'..."
+sudo -upostgres createuser dbadmin || true
+sudo -upostgres createdb -O dbadmin welldone || true
+

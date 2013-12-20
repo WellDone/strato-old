@@ -5,7 +5,8 @@ var express = require( 'express' ),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server);
 
-app.use(express.bodyParser());
+app.use(express.urlencoded())
+app.use(express.json())
 
 var logger = require( './lib/logger' ).start();
 logger.info("CONFIG LOADED", JSON.stringify( config, null, 2 ) );

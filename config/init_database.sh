@@ -1,0 +1,1 @@
+echo "Initializing WellDone database..."

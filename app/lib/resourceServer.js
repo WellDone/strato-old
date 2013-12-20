@@ -16,6 +16,8 @@ resourceServer.prototype = {
   serve: function( path, dir, cssDir ) {
     this.app.use( stylus.middleware({
       src: cssDir,
+      dest: "/home/application/csscache",
+      debug: true,
       compile: compileCSS
     }));
 

@@ -44,8 +44,10 @@ WD.routes = {
 };
 
 $(document).ready( function() {
+  WD.router = new Router(WD.routes);
+  WD.router.init();
+  loadMap();
   WD.data.sites.load( function() {
-    WD.router = new Router(WD.routes);
-    WD.router.init( "/overview" );
+    WD.router.setRoute( "/overview" );
   } );
 } );

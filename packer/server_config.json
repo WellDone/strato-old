@@ -64,8 +64,10 @@
         "virtualbox": {
           "inline": [
             "echo Setting up password-less sudo...",
-            "echo KwRirc0YC1Ob | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
-            "echo KwRirc0YC1Ob | sudo -S chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}"
+            "echo KwRirc0YC1Ob | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
+            "echo KwRirc0YC1Ob | sudo -S chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}",
+            "sudo mount ~/VBoxGuestAdditions.iso /mnt",
+            "sudo /mnt/VBoxLinuxAdditions.run || true"
           ],
           "inline_shebang": "/bin/bash"
         }

@@ -12,10 +12,9 @@ var logController = function( logDir ) {
   this.logFile = logDir + "/debug.log";
   this.logger = new (winston.Logger)({
     transports: [
-      new winston.transports.File({ filename: this.logFile })
+      new (winston.transports.Console)({'timestamp':true})
     ]
   });
-  this.logger.add(winston.transports.Console);
 
   if ( config.DEBUG ) {
     this.logger.log( "debug", "DEBUG MODE!");

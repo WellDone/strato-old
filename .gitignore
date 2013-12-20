@@ -2,6 +2,7 @@
 packer/packer_cache
 *.box
 packer/ssh_keys
+node_modules
 
 *.sublime-project
 *.sublime-workspace

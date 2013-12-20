@@ -15,12 +15,12 @@ var config = {
   hasCLFlag: hasFlag,
   getENV: ENV,
   dbConfig: {
-    core_url: ENV('DATABASE_URL', 'tcp://postgres:password@localhost:5433/WellDone'),
+    core_url: ENV('DATABASE_URL', 'tcp://dbadmin:7FIopgbW1is2@localhost:5432/welldone'),
     reports_url: ENV('REPORTS_DATABASE_URL', 'http://localhost:5984/')
   },
   DEBUG: ( hasFlag( "--debug", "-d" ) || ENV('NODE_DEBUG_MODE') )?true:false,
   port: ENV('PORT', 3000),
-  logDir: ENV('WD_LOG_PATH', '/var/log/welldone_server.log' ),
+  logDir: ENV('WD_LOG_PATH', '/home/application/welldone_server.log' ),
   twilioConfig: { account_sid: ENV('TWILIO_ACCOUNT_SID'),
                   auth_token:  ENV('TWILIO_AUTH_TOKEN'),
                   number:      ENV('TWILIO_NUMBER') }
