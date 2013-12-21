@@ -58,9 +58,6 @@ apt-get install -y postgresql-9.3 pgadmin3
 
 #TODO: Customize where stuff goes on the box
 
-echo "Creating 'dbadmin' user..."
-useradd dbadmin
-echo $'7FIopgbW1is2\n7FIopgbW1is2' | passwd dbadmin
-
 sudo -upostgres createuser dbadmin #Create the postgres user
+sudo -upostgres psql -c "ALTER USER dbadmin WITH PASSWORD 'GikmnmJKDOB3'"
 

@@ -1,7 +1,7 @@
 var config = require( '../lib/config.js' ),
     logger = require( '../lib/logger.js' ).start( __dirname ),
     dbEngine = require( '../lib/db.js' ),
-    db = dbEngine.connect( { url: config.databaseURL, logger: logger } ),
+    db = dbEngine(config.dbConfig, logger),
     schema = require( "./schema.js" );
 
 var force = config.hasCLFlag( "--force", "-f" );
@@ -9,7 +9,7 @@ if ( force ) {
   logger.info( "Forcing recreation of the database.  All data will be lost." );
 }
 
-db.on( 'error', function( err ) {
+db.core.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
@@ -20,7 +20,7 @@ function q( query ) {
   _q.on( 'end', function() {
     --queryCount;
     if ( queryCount === 0 ) {
-      db.end();
+      db.core.end();
     }
   } );
   return _q;

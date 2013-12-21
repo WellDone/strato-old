@@ -15,7 +15,7 @@ var config = {
   hasCLFlag: hasFlag,
   getENV: ENV,
   dbConfig: {
-    core_url: ENV('DATABASE_URL', 'tcp://dbadmin:7FIopgbW1is2@localhost:5432/welldone'),
+    core_url: ENV('DATABASE_URL', 'tcp://user:password@localhost:5432/welldone'),
     reports_url: ENV('REPORTS_DATABASE_URL', 'http://localhost:5984/')
   },
   DEBUG: ( hasFlag( "--debug", "-d" ) || ENV('NODE_DEBUG_MODE') )?true:false,

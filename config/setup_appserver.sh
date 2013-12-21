@@ -7,3 +7,5 @@ chown application:application /home/application
 
 cd /vagrant/app
 npm update
+
+./compileCSS.sh

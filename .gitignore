@@ -4,7 +4,7 @@ packer/packer_cache
 packer/ssh_keys
 node_modules
 
-resources/css/*.css
+app/resources/css/*.css
 
 *.sublime-project
 *.sublime-workspace

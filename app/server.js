@@ -14,19 +14,13 @@ var db = require( './lib/db' )(config.dbConfig, logger);
 
 var momoData = new (require( './lib/momoData' ))( db );
 
-var resourceServer = new (require( './lib/resourceServer' ))( app )
-  , templateServer = new (require( './lib/templateServer' ))( app )
+var templateServer = new (require( './lib/templateServer' ))( app )
   , dataServer = new (require( './lib/dataServer' ))( app, momoData );
 
-resourceServer.serve( "/resources", __dirname + "/resources", __dirname );
 templateServer.serve( "/templates", __dirname + "/resources/html/templates" );
 dataServer.serve( "/data", io );
 dataServer.listen( "/sms" );
 logger.serve( app, "/debug" );
-
-app.get( '/', function( req, res ) {
-  res.sendfile( __dirname + "/resources/html/index.html" );
-});
 
 server.listen( config.port );
 logger.log( "info", "Listening on port " + config.port + "." );

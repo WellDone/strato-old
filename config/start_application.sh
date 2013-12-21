@@ -1,5 +1,8 @@
+echo "Starting application..."
+
 cd /vagrant/app
 export PORT=10000
+export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone
 node server.js 1>/home/application/out.log 2>/home/application/err.log &
 
 #PORT=20000
