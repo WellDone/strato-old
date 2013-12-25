@@ -91,7 +91,15 @@ if [ $DEBUG -eq 1 ]; then
 fi
 
 if [ -e "$PUBKEY" ]; then
-	cp $PUBKEY ./ssh_keys
+	PUBKEYFILE=`basename "$PUBKEY"`
+	echo "Trusting pulic key '$PUBKEYFILE'"
+	PUBKEYTARGET="./ssh_keys/$PUBKEYFILE"
+
+	if [ -e $PUBKEYTARGET ]; then
+		echo "ERROR: '$PUBKEYFILE' already exists in the ssh_keys directory."
+		exit 1
+	fi
+	cp "$PUBKEY" "$PUBKEYTARGET"
 else
 	if [ -n "$PUBKEY" ]; then
 		echo "ERROR: SSH Public key file does not exist."
@@ -103,6 +111,10 @@ if [ -e "$VAGRANT_BOX_FILE" ]; then
 	rm $VAGRANT_BOX_FILE || true
 fi
 echo "packer build --only=$BUILDER server_config.json $PACKER_OPTIONS" | sh
-vagrant box remove welldone_server || true
+if [ -n "$PUBKEYTARGET" ]; then
+	echo "Cleaning up public key file."
+	rm -f "$PUBKEYTARGET"
+fi
 
+vagrant box remove welldone_server || true
 vagrant box add welldone_server $VAGRANT_BOX_FILE
