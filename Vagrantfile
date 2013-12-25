@@ -14,6 +14,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", path: "config/setup_appserver.sh"
   config.vm.provision "shell", path: "config/setup_dbserver.sh"
   config.vm.provision "shell", path: "config/setup_proxyserver.sh"
-  config.vm.provision "shell", inline: "sudo -u dbadmin bash '/vagrant/config/init_database.sh'"
+  config.vm.provision "shell", path: "config/init_database.sh"
   config.vm.provision "shell", inline: "sudo -u application bash '/vagrant/config/start_application.sh'"
 end

@@ -12,3 +12,6 @@ npm install -g forever
 echo "Creating 'application' user..."
 useradd application
 echo $'6MQrXRqGmOS8\n6MQrXRqGmOS8' | (passwd application)
+
+mkdir -p /home/application
+chown application:application /home/application

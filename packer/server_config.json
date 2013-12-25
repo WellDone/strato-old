@@ -3,7 +3,7 @@
     "aws_access_key": "",
     "aws_secret_key": "",
 
-    "allow_vagrant_pubkey": "true",
+    "allow_vagrant_pubkey": "false",
 
     "ssh_name": "wdadmin",
     "ssh_pass": "KwRirc0YC1Ob",
@@ -17,8 +17,12 @@
     "region": "us-east-1",
     "source_ami": "ami-de0d9eb7",
     "instance_type": "t1.micro",
-    "ssh_username": "{{user `ssh_name`}}",
+    "ssh_username": "ubuntu",
     "ami_name": "{{user `hostname`}} {{timestamp}}"
+  },
+  {
+    "type": "digitalocean",
+    "image_id": 1505447
   },
   {
     "type": "virtualbox",
@@ -38,7 +42,7 @@
     "http_port_min" : 9001,
     "http_port_max" : 9001,
 
-    "ssh_username": "wdadmin",
+    "ssh_username": "ubuntu",
     "ssh_password": "KwRirc0YC1Ob",
     "ssh_wait_timeout": "20m",
 
@@ -60,7 +64,24 @@
   "provisioners": [
     {
       "type": "shell",
+      "inline": ["echo Nothing to do here..."],
       "override": {
+        "amazon-ebs": {
+          "inline": [
+            "sudo useradd {{user `ssh_name`}}",
+            "echo $'KwRirc0YC1Ob\nKwRirc0YC1Ob' | (passwd {{user `ssh_name`}})",
+            "sudo sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
+            "sudo chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}"
+          ]
+        },
+        "digitalocean": {
+          "inline": [
+            "sudo useradd {{user `ssh_name`}}",
+            "echo $'KwRirc0YC1Ob\nKwRirc0YC1Ob' | (passwd {{user `ssh_name`}})",
+            "sudo sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
+            "sudo chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}"
+          ]
+        },
         "virtualbox": {
           "inline": [
             "echo Setting up password-less sudo...",
