@@ -42,9 +42,9 @@
     "http_port_min" : 9001,
     "http_port_max" : 9001,
 
-    "ssh_username": "ubuntu",
-    "ssh_password": "KwRirc0YC1Ob",
-    "ssh_wait_timeout": "20m",
+    "ssh_username": "wdadmin",
+    "ssh_password": "wdadminpass",
+    "ssh_wait_timeout": "30m",
 
     "shutdown_command": "echo {{user `ssh_pass`}} | sudo -S shutdown -P now",
 
@@ -85,8 +85,8 @@
         "virtualbox": {
           "inline": [
             "echo Setting up password-less sudo...",
-            "echo KwRirc0YC1Ob | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
-            "echo KwRirc0YC1Ob | sudo -S chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}",
+            "echo wdadminpass | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",
+            "echo wdadminpass | sudo -S chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}",
             "sudo mount ~/VBoxGuestAdditions.iso /mnt",
             "sudo /mnt/VBoxLinuxAdditions.run || true"
           ],

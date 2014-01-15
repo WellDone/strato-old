@@ -12,11 +12,11 @@ Builds a WellDone MoMo Server basebox using Packer.
    amazon-ebs (untested)
 
 OPTIONS (all optional):
-   -h      Show this message
-   -k      Specify the location of the SSH public key file to install
-   -v      Set to "true" to allow SSH using the insecure Vagrant public key
-   -p      Set the admin user password, default "KwRirc0YC1Ob"
-   -d      Enable packer debug logging
+   -h         Show this message
+   -k LOC     Specify the location LOC of the SSH public key file to install
+   -v         Allow SSH using the insecure Vagrant public key
+   -p PWD     Set the admin user password, default "KwRirc0YC1Ob"
+   -d         Enable packer debug logging
 
 AWS_ACCESS_KEY and AWS_SECRET_KEY environment variables are required for
   the amazon-ebs builder
@@ -30,7 +30,7 @@ VAGRANT="true"
 DEBUG=0
 PACKER_OPTIONS=""
 
-while getopts “hk:v:p:d” OPTION
+while getopts “hk:vp:d” OPTION
 do
 	case $OPTION in
 	h)
@@ -41,13 +41,14 @@ do
 		PUBKEY=$OPTARG
 		;;
 	v)
-		PACKER_OPTIONS="$PACKER_OPTIONS -var 'allow_vagrant_pubkey=$OPTARG'"
+		PACKER_OPTIONS="$PACKER_OPTIONS -var 'allow_vagrant_pubkey=true'"
 		;;
 	p)
 		PACKER_OPTIONS="$PACKER_OPTIONS -var 'ssh_pass=$OPTARG'"
 		;;
 	d)
-		DEBUG=1
+		export PACKER_LOG=1
+		echo "DEBUG MODE"
 		;;
 		
 	?)
@@ -84,12 +85,6 @@ if [ -n "$AWS_SECRET_KEY" ]; then
 	PACKER_OPTIONS="$PACKER_OPTIONS -var 'aws_secret_key=$AWS_SECRET_KEY'"
 fi
 
-
-set -e
-if [ $DEBUG -eq 1 ]; then
-	export PACKER_LOG=1
-fi
-
 if [ -e "$PUBKEY" ]; then
 	PUBKEYFILE=`basename "$PUBKEY"`
 	echo "Trusting pulic key '$PUBKEYFILE'"
@@ -110,11 +105,12 @@ fi
 if [ -e "$VAGRANT_BOX_FILE" ]; then
 	rm $VAGRANT_BOX_FILE || true
 fi
-echo "packer build --only=$BUILDER server_config.json $PACKER_OPTIONS" | sh
+COMMAND="packer build --only=$BUILDER $PACKER_OPTIONS server_config.json"
+echo $COMMAND | sh
 if [ -n "$PUBKEYTARGET" ]; then
 	echo "Cleaning up public key file."
 	rm -f "$PUBKEYTARGET"
 fi
 
-vagrant box remove welldone_server || true
+vagrant box remove welldone_server $BUILDER || true
 vagrant box add welldone_server $VAGRANT_BOX_FILE
