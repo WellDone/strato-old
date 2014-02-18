@@ -11,5 +11,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network "forwarded_port", guest: 80, host: 3000
 
-  config.vm.provision "shell", path: "config/provision.sh"
+  config.vm.provision "shell", inline: "ln -fs /vagrant /welldone"
+  config.vm.provision "shell", inline: "/vagrant/deploy.sh -sp local"
 end

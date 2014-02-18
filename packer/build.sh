@@ -114,3 +114,7 @@ fi
 
 vagrant box remove welldone_server $BUILDER || true
 vagrant box add welldone_server $VAGRANT_BOX_FILE
+
+if [ -e "$PUBKEYTARGET" ]; then
+	rm "$PUBKEYTARGET"
+fi

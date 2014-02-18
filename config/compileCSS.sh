@@ -1,10 +1,10 @@
 #!/bin/bash
 
-for f in ./resources/css/*
+for f in /welldone/app/resources/css/*
 do
 	NAME=`basename "$f"`
 	EXT="${NAME##*.}"
 	if [ "$EXT" == "styl" ]; then
-		./node_modules/stylus/bin/stylus -u nib $f
+		/welldone/app/node_modules/stylus/bin/stylus -u nib $f
 	fi
 done

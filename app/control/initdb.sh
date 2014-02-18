@@ -1,6 +1,11 @@
 echo "Initializing WellDone database..."
 
-cd /vagrant/app
+cd /welldone/app
 export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone
-node db/migrate.js --force
-node db/seed.js
+
+if [ "$1" == "true" ]; then
+	node db/migrate.js --force
+	node db/seed.js
+else
+	node db/migrate.js
+fi

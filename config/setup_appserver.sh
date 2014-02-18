@@ -2,7 +2,5 @@
 echo "Setting up appserver..."
 
 # Use forever to start the server services
-cd /vagrant/app
+cd /welldone/app
 npm update
-
-./compileCSS.sh

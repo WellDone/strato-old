@@ -79,4 +79,4 @@ $SSH_CMD "cd /welldone/app
           chmod +x ./control/initdb.sh
           sudo -u postgres bash -c './control/initdb.sh $CLEAN'
           chmod +x ./control/start.sh
-          sudo -u application bash -c 'export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone; ./control/start.sh $'"
+          sudo -u application bash -c 'export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone; ./control/start.sh'"
