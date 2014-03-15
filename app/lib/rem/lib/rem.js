@@ -27,6 +27,7 @@ function REM( options ) {
 	{
 		this.backend = this.options.backend;
 	}
+	this.options.serveLatest = (options.serveLatest)? true : false;
 
 	this.engineCount = 0;
 	this.engines = [];
@@ -57,7 +58,7 @@ REM.prototype.loadSchemas = function( basePath, next )
 			console.log( "Failed to add schema version " + files[i] + ": " + e );
 		}
 	}
-	console.log( "Latest version is " + this.latest().version.join('.') );
+	console.log( "Latest API version is " + this.latest().version.join('.') );
 }
 
 REM.prototype.addVersion = function( versions, index )
@@ -94,7 +95,7 @@ REM.prototype.addVersion = function( versions, index )
 	if ( versions[i] != 'dev' && ( iter.latest == null || versions[i] > iter.latest ) )
 		iter.latest = versions[i];
 
-	console.log( "Added API version " + versions.join('.') + "." );
+	console.log( "Loaded API schema version " + versions.join('.') + "." );
 }
 
 REM.prototype.addEngine = function( versions, engine )
@@ -190,12 +191,13 @@ REM.prototype.serve = function( app, basePath )
 	var self = this;
 	function serveVersion( versionString, versionObject )
 	{
-		if ( versionString != "" )
+		if ( versionString != "" || self.options.serveLatest )
 		{
-			var url = path.join( basePath, "v" + versionString );
+			var url = path.join( basePath, (versionString != "") ? "v" + versionString : "" );
 			
 			var engine = getLatest( versionObject );
 			self.engines[ engine ].serve( app, url );
+			console.log( "Serving API version " + self.engines[engine].version.join('.') + " at " + url + "." );
 		}
 
 		for ( var v in versionObject )
