@@ -89,7 +89,8 @@ dataServer.prototype = {
       subQuery.on( 'row', function( row ) {
         var monitor = { id: row.id,
                         name: row.name,
-                        loc: parsePoint( row.location ) };
+                        loc: parsePoint( row.location ),
+                        gsmid: row.gsmid };
         site.monitors.push( monitor );
       }).on( 'end', function() {
         --queryCount;

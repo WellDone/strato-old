@@ -1,11 +1,11 @@
 /*global WD: false, google: false, $: false */
 
-WD.map = {
+var _map = {
 	currentSites : [],
 	_markers : []
 };
 
-WD.map.PopulateCountriesList = function( siteMap ) {
+_map.PopulateCountriesList = function( siteMap ) {
 	this.countryNameList = [];
 	for ( siteName in siteMap )
 	{
@@ -16,10 +16,10 @@ WD.map.PopulateCountriesList = function( siteMap ) {
 		}
 	}
 }
-WD.map.CountryLayer = function( siteMap ) {
+_map.CountryLayer = function( siteMap ) {
 	var siteName, site, countryName, whereClause;
-	WD.map.PopulateCountriesList( siteMap );
-	whereClause = "name IN ('" + WD.map.countryNameList.join("','") + "')";
+	_map.PopulateCountriesList( siteMap );
+	whereClause = "name IN ('" + _map.countryNameList.join("','") + "')";
 	this._layer = new google.maps.FusionTablesLayer( {
 		query: {
 			select: "'col29'",
@@ -31,7 +31,7 @@ WD.map.CountryLayer = function( siteMap ) {
 	google.maps.event.addListener(this._layer, 'click', this.onClick.bind(this) );
 };
 
-WD.map.CountryLayer.prototype = {
+_map.CountryLayer.prototype = {
 	show : function( _map ) {
 		this._layer.setMap( _map );
 	},
@@ -39,7 +39,7 @@ WD.map.CountryLayer.prototype = {
 		this._layer.setMap( null );
 	},
 	showCountry : function( countryName ) {
-		var whereClause = "name IN ('" + WD.map.countryNameList.join("','") + "')";
+		var whereClause = "name IN ('" + _map.countryNameList.join("','") + "')";
 		this._layer.setOptions({
 			styles: [ {
 				polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
@@ -53,7 +53,7 @@ WD.map.CountryLayer.prototype = {
 		});
 	},
 	showAllCountries : function() {
-		var whereClause = "name IN ('" + WD.map.countryNameList.join("','") + "')";
+		var whereClause = "name IN ('" + _map.countryNameList.join("','") + "')";
 		this._layer.setOptions({
 			styles: [ {
 				polygonOptions: {fillOpacity: 0.0001, strokeColor: "#000000", strokeOpacity:0.2 }
@@ -65,15 +65,15 @@ WD.map.CountryLayer.prototype = {
 	},
 	onClick : function(e) {
 		var countryName = e.row.name.value;
-		if ( WD.map.currentCountry !== countryName &&
-				 $.inArray( countryName, WD.map.countryNameList ) !== -1 ) {
-			WD.map.hideAllSites();
+		if ( _map.currentCountry !== countryName &&
+				 $.inArray( countryName, _map.countryNameList ) !== -1 ) {
+			_map.hideAllSites();
 			WD.router.setRoute( "country/" + countryName );
 		}
 	}
 };
 
-WD.map.ShowFallbackCountriesList = function( siteData )
+_map.ShowFallbackCountriesList = function( siteData )
 {
 	this.PopulateCountriesList( siteData );
 	$("#map_canvas").html("");
@@ -84,7 +84,7 @@ WD.map.ShowFallbackCountriesList = function( siteData )
 	list += "</div>";
 	$("#map_canvas").html(list);
 }
-WD.map.ShowFallbackSitesList = function()
+_map.ShowFallbackSitesList = function()
 {
 	$("#map_canvas").html( "" )
 	var list = "<div class=\"fallback_list\"><h1>Sites</h1>";
@@ -94,10 +94,10 @@ WD.map.ShowFallbackSitesList = function()
 	}
 	$("#map_canvas").html(list);
 }
-WD.map.loadMap = function()
+_map.loadMap = function()
 {
 	if (!window.google)
-		return;//WD.map.showFallbackCountrriesList();
+		return;//_map.showFallbackCountrriesList();
 
 	var overviewStyle = [
 		{
@@ -178,7 +178,7 @@ WD.map.loadMap = function()
 			]
 		}
 	];
-	WD.map.overviewOptions = {
+	_map.overviewOptions = {
 		center: new google.maps.LatLng(9.4969, 36.8961),
 		zoom: 3,
 		mapTypeId: 'overview-style',
@@ -191,35 +191,35 @@ WD.map.loadMap = function()
 		disableDoubleClickZoom:true
 	};
 
-	WD.map._map = new google.maps.Map(document.getElementById("map_canvas"), WD.map.overviewOptions);
-	WD.map.styledMapType = new google.maps.StyledMapType(overviewStyle, {
+	_map._map = new google.maps.Map(document.getElementById("map_canvas"), _map.overviewOptions);
+	_map.styledMapType = new google.maps.StyledMapType(overviewStyle, {
 		name: 'Styled Map'
 	});
-	WD.map._map.mapTypes.set('overview-style', WD.map.styledMapType);
+	_map._map.mapTypes.set('overview-style', _map.styledMapType);
 	WD.currentSites = [];
 };
 
-WD.map.initCountryLayer = function() {
-	WD.map._CountryLayer = new WD.map.CountryLayer( WD.data.sites._siteData );
+_map.initCountryLayer = function() {
+	_map._CountryLayer = new _map.CountryLayer( WD.data.sites._siteData );
 };
-WD.map.goToOverview = function()
+_map.goToOverview = function()
 {
-	WD.map.currentCountry = null;
+	_map.currentCountry = null;
 	WD.nav.set();
-	WD.map.hideAllSites();
-	if (!WD.map._map)
+	_map.hideAllSites();
+	if (!_map._map)
 	{
-		WD.map.ShowFallbackCountriesList( WD.data.sites._siteData );
+		_map.ShowFallbackCountriesList( WD.data.sites._siteData );
 		return;
 	}
-	WD.map.initCountryLayer();
-	WD.map._CountryLayer.showAllCountries();
-	WD.map._map.setOptions(WD.map.overviewOptions);
-	WD.map._CountryLayer.show( WD.map._map );
+	_map.initCountryLayer();
+	_map._CountryLayer.showAllCountries();
+	_map._map.setOptions(_map.overviewOptions);
+	_map._CountryLayer.show( _map._map );
 };
 
 if ( window.google ) {
-	WD.map.markerImage = {
+	_map.markerImage = {
 		url: '/resources/images/icon1-blue.png',
 		// This marker is 20 pixels wide by 32 pixels tall.
 		size: new google.maps.Size(24, 24),
@@ -229,13 +229,13 @@ if ( window.google ) {
 		anchor: new google.maps.Point(12, 12)
 	};
 }
-WD.map.goToCountry = function( countryName )
+_map.goToCountry = function( countryName )
 {
 	var monitorCount = 0;
 	$.each( WD.data.sites._siteData, function( id, site ) {
 		if ( site.country === countryName ) {
 			monitorCount += site.monitors.length;
-			WD.map.showSite( site );
+			_map.showSite( site );
 		}
 	});
 	if ( monitorCount === 0 ) {

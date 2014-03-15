@@ -1,0 +1,23 @@
+<h1 class="page-header">Mobile Monitors</h1>
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>GSM ID</th>
+        <th>Site</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#monitors}}
+        <tr class="linkRow" data-gsmid="{{gsmid}}">
+          <td>{{name}}</td>
+          <td>{{gsmid}}</td>
+          <td data-siteid="{{site.id}}" class="siteLinkColumn"><a>{{site.name}}</a></td>
+          <td>{{status}}</td>
+          <td><a class="editMonitor">edit</a>&nbsp;<a class="deleteMonitor">delete</a></td>
+        </tr>
+      {{/monitors}}
+  </table>
+</div>

@@ -1,0 +1,16 @@
+{
+	"monitors": {
+		"id"   : { "type": "integer",
+		           "constraint": "pkey" },
+		"name" : { "type": "string",
+		           "constraint": "unique" },
+		"group": { "relation": "groups",
+		           "count": "one" },
+	},
+	"groups": {
+
+	},
+	"people": {
+
+	}
+}

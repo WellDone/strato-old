@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.username = "wdadmin"
 
   config.vm.network "forwarded_port", guest: 80, host: 3000
+  config.vm.network "forwarded_port", guest: 5432, host: 5433
 
   config.vm.provision "shell", inline: "ln -fs /vagrant /welldone"
   config.vm.provision "shell", inline: "/vagrant/deploy.sh -sp local"

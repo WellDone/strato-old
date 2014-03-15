@@ -1,0 +1,30 @@
+{
+	"types": {
+		"monitor/monitors": {
+			"id"       : "int            | pkey",
+			"name"     : "string         | unique",
+			"location" : "point",
+			"gsmid"    : "string         | unique, required, size: 20",
+			"groups"   : "refset:group"
+		},
+		"group/groups": {
+			"id"       : "int            | pkey",
+			"name"     : "string         | unique, required",
+			"owner"    : "ref:account    | required"
+		},
+		"account/accounts": {
+			"name"     : "string         | pkey, required"
+		},
+		"user/users": {
+			"id"       : "int            | pkey",
+			"fullname" : "string         | required",
+			"phone"    : "string         | unique",
+			"email"    : "string         | unique",
+			"accounts" : "refset:account | required"
+		},
+		"alert/alerts": {
+			"monitor" : "ref:monitor | pkey",
+			"group"   : "ref:group"
+		}
+	}
+}
