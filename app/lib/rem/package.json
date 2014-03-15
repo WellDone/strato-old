@@ -1,0 +1,31 @@
+{
+  "name": "REM",
+  "version": "0.1.0",
+  "description": "A straightforward approach to versioned, restful, battle-ready API and data model development",
+  "main": "lib/rem.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "~0.10.0"
+  },
+  "dependencies": {
+    "any-db": "~2.1.0",
+    "express": "x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amcgee/REM.git"
+  },
+  "keywords": [
+    "rest",
+    "api",
+    "restful"
+  ],
+  "author": "Austin McGee (austinmcgee.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amcgee/REM/issues"
+  },
+  "homepage": "https://github.com/amcgee/REM"
+}
