@@ -1,8 +1,7 @@
 {
-  "name": "WellDone",
-  "description": "WellDone MoMo server",
-  "version": "0.2.1",
-  "private": true,
+  "name": "Strato",
+  "description": "WellDone Strato server and data portal",
+  "version": "0.3.0",
   "dependencies": {
     "express": "3.x",
     "stylus": "*",
