@@ -1,22 +1,23 @@
-var express = require( 'express' ),
-    app  = express();
-app.use( express.urlencoded() );
-app.use( express.json() );
+var logger   = require( './lib/logger' ),
+    config   = require( './lib/config' );
 
-var logger   = require( 'lib/logger' ).start();
-var config   = require( 'lib/config' );
-var dbEngine = require( 'lib/db' );
+var REM      = require( './lib/rem' ),
+    express  = require( 'express' ),
+    app      = express();
 
 logger.info("CONFIG LOADED", JSON.stringify( config, null, 2 ) );
 
-var db = dbEngine( config.dbConfig, logger );
-
-db.connect();
-
-// We have arrived!
-
-var apiv1 = new (require( 'lib/api/apiv1' ))( app, config, db );
-apiv1.serve( '/api/v1' );
+var api = new REM( {
+	path: './lib/api',
+	db: {
+		url: config.dbConfig.core_url,
+		connectionPool: { min: 2, max: 10 }
+	},
+	logger: logger
+});
 
 var startDate = new Date();
-logger.log( "info", "API Server started at " + startDate.toTimeString() + " on " + startDate.toDateString() + ".");
+logger.info( "API Server started at " + startDate.toTimeString() + " on " + startDate.toDateString() + "." );
+
+api.serve( app, '/api' );
+app.listen( config.port || 10000 );

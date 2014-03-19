@@ -26,6 +26,10 @@ define( [ 'jquery',
  	page( '/manage/site/:id', singleSiteHandler );
 
 	page( '/manage/monitors', monitorsHandler );
-	page( '/manage/monitor/:gsmid', singleMonitorHandler );
+	page( '/manage/monitor/:id', singleMonitorHandler );
+
+	page( '/manage', function() {
+		page( '/manage/monitors' );
+	})
 	return manageHandler;
  } );

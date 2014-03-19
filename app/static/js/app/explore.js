@@ -1,5 +1,6 @@
 define( ['jquery',
-         'hbars!views/explore'], function( $ ) {
+         'page',
+         'hbars!views/explore'], function( $, page, htmlTemplate ) {
 	function exploreHandler( ctx, next ) {
 		$('#content').html( htmlTemplate() );
 		deactivate();
@@ -9,10 +10,10 @@ define( ['jquery',
 		next();
 	}
  	
- 	page( '/explore', sitesHandler );
- 	page( '/manage/site/:id', singleSiteHandler );
+ 	page( '/explore', exploreHandler );
+ 	//page( '/manage/site/:id', singleSiteHandler );
 
-	page( '/manage/monitors', monitorsHandler );
-	page( '/manage/monitor/:gsmid', singleMonitorHandler );
+	//page( '/manage/monitors', monitorsHandler );
+	//page( '/manage/monitor/:gsmid', singleMonitorHandler );
 	return exploreHandler;
  })

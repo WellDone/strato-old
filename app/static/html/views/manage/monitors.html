@@ -11,10 +11,10 @@
     </thead>
     <tbody>
       {{#monitors}}
-        <tr class="linkRow" data-gsmid="{{gsmid}}">
+        <tr class="linkRow" data-monitorid="{{id}}">
           <td>{{name}}</td>
           <td>{{gsmid}}</td>
-          <td data-siteid="{{site.id}}" class="siteLinkColumn"><a>{{site.name}}</a></td>
+          <td data-siteid="{{site}}" class="siteLinkColumn"><a>{{site}}</a></td>
           <td>{{status}}</td>
           <td><a class="editMonitor">edit</a>&nbsp;<a class="deleteMonitor">delete</a></td>
         </tr>

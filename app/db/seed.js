@@ -1,5 +1,5 @@
 var config = require( '../lib/config.js' ),
-    logger = require( '../lib/logger.js' ).start( __dirname ),
+    logger = require( '../lib/logger.js' ),
     db = require( '../lib/db.js' )( config.dbConfig, logger )
 
 var clean = config.hasCLFlag( "--clean" );

@@ -11,6 +11,16 @@ function REM( options ) {
 	this.options = options;
 	this.options.path = path.resolve( options.path );
 
+	this.logger = this.options.logger;
+	if ( !this.logger ) 
+	{
+		this.logger = {
+			log: function( level, log ) { console.log( level + ": " + log ); },
+			info: function( log ) { this.log( "info", log ); },
+			error: function( log ) { this.log( "error", log ); }
+		};
+	}
+
 	if ( !this.options.backend )
 	{
 		var complex = ( typeof this.options.db == 'object' );
@@ -21,7 +31,7 @@ function REM( options ) {
 		  ( complex && this.options.db.connectionPool ) ? this.options.db.connectionPool
 		                                                : null;
 		REMSQL = require( './rem-sql' );
-		this.backend = ( new REMSQL( url, poolOptions ) );
+		this.backend = ( new REMSQL( url, poolOptions, this.logger ) );
 	}
 	else
 	{
@@ -55,10 +65,10 @@ REM.prototype.loadSchemas = function( basePath, next )
 		}
 		catch ( e )
 		{
-			console.log( "Failed to add schema version " + files[i] + ": " + e );
+			this.logger.error( "Failed to add schema version " + files[i] + ": " + e );
 		}
 	}
-	console.log( "Latest API version is " + this.latest().version.join('.') );
+	this.logger.info( "Latest API version is " + this.latest().version.join('.') );
 }
 
 REM.prototype.addVersion = function( versions, index )
@@ -95,7 +105,7 @@ REM.prototype.addVersion = function( versions, index )
 	if ( versions[i] != 'dev' && ( iter.latest == null || versions[i] > iter.latest ) )
 		iter.latest = versions[i];
 
-	console.log( "Loaded API schema version " + versions.join('.') + "." );
+	this.logger.info( "Loaded API schema version " + versions.join('.') + "." );
 }
 
 REM.prototype.addEngine = function( versions, engine )
@@ -197,7 +207,7 @@ REM.prototype.serve = function( app, basePath )
 			
 			var engine = getLatest( versionObject );
 			self.engines[ engine ].serve( app, url );
-			console.log( "Serving API version " + self.engines[engine].version.join('.') + " at " + url + "." );
+			self.logger.info( "Serving API version " + self.engines[engine].version.join('.') + " at " + url + "." );
 		}
 
 		for ( var v in versionObject )

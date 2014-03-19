@@ -1,10 +1,11 @@
 var anyDB = require( 'any-db' );
 
-var rem_sql = function( url, poolOptions ) {
+var rem_sql = function( url, poolOptions, logger ) {
 	this.db = ( poolOptions ) ? anyDB.createPool( url, poolOptions ) : anyDB.createConnection( url );
 	this.db.on( 'error', function(err) {
 		throw err;
 	})
+	this.logger = logger;
 }
 
 rem_sql.prototype.assertValid = function()
@@ -61,9 +62,11 @@ function parseBody( type, body, output )
 }
 rem_sql.prototype.streamQueryResults = function( sql, parameters, output )
 {
-	console.log( sql );
-	console.log( "parameters: [ " + parameters.toString() + " ]" );
+	this.logger.info( sql );
+	this.logger.info( "parameters: [ " + parameters.toString() + " ]" );
+	
 	var result = [];
+	var self = this;
 	this.db.query( sql, parameters )
 	.on( 'data', function( row ) {
 		result.push( row );
@@ -72,7 +75,7 @@ rem_sql.prototype.streamQueryResults = function( sql, parameters, output )
 		output( null, result );
 	} )
 	.on( 'error', function( err ) {
-		console.log( err );
+		self.logger.error( err );
 		output( "Database query failed. " + err.toString() );
 	})
 }
