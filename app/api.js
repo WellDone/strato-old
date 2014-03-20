@@ -8,7 +8,7 @@ var REM      = require( './lib/rem' ),
 logger.info("CONFIG LOADED", JSON.stringify( config, null, 2 ) );
 
 var api = new REM( {
-	path: './lib/api',
+	path: './data/models',
 	db: {
 		url: config.dbConfig.core_url,
 		connectionPool: { min: 2, max: 10 }
