@@ -1,6 +1,6 @@
 define( [ 'jquery',
           'page',
-          'hbars!views/manage/site' ],
+          'hbars!views/manage/group' ],
  function ( $, page, template ) {
  	return function ( ctx, next ) {
  		var site;

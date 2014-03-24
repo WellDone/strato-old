@@ -11,7 +11,7 @@ define( ['jquery',
 	}
  	
  	page( '/explore', exploreHandler );
- 	//page( '/manage/site/:id', singleSiteHandler );
+ 	//page( '/manage/group/:id', singleGroupHandler );
 
 	//page( '/manage/monitors', monitorsHandler );
 	//page( '/manage/monitor/:gsmid', singleMonitorHandler );

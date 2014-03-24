@@ -232,7 +232,7 @@ REMEngine.Resource.prototype.serve = function( app, baseurl ) {
 					if ( err )
 					{
 						var msg = "Oops, something bad happened!<br/>" + err;
-						self.options.logger.error( err );
+						//self.options.logger.error( err );
 						res.send(500, msg );
 					}
 					else

@@ -6,12 +6,12 @@ function deactivate() {
 
 define( [ 'jquery',
 					'page',
-          'app/manage/sites',
-          'app/manage/site',
+          'app/manage/groups',
+          'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
           'hbars!views/manage' ],
- function( $, page, sitesHandler, singleSiteHandler, monitorsHandler, singleMonitorHandler, htmlTemplate ) {
+ function( $, page, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, htmlTemplate ) {
  	function manageHandler( ctx, next ) {
 		$('#content').html( htmlTemplate() );
 		deactivate();
@@ -22,8 +22,8 @@ define( [ 'jquery',
 	}
 	page( '/manage/*', manageHandler );
  	
- 	page( '/manage/sites', sitesHandler );
- 	page( '/manage/site/:id', singleSiteHandler );
+ 	page( '/manage/groups', groupsHandler );
+ 	page( '/manage/group/:id', singleGroupHandler );
 
 	page( '/manage/monitors', monitorsHandler );
 	page( '/manage/monitor/:id', singleMonitorHandler );

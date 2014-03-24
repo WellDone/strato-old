@@ -1,1 +1,64 @@
 <h1 class="page-header">{{name}}</h1>
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+  	<h3 class="panel-title">Status History</h3>
+  </div>
+  <div class="panel-body">
+    <p><h4>Current Status: <span class="label label-success">Good</span></h4></p>
+  </div>
+	<div class="list-group">
+		<a href="#" class="list-group-item list-group-item-success"><strong>May 15, 2014</strong> {{name}} hit the "success" threshhold</a>
+	  <a href="#" class="list-group-item list-group-item-danger"><strong>April 30, 2014</strong> {{name}} stopped functioning completely</a>
+	  <a href="#" class="list-group-item list-group-item-warning"><strong>April 14, 2014</strong> {{name}} functionality started changing</a>
+	  <a href="#" class="list-group-item list-group-item-success"><strong>March 30, 2014</strong> {{name}} hit the "success" threshhold</a>
+	  <a href="#" class="list-group-item list-group-item-info"><strong>March 24, 2014</strong> {{name}} came online</a>
+	</div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+  	<h3 class="panel-title">Reports</h3>
+  </div>
+  <div class="panel-body">
+    <form class="form-inline" method="get">
+    	<div class="form-group">
+		    <label class="sr-only" for="filterStartDate">Start Date</label>
+		    <input type="datetime" class="form-control" id="filterStartDate" placeholder="Start Date">
+		  </div>
+		  <div class="form-group">
+		    <label class="sr-only" for="filterEndDate">End Date</label>
+		    <input type="datetime" class="form-control" id="filterEndDate" placeholder="EndDate">
+		  </div>
+		  <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+  </div>
+
+  <table class="table">
+    <tr>
+    	<th>Date</th>
+    	<th>Value</th>
+    </tr>
+    <tr>
+    	<td>3/24/2014</td>
+    	<td>42</td>
+    </tr>
+    <tr>
+    	<td>3/24/2014</td>
+    	<td>42</td>
+    </tr>
+    <tr>
+    	<td>3/24/2014</td>
+    	<td>42</td>
+    </tr>
+  </table>
+  <div class="panel-footer">
+  	<a class="pull-right" href="#">
+      Download as CSV
+    </a>
+  	<ul class="pager">
+		  <li class='disabled'><a href="#">Previous</a></li>
+		  <li class='disabled'><a href="#">Next</a></li>
+		</ul>
+  </div>
+</div>

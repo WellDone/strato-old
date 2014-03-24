@@ -5,8 +5,9 @@
       <tr>
         <th>Name</th>
         <th>GSM ID</th>
-        <th>Site</th>
+        <th>Groups</th>
         <th>Status</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -14,10 +15,33 @@
         <tr class="linkRow" data-monitorid="{{id}}">
           <td>{{name}}</td>
           <td>{{gsmid}}</td>
-          <td data-siteid="{{site}}" class="siteLinkColumn"><a>{{site}}</a></td>
-          <td>{{status}}</td>
-          <td><a class="editMonitor">edit</a>&nbsp;<a class="deleteMonitor">delete</a></td>
+          <td>
+            {{#groups}}
+              <a>{{name}}</a>
+            {{/groups}}
+          </td>
+          <td><span class="label label-{{status.class}}">{{status.text}}</span></td>
+          <td><a class="editMonitor">edit</a>&nbsp;<a data-toggle="modal" data-target="#deleteModal" class="deleteMonitor">delete</a></td>
         </tr>
       {{/monitors}}
   </table>
+</div>
+<button id="new-monitor-button" class="btn btn-primary">New Monitor</button>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="deleteModalLabel">Delete Monitor?</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to remove this monitor from the Strato system?  This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No, nevermind</button>
+        <button id="actually-delete-button" type="button" class="btn btn-danger" data-dismiss="modal">Yes, delete it</button>
+      </div>
+    </div>
+  </div>
 </div>
