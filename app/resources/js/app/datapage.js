@@ -103,11 +103,25 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData, callback ) {
       return;
     }
 
-    data.forEach(function(d) {
-      d.date = new Date(d.date);
-    });
+    WD.dataPage.IDToIndexMap = {};
+    for ( var index = 0; index < siteData.monitors.length; ++index )
+    {
+      WD.dataPage.IDToIndexMap[siteData.monitors[index].id] = index;
+    }
 
-    WD.dataPage.data = data;
+    WD.dataPage.data = [];
+    data.forEach(function(d) {
+      var o = {};
+      for ( var id in WD.dataPage.IDToIndexMap ) {
+        var index = WD.dataPage.IDToIndexMap[id];
+        if ( d[id] )
+          o[index] = d[id];
+        else
+          o[index] = undefined;
+      }
+      o.date = new Date(d.date);
+      WD.dataPage.data.push( o );
+    });
 
     if ( WD.dataPage.socket ) {
       WD.dataPage.socket.emit( 'clear monitors' );
@@ -120,20 +134,27 @@ WD.dataPage.loadDataForVisualization = function( siteID, siteData, callback ) {
     
     WD.dataPage.socket.on('newReport', function (newData) {
       newData.date = new Date( newData.date );
+      var index = WD.dataPage.IDToIndexMap[newData.monitor];
+      if ( !index && index !== 0 )
+        return;
+
       var i;
       for ( i = 0; i < WD.dataPage.data.length; ++i ) {
         if ( WD.dataPage.data[i].date == newData.date ) {
-          WD.dataPage.data[i][newData.monitor] = newData.eventCount;
+          WD.dataPage.data[i][index] = newData.eventCount;
           break;
         }
       }
       if ( i == WD.dataPage.data.length ) {
         var obj = { date: newData.date };
-        obj[newData.monitor] = newData.eventCount;
+        obj[index] = newData.eventCount;
         WD.dataPage.data.push( obj );
       }
       WD.dataPage.drawVisualization();
     });
+    WD.dataPage.socket.on('clear', function(monitorid) {
+      WD.dataPage.render( siteID );
+    })
 
     callback( WD.dataPage.data );
   });
@@ -218,7 +239,8 @@ function extendSiteData( siteData, monitorData ) {
   for (d in dates) {
     var sum = 0;
     for ( v in dates[d] ) {
-      sum += dates[d][v];
+      if ( !isNaN( dates[d][v] ) )
+        sum += dates[d][v];
     }
     dates[d] = sum / dates[d].length;
     siteData.runningAverage += dates[d];
@@ -228,7 +250,7 @@ function extendSiteData( siteData, monitorData ) {
   siteData.runningAverage = siteData.runningAverage.toFixed(2);
 
   //siteData.volumePerCapita = siteData.runningAverage * 1.5; // assumes //(Math.random() * 6 + 17).toFixed(2);
-  siteData.averageVolume = (siteData.runningAverage * 1.5).toFixed(2); //Math.ceil( siteData.volumePerCapita * siteData.population );
+  siteData.averageVolume = (siteData.runningAverage * 1).toFixed(2); //Math.ceil( siteData.volumePerCapita * siteData.population );
   if ( !siteData.population ) {
     siteData.population = Math.ceil( Math.random() * 15 );
   }
