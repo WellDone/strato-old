@@ -7,9 +7,11 @@ require.config({
 		d3: 'd3.v3.min',
 		Handlebars: 'handlebars',
 		bootstrap: 'bootstrap.min',
+		MarkerClusterer: 'markerclusterer_packed',
 
 		text: '../require/text',
 		hbars: '../require/hbars',
+		async: '../require/async',
 
 		views: '/static/html/views'
 	},
@@ -23,6 +25,9 @@ require.config({
 		},
 		d3: {
 			exports: 'd3'
+		},
+		MarkerClusterer: {
+			exports: 'MarkerClusterer'
 		}
 	}
 });

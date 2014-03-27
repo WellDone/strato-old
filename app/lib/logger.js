@@ -35,4 +35,8 @@ logger.serve = function( app, path ) {
 */
 }
 
+logger.start = function() {
+  return logger;
+}
+
 module.exports = logger;

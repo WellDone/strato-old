@@ -19,7 +19,10 @@ var config = {
     reports_url: ENV('REPORTS_DATABASE_URL', 'http://localhost:5984/')
   },
   DEBUG: ( hasFlag( "--debug", "-d" ) || ENV('NODE_DEBUG_MODE') )?true:false,
-  port: ENV('PORT', 10000),
+  ports: {
+    api: ENV('PORT', 10000),
+    gateway: ENV('GATEWAYPORT', 11000)
+  },
   logDir: ENV('WD_LOG_PATH', '/home/application/welldone_server.log' ),
   twilioConfig: { account_sid: ENV('TWILIO_ACCOUNT_SID'),
                   auth_token:  ENV('TWILIO_AUTH_TOKEN'),

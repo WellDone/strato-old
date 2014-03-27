@@ -6,13 +6,15 @@ function deactivate() {
 
 define( [ 'jquery',
 					'page',
+					'app/navbar',
           'app/manage/groups',
           'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
           'hbars!views/manage' ],
- function( $, page, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, htmlTemplate ) {
+ function( $, page, navbar, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, htmlTemplate ) {
  	function manageHandler( ctx, next ) {
+ 		navbar.hideSearch()
 		$('#content').html( htmlTemplate() );
 		deactivate();
 		var el = document.querySelector('.nav-sidebar [href="'+ctx.path+'"]');
@@ -25,7 +27,7 @@ define( [ 'jquery',
  	page( '/manage/groups', groupsHandler );
  	page( '/manage/group/:id', singleGroupHandler );
 
-	page( '/manage/monitors', monitorsHandler );
+ 	page( '/manage/monitors', monitorsHandler );
 	page( '/manage/monitor/:id', singleMonitorHandler );
 
 	page( '/manage', function() {
