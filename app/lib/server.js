@@ -1,5 +1,5 @@
-var logger  = require( './lib/logger' ),
-    config  = require( './lib/config' );
+var logger  = require( './logger' ),
+    config  = require( './config' );
 
 var express  = require( 'express' );
 
@@ -22,7 +22,7 @@ Server.prototype.start = function() {
 	this.app.listen( port );
 
 	var startDate = new Date();
-	logger.info( "Server '" + this.name + "' (internal port " + port + ") started at " + startDate.toTimeString() + " on " + startDate.toDateString() + "." );
+	logger.info( "Server '" + this.name + "' (port " + port + ") started at " + startDate.toTimeString() + " on " + startDate.toDateString() + "." );
 }
 
 module.exports = Server;

@@ -1,7 +1,7 @@
-var logger = require( './lib/logger' ),
-    config = require( './lib/config' );
+var logger = require( './logger' ),
+    config = require( './config' );
 
-var REM    = require( './lib/rem' ),
+var REM    = require( './rem' );
 
 module.exports = function( options )
 {

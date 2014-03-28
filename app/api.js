@@ -1,7 +1,9 @@
 var logger  = require( './lib/logger' ).start( 'api' ),
     config  = require( './lib/config' );
 
-var server = new require( './lib/server' )( 'api', {} );
+var Server = require( './lib/server' );
+
+var server = new Server( 'api', {} );
 var data = require( './lib/data' )();
 
 data.serve( server.app, '/api' );
