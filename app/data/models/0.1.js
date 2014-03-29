@@ -1,5 +1,5 @@
 module.exports = {
-	"types": {
+	"resources": {
 		"monitor/monitors": {
 			"id"       : "int            | pkey",
 			"name"     : "string         | unique",
@@ -23,12 +23,13 @@ module.exports = {
 			}
 			_auth      : function( obj, ctx ) {
 				
-			}
+			},
+			_public    : false
 		},
 		"group/groups": {
 			"id"       : "int            | pkey",
 			"name"     : "string         | unique, required",
-			"owner"    : "ref:account    | required"
+			"owner"    : "ref:accounts   | required"
 		},
 		"account/accounts": {
 			"name"     : "string         | pkey, required"
@@ -38,7 +39,7 @@ module.exports = {
 			"fullname" : "string         | required",
 			"phone"    : "string         | unique",
 			"email"    : "string         | unique",
-			"accounts" : "refset:account | required"
+			"accounts" : "refset:accounts| required"
 		},
 		"alert/alerts": {
 			"monitor" : "ref:monitor | pkey",

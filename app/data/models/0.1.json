@@ -1,29 +1,36 @@
 {
 	"types": {
-		"monitor/monitors": {
+		"point": {
+			"latitude": "float",
+			"longitude": "float"
+		}
+	},
+	"resources": {
+		"monitors": {
 			"id"       : "int            | pkey",
 			"name"     : "string         | unique",
 			"location" : "point",
-			"gsmid"    : "string         | unique, required, size: 20"
+			"gsmid"    : "string         | unique, required, size: 20",
+			"groups"   : "refset:groups"
 		},
-		"group/groups": {
+		"groups": {
 			"id"       : "int            | pkey",
 			"name"     : "string         | unique, required",
-			"owner"    : "ref:account    | required"
+			"owner"    : "ref:accounts   | required"
 		},
-		"account/accounts": {
+		"accounts": {
 			"name"     : "string         | pkey, required"
 		},
-		"user/users": {
+		"users": {
 			"id"       : "int            | pkey",
 			"fullname" : "string         | required",
 			"phone"    : "string         | unique",
 			"email"    : "string         | unique",
-			"accounts" : "refset:account | required"
+			"accounts" : "refset:accounts| required"
 		},
-		"alert/alerts": {
-			"monitor" : "ref:monitor | pkey",
-			"group"   : "ref:group"
+		"alerts": {
+			"monitor" : "ref:monitors | pkey",
+			"group"   : "ref:groups"
 		}
 	}
 }

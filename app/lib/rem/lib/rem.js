@@ -45,30 +45,32 @@ function REM( options ) {
 		latest: null
 	};
 
-	this.loadSchemas( this.options.path );
+	this.loadModels( this.options.path );
 }
 
-REM.prototype.loadSchemas = function( basePath, next )
+REM.prototype.loadModels = function( basePath, next )
 {
 	var self = this;
 
 	var files = fs.readdirSync( basePath );
 	if ( files.length == 0 ) {
-		next( new Error( "No REM schema files found in base directory '" + basePath + "'" ) );
+		next( new Error( "No REM model files found in base directory '" + basePath + "'" ) );
 		return;
 	}
 	for ( var i = 0; i < files.length; ++i )
 	{
 		try
 		{
-			self.loadSchemasFile( path.join( basePath, files[i] ) );
+			self.loadModelFile( path.join( basePath, files[i] ) );
 		}
 		catch ( e )
 		{
-			this.logger.error( "Failed to add schema version " + files[i] + ": " + e );
+			throw e;
+			this.logger.error( "Failed to add model version " + files[i] + ": " + e );
 		}
 	}
-	this.logger.info( "Latest API version is " + this.latest().version.join('.') );
+	if ( this.latest() && this.latest() !== 0 )
+		this.logger.info( "Latest API version is " + this.latest().version.join('.') );
 }
 
 REM.prototype.addVersion = function( versions, index )
@@ -105,7 +107,7 @@ REM.prototype.addVersion = function( versions, index )
 	if ( versions[i] != 'dev' && ( iter.latest == null || versions[i] > iter.latest ) )
 		iter.latest = versions[i];
 
-	this.logger.info( "Loaded API schema version " + versions.join('.') + "." );
+	this.logger.info( "Loaded API model version " + versions.join('.') + "." );
 }
 
 REM.prototype.addEngine = function( versions, engine )
@@ -150,7 +152,7 @@ REM.prototype.parseVersion = function( versionString )
 	return versions;
 }
 
-REM.prototype.loadSchemasFile = function( file ) {
+REM.prototype.loadModelFile = function( file ) {
 	var extension = path.extname( file );
 	if ( extension == '.json' )
 	{
@@ -159,12 +161,12 @@ REM.prototype.loadSchemasFile = function( file ) {
 		
 		var versions = this.parseVersion( name );
 		if ( versions.length == 0 )
-			throw new Error( "Invalid REM schema version '" + name + "'." );
+			throw new Error( "Invalid REM model version '" + name + "'." );
 		for ( var i = versions.length; i < this.options.depth; ++i )
 			versions.push( '0' );
 		
-		var schema = fs.readFileSync( file );
-		this.addEngine( versions, new REMEngine( versions, schema, this.backend, this.options ) )
+		var model = JSON.parse( fs.readFileSync( file ) );
+		this.addEngine( versions, new REMEngine( versions, model, this.backend, this.options ) )
 	}
 }
 
