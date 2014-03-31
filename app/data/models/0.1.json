@@ -11,26 +11,32 @@
 			"name"     : "string         | unique",
 			"location" : "point",
 			"gsmid"    : "string         | unique, required, size: 20",
-			"groups"   : "refset:groups"
+			"groups"   : "refset:groups(monitors)"
 		},
 		"groups": {
 			"id"       : "int            | pkey",
 			"name"     : "string         | unique, required",
-			"owner"    : "ref:accounts   | required"
+			"owner"    : "ref:accounts(groups)   | required",
+			"monitors" : "refset:monitors(groups)",
+			"alerts"   : "refset:alerts(group_ref)"
 		},
 		"accounts": {
-			"name"     : "string         | pkey, required"
+			"name"     : "string         | pkey",
+			"groups"   : "refset:groups(owner)",
+			"users"    : "refset:users(accounts)"
 		},
 		"users": {
 			"id"       : "int            | pkey",
 			"fullname" : "string         | required",
 			"phone"    : "string         | unique",
 			"email"    : "string         | unique",
-			"accounts" : "refset:accounts| required"
+			"accounts" : "refset:accounts(users) | required",
+			"alerts"   : "refset:alerts(user)"
 		},
 		"alerts": {
-			"monitor" : "ref:monitors | pkey",
-			"group"   : "ref:groups"
+			"id"      : "int | pkey",
+			"group_ref"   : "ref:groups(alerts) ",
+			"user"    : "refset:users(alerts)"
 		}
 	}
 }
