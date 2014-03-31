@@ -58,7 +58,12 @@ REMEngine.prototype.serve = function( app, baseurl ) {
 		{
 			model[r] = {};
 			for ( var c in self.model.top[r].columns )
-				model[r][c] = self.model.top[r].columns[c].type;
+			{
+				if ( self.model.top[r].columns[c].ref )
+					model[r][c] = "ref: " + self.model.top[r].columns[c].ref.target.name;	
+				else
+					model[r][c] = self.model.top[r].columns[c].type;
+			}
 		}
 		res.send( 200, model );
 	});
@@ -94,10 +99,10 @@ REMEngine.prototype.sanitizeBody = function( resource, method, body )
 {
 	for ( var f in body )
 		if ( !resource.model.columns.hasOwnProperty( f ) )
-			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name.singular + "'." );
+			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name + "'." );
 	for ( var c in resource.model.columns )
 		if ( method == 'POST' && resource.model.columns[c].constraints.required && !body[c] )
-			throw new Error( "Property '" + c + "' is required for type '" + resource.name.singular + "'" );
+			throw new Error( "Property '" + c + "' is required for type '" + resource.name + "'" );
 	return body;
 }
 

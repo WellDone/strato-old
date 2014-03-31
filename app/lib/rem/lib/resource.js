@@ -20,10 +20,12 @@ var Resource = function( name, model, engine ) {
 
 Resource.prototype.serve = function( app, baseurl ) {
 	var self = this;
-	var serveFunc = function( fname ) {
-		var tryServe = function( f, req, res ) {
+	var serveFunc = function( fname, isCollection ) {
+		var tryServe = function( f, isCollection, req, res ) {
 			var params = self.engine.sanitizeParams( this, req.params );
 		  var body = self.engine.sanitizeBody( this, req.method, req.body );
+		  console.log( params );
+		  console.log( body );
 
 		  console.log( "Request received: " + req.path ) ;
 
@@ -44,11 +46,12 @@ Resource.prototype.serve = function( app, baseurl ) {
 							{
 								res.send( 200, responseData[0] );
 							}
-							else if ( responseData.length == 0 )
+							else if ( responseData.length == 0 && req.method == 'GET' && !isCollection )
 							{
-								if ( req.method == 'GET' )
-									res.send( 404, "Resource not found." );
-								else
+								res.send( 404, "Resource not found." );
+							}
+							else if ( req.method == 'POST' )
+							{
 									res.send( 302, "Resource created." );
 							}
 							else
@@ -64,14 +67,14 @@ Resource.prototype.serve = function( app, baseurl ) {
 				res.send(500, "Something bad happened: " + e.toString() );
 			}
 		}
-		return tryServe.bind( self, self[fname].bind( self ) );
+		return tryServe.bind( self, self[fname].bind( self ), isCollection?true:false );
 	}
 	
 	var url = path.join( baseurl, this.name );
 
-	app.get( url          , serveFunc( 'get' ) );
+	app.get( url          , serveFunc( 'get', true ) );
 	app.get( url + "/:id" , serveFunc( 'get' ) );
-	app.post( url         , serveFunc( 'post' ) );
+	app.post( url         , serveFunc( 'post', true ) );
 	app.put( url + "/:id" , serveFunc( 'put' ) );
 	app.del( url + "/:id" , serveFunc( 'del' ) );
 }

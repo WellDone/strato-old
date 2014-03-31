@@ -15,21 +15,26 @@ function validateColumnType( name, types )
 
 	throw new Error( "Invalid column type '" + name + "'" );
 }
+var parseRef = function( refString, plural )
+{
+	var ref = { plural: plural }
+	var complementStart = refString.indexOf( '(' );
+	if ( complementStart == -1 || refString[refString.length-1] != ')' )
+		throw new Error( "Invalid reference specification '" + refString + "'" )
+
+	ref.target = refString.substr( 0, complementStart );
+	ref.complement = refString.substr( complementStart+1, refString.length-complementStart-2 );
+	return ref;
+}
 var parseColumnType = function( typeString, types )
 {
 	if ( typeString.substr( 0, 4 ) == 'ref:' )
 	{
-		return {
-			target: typeString.substr( 4 ),
-			plural: false
-		};
+		return parseRef( typeString.substr( 4 ), false );	
 	}
 	else if ( typeString.substr( 0, 7 ) == 'refset:' )
 	{
-		return {
-			target: typeString.substr( 7 ),
-			plural: true
-		};
+		return parseRef( typeString.substr( 7 ), true );
 	}
 	else
 	{
@@ -146,6 +151,7 @@ var parse = function( input ) {
 		var name = r;
 		var ir = input.resources[r];
 		var resource = {
+			name: r,
 			columns: {},
 			id: null,
 			public: true
@@ -163,7 +169,8 @@ var parse = function( input ) {
 				resource.columns[c] = parseColumnDescription( ir[c], model.types );
 				if ( resource.columns[c].ref )
 				{
-					resource.columns[c].ref.source = c;
+					resource.columns[c].ref.source = resource;
+					resource.columns[c].ref.column = c;
 					model.references.push( resource.columns[c].ref )
 				}
 				if ( resource.columns[c].constraints.pkey )
@@ -182,8 +189,6 @@ var parse = function( input ) {
 			model.top[name] = resource;
 	}
 
-	console.log( model.top );
-
 	for ( var d in model.references )
 	{
 		var found = false;
@@ -192,6 +197,15 @@ var parse = function( input ) {
 			if ( model.references[d].target == r )
 			{
 				model.references[d].target = model.resources[r];
+				var complement = model.resources[r].columns[ model.references[d].complement ];
+				if ( !complement )
+					throw new Error( "Reference complement '" + model.references[d].complement + "' not found for referenced resource '" + r + "'" );
+				if ( model.references[d].plural && complement.ref.plural )
+				{
+					model.references[d].manyToMany = true;
+					if ( !complement.ref.primary )
+						model.references[d].primary = true;
+				}
 				found = true;
 				break;
 			}
