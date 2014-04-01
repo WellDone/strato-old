@@ -31,7 +31,7 @@ define( ['jquery',
     		markers.push( m );
     	}
     	map.on( 'markerClick', function( m ) {
-    		page( '/manage/monitor/' + m.monitor.id );
+    		page( '/manage/monitors/' + m.monitor.id );
     	} );
 			map.addMarkers( markers );
 		} );

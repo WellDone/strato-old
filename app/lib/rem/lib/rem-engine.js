@@ -53,20 +53,15 @@ REMEngine.prototype.serve = function( app, baseurl ) {
 		res.send( 200, self.model.types );
 	});
 	app.get( path.join( baseurl, '_model' ), function( req, res ) {
-		var model = {};
-		for ( var r in self.model.top )
-		{
-			model[r] = {};
-			for ( var c in self.model.top[r].columns )
-			{
-				if ( self.model.top[r].columns[c].ref )
-					model[r][c] = "ref: " + self.model.top[r].columns[c].ref.target.name;	
-				else
-					model[r][c] = self.model.top[r].columns[c].type;
-			}
-		}
+		var model = Modeler.simplify( self.model );
 		res.send( 200, model );
 	});
+	if ( this.backend.schema )
+		app.get( path.join( baseurl, '_schema' ), function( req, res ) {
+			var schema = self.backend.schema( self.model );
+			res.set('Content-Type', 'text/plain');
+			res.send( 200, schema );
+		});
 
 	for ( var i = 0; i < this.resources.length; ++i )
 	{

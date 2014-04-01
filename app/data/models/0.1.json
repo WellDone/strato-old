@@ -7,36 +7,57 @@
 	},
 	"resources": {
 		"monitors": {
-			"id"       : "int            | pkey",
-			"name"     : "string         | unique",
+			"id"       : "id                       | pkey",
+			"name"     : "string                   | unique",
 			"location" : "point",
-			"gsmid"    : "string         | unique, required, size: 20",
-			"groups"   : "refset:groups(monitors)"
+			"gsmid"    : "string                   | unique, required, size: 20",
+			"modules"  : "refset:modules(monitor)",
+			"groups"   : "refset:groups(monitors)",
+			"reports"  : "refset:reports(monitor)"
 		},
+		"modules": {
+			"id"       : "id                       | pkey",
+			"monitor"  : "ref:monitors(modules)    | required",
+			"type"     : "ref:module_types(modules)"
+		},
+		"module_types": {
+			"id"       : "id                       | pkey",
+			"name"     : "string                   | unique, required",
+			"units"    : "string                   | required, size: 32",
+			"modules"  : "refset:modules(type)"
+		},
+
+		"reports": {
+			"id"        : "id                       | pkey",
+			"timestamp" : "int                      | required",
+			"monitor"   : "ref:monitors(reports)    | required",
+			"data"      : "string"
+		},
+
 		"groups": {
-			"id"       : "int            | pkey",
-			"name"     : "string         | unique, required",
-			"owner"    : "ref:accounts(groups)   | required",
+			"id"       : "id                       | pkey",
+			"name"     : "string                   | unique, required",
+			"owner"    : "ref:accounts(groups)     | required",
 			"monitors" : "refset:monitors(groups)",
 			"alerts"   : "refset:alerts(group_ref)"
 		},
 		"accounts": {
-			"name"     : "string         | pkey",
+			"name"     : "string                   | pkey",
 			"groups"   : "refset:groups(owner)",
 			"users"    : "refset:users(accounts)"
 		},
 		"users": {
-			"id"       : "int            | pkey",
-			"fullname" : "string         | required",
-			"phone"    : "string         | unique",
-			"email"    : "string         | unique",
-			"accounts" : "refset:accounts(users) | required",
+			"id"       : "id                       | pkey",
+			"fullname" : "string                   | required",
+			"phone"    : "string                   | unique",
+			"email"    : "string                   | unique",
+			"accounts" : "refset:accounts(users)",
 			"alerts"   : "refset:alerts(user)"
 		},
 		"alerts": {
-			"id"      : "int | pkey",
-			"group_ref"   : "ref:groups(alerts) ",
-			"user"    : "refset:users(alerts)"
+			"id"       : "id                       | pkey",
+			"group_ref": "ref:groups(alerts)",
+			"user"     : "refset:users(alerts)"
 		}
 	}
 }

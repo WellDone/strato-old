@@ -1,16 +1,18 @@
-define( [ 'jquery',
-          'page',
-          'hbars!views/manage/groups' ],
- function ( $, page, template ) {
- 	return function () {
-	 	$.getJSON( "/api/v0/groups", function( data ) {
-	 		if (!data)
-	 			alert( "Failed to retrieve sites!" );
-			$('#manage-content').html( template( { sites: data } ) );
-			$('tr.linkRow').click( function () {
-				page( $(this).attr('data-url') );
-			})
-		});
-	}
- }
-);
+define( [ 'app/manage-page' ], function( Renderer ) {
+	var page = new Renderer( '#manage-content', {
+		name: {
+			raw: 'groups',
+			pretty_singular: 'Group',
+			pretty_plural: 'Groups',
+			title: 'Mobile Monitor Groups'
+		},
+		columns: {
+			'name': 'Name',
+			'monitors': 'Monitors'
+		},
+		create: {
+			'name': "Group name..."
+		}
+	})
+	return page.render.bind( page );
+} )

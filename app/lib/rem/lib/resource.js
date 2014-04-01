@@ -1,4 +1,5 @@
 var path = require( 'path' );
+var Modeler = require( './modeler')
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
@@ -42,7 +43,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 					{
 						if ( responseData )
 						{
-							if ( responseData.length && responseData.length == 1 )
+							if ( responseData.length && !isCollection )
 							{
 								res.send( 200, responseData[0] );
 							}
@@ -71,6 +72,11 @@ Resource.prototype.serve = function( app, baseurl ) {
 	}
 	
 	var url = path.join( baseurl, this.name );
+
+	app.get( path.join( url, '_model' ), function( req, res ) {
+		var model = Modeler.simplify( self.model );
+		res.send( 200, model );
+	});
 
 	app.get( url          , serveFunc( 'get', true ) );
 	app.get( url + "/:id" , serveFunc( 'get' ) );

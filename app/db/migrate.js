@@ -2,8 +2,14 @@ var config = require( '../lib/config.js' ),
     logger = require( '../lib/logger.js' );
     
 var dbEngine = require( '../lib/db.js' ),
-    db = dbEngine(config.dbConfig, logger),
-    schema = require( "./schema.js" );
+    db = dbEngine(config.dbConfig, logger);
+var data = require( '../lib/data' )(),
+    schemaGenerator = require( "../lib/rem/rem-sql-genschema" );
+
+var schema = schemaGenerator( data.latest().model );
+schema.version = data.latest().version.join(".");
+
+console.log( schema );
 
 var force = config.hasCLFlag( "--force", "-f" );
 if ( force ) {
@@ -14,17 +20,8 @@ db.core.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
-var queryCount = 0;
 function q( query ) {
-  ++queryCount;
-  var _q = db.core.query( query );
-  _q.on( 'end', function() {
-    --queryCount;
-    if ( queryCount === 0 ) {
-      db.core.end();
-    }
-  } );
-  return _q;
+  return db.core.query( query );;
 }
 
 function dropAllTables() {
@@ -60,6 +57,7 @@ function createIndices() {
 }
 
 function updateVersion() {
+  q( "CREATE TABLE IF NOT EXISTS DBINFO( Version integer )" )
   q( "DELETE FROM DBINFO" );
   q( "INSERT INTO DBINFO VALUES (" + schema.version + ")");
 }

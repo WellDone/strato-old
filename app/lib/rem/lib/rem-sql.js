@@ -1,4 +1,5 @@
 var anyDB = require( 'any-db' );
+var schemaGenerator = require( '../rem-sql-genschema' );
 
 var rem_sql = function( url, poolOptions, logger ) {
 	this.db = ( poolOptions ) ? anyDB.createPool( url, poolOptions ) : anyDB.createConnection( url );
@@ -133,7 +134,24 @@ function parseBody( body )
 		valueArgs: valueArgs
 	}
 }
-rem_sql.prototype.streamQueryResults = function( sql, parameters, output )
+function transformRow( model, row ) {
+	for ( var c in model.columns )
+	{
+		var ref = model.columns[c].ref;
+		if ( row.hasOwnProperty( c ) && ref && ref.plural )
+		{
+			for ( var r in row[c] )
+			{
+				if ( row[c][r] !== null )
+					row[c][r] = "ref:/" + ref.target.name + "/" + row[c][r];
+				else if ( row[c].length == 1 )
+					row[c] = [];
+			}
+		}
+	}
+	return row;
+}
+rem_sql.prototype.streamQueryResults = function( sql, parameters, transform, output )
 {
 	this.logger.info( sql );
 	this.logger.info( "parameters: [ " + parameters.toString() + " ]" );
@@ -142,7 +160,7 @@ rem_sql.prototype.streamQueryResults = function( sql, parameters, output )
 	var self = this;
 	this.db.query( sql, parameters )
 	.on( 'data', function( row ) {
-		result.push( row );
+		result.push( transform( row ) );
 	} )
 	.on( 'end', function() {
 		output( null, result );
@@ -158,12 +176,7 @@ rem_sql.prototype.get = function( model, type, filters, body, output )
 
 	var query = constructQuery( "select", model, filters, body );
 
-	this.streamQueryResults( query.sql, query.parameters, output );
-	return;
-	var parsedFilter = parseFilter( model, filters );
-
-	var sql = "SELECT " + parsedFilter.columns.join(", ") + " FROM " + type + parsedFilter.condition;
-	this.streamQueryResults( sql, parsedFilter.parameters, output );
+	this.streamQueryResults( query.sql, query.parameters, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.post = function( model, type, filters, body, output )
@@ -175,7 +188,7 @@ rem_sql.prototype.post = function( model, type, filters, body, output )
 	var parsedBody = parseBody( body );
 
 	var sql = "INSERT INTO " + type + " (" + parsedBody.columns.join(", ") + ") VALUES (" + parsedBody.valueArgs.join(", ") + ")";
-	this.streamQueryResults( sql, parsedBody.parameters, output );
+	this.streamQueryResults( sql, parsedBody.parameters, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.put = function( model, type, filters, body, output )
@@ -193,7 +206,7 @@ rem_sql.prototype.put = function( model, type, filters, body, output )
 	}
 
 	var sql = "UPDATE " + type + " SET " + assignmentStrings.join( ", " ) + parsedFilter.condition;
-	this.streamQueryResults( sql, parameters, output );
+	this.streamQueryResults( sql, parameters, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.del = function( model, type, filters, body, output )
@@ -202,7 +215,20 @@ rem_sql.prototype.del = function( model, type, filters, body, output )
 	var parsedFilter = parseFilter( model, filters );
 
 	var sql = "DELETE FROM " + type + parsedFilter.condition;
-	this.streamQueryResults( sql, parsedFilter.parameters, output );
+	this.streamQueryResults( sql, parsedFilter.parameters, transformRow.bind( null, model ), output );
+}
+
+rem_sql.prototype.schema = function( model )
+{
+	var schema = schemaGenerator( model );
+	var schemaString = "";
+	for ( var t in schema.tables ) {
+		schemaString += "CREATE TABLE " + t + " (" + schema.tables[t] + " )\r\n";
+	}
+	for ( var i in schema.indices ) {
+		schemaString += "CREATE INDEX " + i + " " + schema.indices[i] + "\r\n";
+	}
+	return schemaString;
 }
 
 module.exports = rem_sql;

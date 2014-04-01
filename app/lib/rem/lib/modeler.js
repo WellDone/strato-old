@@ -63,12 +63,12 @@ function parseConstraints( constraintString )
 	  		constraints['size']['min'] = parseInt( bounds[0].trim() );
 	  		constraints['size']['max'] = parseInt( bounds[1].trim() );
 	  	} else {
-	  		throw new Error( "Invalid constraint specifier '" + description + "'." );
+	  		throw new Error( "Invalid constraint specifier '" + constraintString + "'." );
 	  	}
 
 	  	if ( isNaN( constraints['size']['max'] ) ||
 	  	     ( constraints['size'].hasOwnProperty('min') && isNaN( constraints['size']['min'] ) ) )
-	  		throw new Error( "Invalid constraint specifier '" + description + "'.  Size bounds must be integers." );
+	  		throw new Error( "Invalid constraint specifier '" + constraintString + "'.  Size bounds must be integers." );
 	  }
 	  else
 	  {
@@ -86,7 +86,7 @@ function parseConstraints( constraintString )
 	  			constraints.required = true;
 	  			break;
 	  		default:
-	  			throw new Error( "Invalid constraint specifier '" + description + "'.  Unrecognized constraint '" + c + "'." );
+	  			throw new Error( "Invalid constraint specifier '" + constraintString + "'.  Unrecognized constraint '" + c + "'." );
 	  	}
 	  }
 	}
@@ -219,6 +219,27 @@ var parse = function( input ) {
 var Modeler = {
 	create: function( input ) {
 		return parse( input );
+	},
+	simplify: function( model ) {
+		console.log( model );
+		var out = {};
+		if ( model.columns )
+		{
+			for ( var c in model.columns )
+			{
+				if ( model.columns[c].ref )
+					out[c] = "ref:" + model.columns[c].ref.target.name;	
+				else
+					out[c] = model.columns[c].type;
+			}
+		}
+		else if ( model.top )
+		{
+			for( var r in model.top ) {
+				out[r] = Modeler.simplify( model.top[r] );
+			}
+		}
+		return out;
 	}
 }
 

@@ -7,12 +7,13 @@ function deactivate() {
 define( [ 'jquery',
 					'page',
 					'app/navbar',
+					'hbars!views/manage',
           'app/manage/groups',
           'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
-          'hbars!views/manage' ],
- function( $, page, navbar, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, htmlTemplate ) {
+          'app/manage/people' ],
+ function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler ) {
  	function manageHandler( ctx, next ) {
  		navbar.hideSearch()
 		$('#content').html( htmlTemplate() );
@@ -25,10 +26,12 @@ define( [ 'jquery',
 	page( '/manage/*', manageHandler );
  	
  	page( '/manage/groups', groupsHandler );
- 	page( '/manage/group/:id', singleGroupHandler );
+ 	page( '/manage/groups/:id', singleGroupHandler );
 
  	page( '/manage/monitors', monitorsHandler );
-	page( '/manage/monitor/:id', singleMonitorHandler );
+	page( '/manage/monitors/:id', singleMonitorHandler );
+
+	page( '/manage/people', peopleHandler );
 
 	page( '/manage', function() {
 		page( '/manage/monitors' );
