@@ -9,6 +9,19 @@ function Server( name, options ) {
 	this.name = name;
 	this.app = express();
 
+	var winstonStream = {
+    write: function(message, encoding){
+       logger.info(message);
+    }
+	};
+
+	//this.app.use(express.logger({stream:winstonStream}));
+
+	this.app.use(function(req, res, next){
+	  logger.info('%s %s %s', req.method, req.url, req.body || "<no body>" );
+	  next();
+	});
+
 	if ( !options )
 		options = {};
 	this.options = options;

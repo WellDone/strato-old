@@ -223,7 +223,7 @@ rem_sql.prototype.schema = function( model )
 	var schema = schemaGenerator( model );
 	var schemaString = "";
 	for ( var t in schema.tables ) {
-		schemaString += "CREATE TABLE " + t + " (" + schema.tables[t] + " )\r\n";
+		schemaString += "CREATE TABLE " + t + " (" + schema.tables[t] + "\r\n);\r\n";
 	}
 	for ( var i in schema.indices ) {
 		schemaString += "CREATE INDEX " + i + " " + schema.indices[i] + "\r\n";

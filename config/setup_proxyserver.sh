@@ -3,7 +3,7 @@
 # setup the load balancer and nginx rules
 echo "Setting up NGINX proxy..."
 rm /etc/nginx/sites-enabled/default
-cp /welldone/config/proxy/momo.welldone.org.conf /etc/nginx/sites-enabled/momo.welldone.org.conf
+cp /welldone/config/proxy/strato.welldone.org.conf /etc/nginx/sites-enabled/strato.welldone.org.conf
 
 nginx -t
 

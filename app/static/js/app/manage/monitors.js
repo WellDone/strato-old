@@ -10,12 +10,14 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			'name': 'Name',
 			'location': 'Location',
 			'gsmid': 'SMS Number',
-			'groups': 'Groups'
+			'groups': 'Groups',
+			'status': 'Status'
 		},
 		create: {
 			'name': "Monitor name...",
 			'location': "(lat,long)",
-			'gsmid': "+xxxxxxxxxxx"
+			'gsmid': "+xxxxxxxxxxx",
+			'status': 3
 		}
 	})
 	return page.render.bind( page );

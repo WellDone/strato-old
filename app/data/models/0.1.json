@@ -13,7 +13,8 @@
 			"gsmid"    : "string                   | unique, required, size: 20",
 			"modules"  : "refset:modules(monitor)",
 			"groups"   : "refset:groups(monitors)",
-			"reports"  : "refset:reports(monitor)"
+			"reports"  : "refset:reports(monitor)",
+			"status"   : "int                      | required"
 		},
 		"modules": {
 			"id"       : "id                       | pkey",

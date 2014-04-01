@@ -3,7 +3,11 @@ var winston = require( 'winston' ),
 
 var logger = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({'timestamp':true})
+    new (winston.transports.Console)({
+      timestamp: true,
+      handleExceptions: true,
+      exitOnError: true
+    })
   ]
 });
 

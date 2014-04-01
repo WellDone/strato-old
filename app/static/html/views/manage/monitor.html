@@ -41,22 +41,20 @@
 		  </div>
 
 		  <table class="table">
-		    <tr>
-		    	<th>Date</th>
-		    	<th>Value</th>
-		    </tr>
-		    <tr>
-		    	<td>3/24/2014</td>
-		    	<td>42</td>
-		    </tr>
-		    <tr>
-		    	<td>3/24/2014</td>
-		    	<td>42</td>
-		    </tr>
-		    <tr>
-		    	<td>3/24/2014</td>
-		    	<td>42</td>
-		    </tr>
+		  	<thead>
+			    <tr>
+			    	<th>Date</th>
+			    	<th>Value</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+		    {{#each reports}}
+		    	<tr>
+		    		<td>3/24/2014</td>
+		    		<td>42</td>
+		    	</tr>
+		    {{/each}}
+		    </tbody>
 		  </table>
 		  <div class="panel-footer">
 		  	<a class="pull-right" href="#">
