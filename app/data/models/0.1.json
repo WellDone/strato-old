@@ -30,7 +30,7 @@
 
 		"reports": {
 			"id"        : "id                       | pkey",
-			"timestamp" : "int                      | required",
+			"timestamp" : "timestamp                | required",
 			"monitor"   : "ref:monitors(reports)    | required",
 			"data"      : "string"
 		},

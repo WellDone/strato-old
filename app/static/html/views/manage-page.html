@@ -13,7 +13,14 @@
       {{#each data}}
         <tr class="linkRow" data-id="{{id}}">
           {{#each columns}}
-            <td>{{.}}</td>
+            {{#if this.isRef}}
+              <td>
+              {{#each refs}}
+                <span class="label label-info">{{.}}</span>
+              {{/each}}
+            {{else}}
+              <td>{{.}}</td>
+            {{/if}}
           {{/each}}
           <td class="resource-manager"><a class="editResource">edit</a>&nbsp;<a data-toggle="modal" data-target="#deleteModal" class="deleteResource">delete</a></td>
         </tr>

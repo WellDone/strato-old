@@ -3,7 +3,7 @@ var Modeler = require( './modeler')
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
-	'add': 'push',
+	'add': 'post',
 	'remove': 'del',
 	'update': 'put'
 }
@@ -19,49 +19,46 @@ var Resource = function( name, model, engine ) {
 		this[v] = this[verbAliases[v]];
 }
 
+function handleBackendResult( req, res, isCollection, err, responseData ) {
+	if ( err )
+	{
+		var msg = "Oops, something bad happened!<br/>" + err;
+		//self.options.logger.error( err );
+		res.send(500, msg );
+	}
+	else
+	{
+		if ( responseData )
+		{
+			if ( responseData.length && !isCollection )
+			{
+				res.send( 200, responseData[0] );
+			}
+			else if ( responseData.length == 0 && req.method == 'GET' && !isCollection )
+			{
+				res.send( 404, "Resource not found." );
+			}
+			else if ( req.method == 'POST' )
+			{
+					res.send( 302, "Resource created." );
+			}
+			else
+			{
+				res.send( 200, responseData );
+			}
+		}
+	}
+}
+
 Resource.prototype.serve = function( app, baseurl ) {
 	var self = this;
 	var serveFunc = function( fname, isCollection ) {
 		var tryServe = function( f, isCollection, req, res ) {
-			var params = self.engine.sanitizeParams( this, req.params );
-		  var body = self.engine.sanitizeBody( this, req.method, req.body );
-		  console.log( params );
-		  console.log( body );
-
 		  console.log( "Request received: " + req.path ) ;
 
 		  try
 			{
-				f( params, body, function( err, responseData ) {
-					if ( err )
-					{
-						var msg = "Oops, something bad happened!<br/>" + err;
-						//self.options.logger.error( err );
-						res.send(500, msg );
-					}
-					else
-					{
-						if ( responseData )
-						{
-							if ( responseData.length && !isCollection )
-							{
-								res.send( 200, responseData[0] );
-							}
-							else if ( responseData.length == 0 && req.method == 'GET' && !isCollection )
-							{
-								res.send( 404, "Resource not found." );
-							}
-							else if ( req.method == 'POST' )
-							{
-									res.send( 302, "Resource created." );
-							}
-							else
-							{
-								res.send( 200, responseData );
-							}
-						}
-					}
-				})
+				f( req.params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
 			}
 			catch (e)
 			{
@@ -83,10 +80,24 @@ Resource.prototype.serve = function( app, baseurl ) {
 	app.post( url         , serveFunc( 'post', true ) );
 	app.put( url + "/:id" , serveFunc( 'put' ) );
 	app.del( url + "/:id" , serveFunc( 'del' ) );
+	for ( var c in self.model.columns )
+	{
+		if ( self.model.columns[c].ref && self.model.columns[c].ref.plural ) {
+			app.get( url + "/:id/" + c, function( c, req, res ) {
+				var filter = {};
+				filter[self.model.columns[c].ref.complement] = req.params.id;
+				var target = self.model.columns[c].ref.target.name;
+				console.log( target );
+				self.engine.resource(target).get( filter, handleBackendResult.bind( null, req, res, true ) );
+			}.bind( self, c ) );
+		}
+	}
 }
 
 Resource.prototype.proxy = function( fname, params, body, output )
 {
+	params = this.engine.sanitizeParams( this, params );
+	body = this.engine.sanitizeBody( this, fname, body )
 	switch ( arguments.length )
 	{
 		case 2:
@@ -103,12 +114,19 @@ Resource.prototype.proxy = function( fname, params, body, output )
 		default:
 			throw new Error( "Invalid arguments." );
 	}
-	if ( !params )
-		this.engine.backend[fname]( this.model, this.name, null, body, output );
-	else if ( typeof params == 'object' )
-		this.engine.backend[fname]( this.model, this.name, params, body, output )
-	else
-		this.engine.backend[fname]( this.model, this.name, { id: params }, body, output );
+	try
+	{
+		if ( !params )
+			this.engine.backend[fname]( this.model, this.name, null, body, output );
+		else if ( typeof params == 'object' )
+			this.engine.backend[fname]( this.model, this.name, params, body, output )
+		else
+			this.engine.backend[fname]( this.model, this.name, { id: params }, body, output );
+	}
+	catch (e)
+	{
+		output( e );
+	}
 }
 
 module.exports = Resource;

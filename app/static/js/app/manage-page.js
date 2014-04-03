@@ -33,7 +33,15 @@ define( [ 'jquery',
  			var flatObj = { id: data[d].id, columns: [] };
 	 		for ( var i = 0; i < this.columns.length; ++i )
 	 		{
-	 			flatObj.columns.push( data[d][this.columns[i].raw] );
+	 			var item = data[d][this.columns[i].raw];
+	 			if ( $.isArray( item ) )
+	 			{
+	 				item = {
+	 					isRef: true,
+	 					refs: item
+	 				}
+	 			}
+	 			flatObj.columns.push( item );
 	 		}
 	 		out.push( flatObj );
  		}

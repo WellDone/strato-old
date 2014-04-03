@@ -14,6 +14,10 @@ function translateType( column )
 	{
 		return "integer";
 	}
+	else if ( column.type == 'float' )
+	{
+		return "float";
+	}
 	else if ( column.type == 'id' )
 	{
 		return "SERIAL"
@@ -21,6 +25,10 @@ function translateType( column )
 	else if ( column.type == 'point' )
 	{
 		return "point";
+	}
+	else if ( column.type == 'timestamp' )
+	{
+		return "timestamp";
 	}
 	else if ( column.type == 'ref' )
 	{

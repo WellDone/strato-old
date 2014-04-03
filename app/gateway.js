@@ -6,10 +6,98 @@ var Server = require( './lib/server' );
 var server = new Server( 'gateway', {} );
 var data = require( './lib/data' )( { version: 'latest', connectionPool: { min: 1, max: 10 } } );
 
+var reportParser = require( './lib/reportParser' );
+
+
+function processReport( from, body, timestamp, output ) {
+	var report;
+	try
+	{
+		report = reportParser( body );
+	}
+	catch ( e )
+	{
+		// TODO: Store the malformed report
+		return false;
+	}
+
+	report = {
+		timestamp: timestamp,
+		data: JSON.stringify( report )
+	};
+
+	console.log( data.r('reports') );
+	data.r('monitors').get( { gsmid: from }, function( err, result ) {
+		if ( err )
+		{
+			output( err )
+			return;
+		}
+		if ( !result || result.length == 0 )
+		{
+			output( "No monitor found" );
+			return;
+		}
+		console.log( result );
+		report.monitor = result[0].id;
+		data.r('reports').add( null, report, output );
+	});
+}
+
+function processSMS( req, res ) {
+	if ( !req.body )
+	{
+		res.send( 400, "Invalid request." );
+		return false;
+	}
+
+	var body = req.body.Body? req.body.Body : req.body.message;
+  var from = req.body.From? req.body.From : req.body.from;
+  var timestamp = req.body.sent_timestamp;
+  if (timestamp) {
+    timestamp = parseInt(timestamp)
+    if ( !isNaN(timestamp) ) {
+      timestamp = new Date(timestamp);
+    } else {
+      console.log( "Discarding invalid timestamp " + req.body.sent_timestamp );
+      timestamp = null;
+  }
+    }
+  if ( !timestamp )
+  	timestamp = new Date();
+
+  if ( body && from ) {
+	  processReport( from, body, timestamp, function( err, output ) {
+	  	if ( err ) {
+	  		res.send( 500, "Something bad happened: " + err );
+	  		return;
+	  	}
+	  	res.writeHead( 200 );
+	    if (req.body.message) // This came from SMSSync
+	    {
+	      res.write( "{payload:{success:\"true\"}}" );
+	    }
+	    console.log( "Successfully processed report." );
+	    res.end();
+	  } );
+	} else {
+		res.writeHead( 400 );
+		res.write( "Malformed request." );
+		console.log( "Malformed request." );
+		res.end();
+	}
+}
+
 // /gateway/<type> or /gateway/<type>/<version>
 server.app.post( /^\/gateway\/([^\/]+)(\/\d+)?/, function( req, res ) {
-	//TODO, use `data` programatically
-	res.send( 200, "Gateway OK" );
+	if ( req.params[0].toLowerCase() == 'sms' )
+	{
+		processSMS( req, res );
+	}
+	else
+	{
+		res.send( 404, "Not a valid gateway" );
+	}
 } );
 
 server.start();

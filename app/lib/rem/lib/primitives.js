@@ -2,5 +2,6 @@ module.exports = {
 	"string": true,
 	"int": true,
 	"id": true,
-	"float": true
+	"float": true,
+	"timestamp": true
 }

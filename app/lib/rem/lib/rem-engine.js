@@ -19,10 +19,10 @@ function REMEngine( version, modelJSON, backend, options ) {
 	this.backend = backend;
 	this.model = Modeler.create( modelJSON );
 
-	this.resources = [];
+	this.resources = {};
 	for ( var r in this.model.top )
 	{
-		this.resources.push( new REMResource( r, this.model.top[r], this ) );
+		this.resources[r] = new REMResource( r, this.model.top[r], this );
 	}
 
 	for ( var i in verbs )
@@ -63,7 +63,7 @@ REMEngine.prototype.serve = function( app, baseurl ) {
 			res.send( 200, schema );
 		});
 
-	for ( var i = 0; i < this.resources.length; ++i )
+	for ( var i in this.resources )
 	{
 		this.resources[i].serve( app, baseurl );
 	}
@@ -96,7 +96,7 @@ REMEngine.prototype.sanitizeBody = function( resource, method, body )
 		if ( !resource.model.columns.hasOwnProperty( f ) )
 			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name + "'." );
 	for ( var c in resource.model.columns )
-		if ( method == 'POST' && resource.model.columns[c].constraints.required && !body[c] )
+		if ( method.toLowerCase() == 'post' && resource.model.columns[c].constraints.required && !body[c] )
 			throw new Error( "Property '" + c + "' is required for type '" + resource.name + "'" );
 	return body;
 }

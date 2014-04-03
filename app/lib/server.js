@@ -17,8 +17,11 @@ function Server( name, options ) {
 
 	//this.app.use(express.logger({stream:winstonStream}));
 
+	this.app.use( express.json() );
+	this.app.use( express.urlencoded() );
+
 	this.app.use(function(req, res, next){
-	  logger.info('%s %s %s', req.method, req.url, req.body || "<no body>" );
+	  logger.info('%s %s', req.method, req.url );
 	  next();
 	});
 
