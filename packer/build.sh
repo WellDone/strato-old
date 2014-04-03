@@ -63,7 +63,7 @@ shift $(($OPTIND - 1))
 BUILDER=$1
 case "$BUILDER" in
 	virtualbox-iso)
-		VAGRANT_BOX_FILE="./packer_virtualbox_virtualbox.box"
+		VAGRANT_BOX_FILE="./packer_virtualbox-iso_virtualbox.box"
 		;;
 	digitalocean)
 		VAGRANT_BOX_FILE="./packer_digitalocean_digitalocean.box"
