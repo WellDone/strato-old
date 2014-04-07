@@ -74,20 +74,39 @@ REMEngine.prototype.resource = function( name ) {
 REMEngine.prototype.r = REMEngine.prototype.resource;
 
 REMEngine.prototype.sanitizeParams = function( resource, params ) {
-	var filters = {};
-	for ( var f in params )
+	var out = {
+		fields: [],
+		where: {},
+		limit: 0,
+		order: 'default'
+	};
+
+	if ( params.fields )
 	{
-		var value = params[f];
-		if ( f == 'id' )
-			f = resource.model.id;
-
-		if ( !resource.model.columns.hasOwnProperty( f ) )
-			throw new Error( "Resource type '" + resource + "' has no property '" + f + "'" );
-
-		filters[f] = value;
+		params.fields.forEach( function( f ) {
+			if ( !resource.model.columns.hasOwnProperty( f ) || resource.model.columns[f].ref )
+				throw new Error( "Resource type '" + resource + "' has no local property '" + f + "'" );
+			out.fields.push( fields );
+		});
 	}
-	//TODO: nesting.
-	return filters;
+	if ( out.fields.length === 0 ) {
+		for ( var c in resource.model.columns )
+		{
+			if ( !resource.model.columns[c].ref )
+				out.fields.push( c );
+		}
+	}
+
+	for ( var w in params.where )
+	{
+		out.where[w] = params.where[w];
+	}
+
+	if ( params.id )
+		out.where[resource.model.id] = params.id;
+	
+	console.log( params, out );
+	return out;
 }
 
 REMEngine.prototype.sanitizeBody = function( resource, method, body )

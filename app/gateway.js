@@ -27,7 +27,7 @@ function processReport( from, body, timestamp, output ) {
 	};
 
 	console.log( data.r('reports') );
-	data.r('monitors').get( { gsmid: from }, function( err, result ) {
+	data.r('monitors').get( { where: { gsmid: from } }, function( err, result ) {
 		if ( err )
 		{
 			output( err )

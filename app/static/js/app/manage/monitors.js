@@ -10,7 +10,6 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			'name': 'Name',
 			'location': 'Location',
 			'gsmid': 'SMS Number',
-			'groups': 'Groups',
 			'status': 'Status'
 		},
 		create: {

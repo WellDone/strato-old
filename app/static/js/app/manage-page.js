@@ -34,6 +34,8 @@ define( [ 'jquery',
 	 		for ( var i = 0; i < this.columns.length; ++i )
 	 		{
 	 			var item = data[d][this.columns[i].raw];
+	 			if ( !item )
+	 				item = ""
 	 			if ( $.isArray( item ) )
 	 			{
 	 				item = {

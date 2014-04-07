@@ -54,8 +54,6 @@ Resource.prototype.serve = function( app, baseurl ) {
 	var self = this;
 	var serveFunc = function( fname, isCollection ) {
 		var tryServe = function( f, isCollection, req, res ) {
-		  console.log( "Request received: " + req.path ) ;
-
 		  try
 			{
 				f( req.params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
@@ -82,13 +80,14 @@ Resource.prototype.serve = function( app, baseurl ) {
 	app.del( url + "/:id" , serveFunc( 'del' ) );
 	for ( var c in self.model.columns )
 	{
-		if ( self.model.columns[c].ref && self.model.columns[c].ref.plural ) {
+		if ( self.model.columns[c].ref ) {
+			var isCollection = self.model.columns[c].ref.plural;
 			app.get( url + "/:id/" + c, function( c, req, res ) {
-				var filter = {};
-				filter[self.model.columns[c].ref.complement] = req.params.id;
+				var params = { where: {} };
+				params.where[self.model.columns[c].ref.complement] = req.params.id;
 				var target = self.model.columns[c].ref.target.name;
 				console.log( target );
-				self.engine.resource(target).get( filter, handleBackendResult.bind( null, req, res, true ) );
+				self.engine.resource(target).get( params, handleBackendResult.bind( null, req, res, isCollection ) );
 			}.bind( self, c ) );
 		}
 	}
