@@ -9,6 +9,7 @@ OPTIONS (all optional):
    -h     Show this message
    -p     Run provisioning steps to initialize a new server.
    -s     Delete all existing data, recreate and reseed the database.  USE AT YOUR OWN RISK
+   -d     Install the development self-signed SSL certificate
 
 TARGET:
    The target VM, or "vagrant" or "local".  
@@ -20,8 +21,9 @@ TARGET_MACHINE=""
 
 CLEAN=
 PROVISION=
+APP_CONTEXT="PRODUCTION"
 
-while getopts "hsp" OPTION
+while getopts "hspd" OPTION
 do
 	case $OPTION in
 	h)
@@ -33,6 +35,9 @@ do
 		;;
 	p)
 		PROVISION=true
+		;;
+	d)
+		APP_CONTEXT="DEVELOPMENT"
 		;;
 	?)
 		usage
@@ -71,7 +76,7 @@ fi
 
 if [ -n "$PROVISION" ]; then
 	echo "Provisioning server"
-	$SSH_CMD "sudo bash /welldone/config/provision.sh"
+	$SSH_CMD "sudo bash -c 'export APP_CONTEXT=$APP_CONTEXT; /welldone/config/provision.sh'"
 fi
 
 $SSH_CMD "cd /welldone/app
