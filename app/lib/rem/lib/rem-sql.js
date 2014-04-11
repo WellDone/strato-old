@@ -55,10 +55,13 @@ function constructQuery( type, model, params, body)
 			if ( model.columns[f].ref && !model.columns[f].ref.manyToMany )
 			{
 				var target = model.columns[f].ref.target;
-				joins.push( "RIGHT JOIN " + target.name + 
-					          " ON " + model.name + "." + f +
-					             " " + operator + " " +
-					             target.name + "." + target.id );
+				var joinID = "joinTable" + joins.length;
+				joins.push( "LEFT JOIN ( " +
+				        "\r\n             SELECT " + target.id +
+				        "\r\n             FROM " + target.name + 
+				        "\r\n             WHERE " + target.id + " = $" + (parameters.length+1) + ")" + " AS " + joinID +
+					      "\r\n  ON " + model.name + "." + f + " " + operator + " " + joinID + "." + target.id );
+				parameters.push( value );
 			}
 			else if ( model.columns[f].ref && model.columns[f].ref.manyToMany )
 			{
@@ -70,12 +73,13 @@ function constructQuery( type, model, params, body)
 				joins.push( "RIGHT OUTER JOIN ( " + 
 					      "\r\n                   SELECT " + junction + "." + model.name + "_ref" +
 					      "\r\n                   FROM " + junction + 
-					      "\r\n                   WHERE " + junction + "." + target.name + "_ref = " + value + ")" + " AS " + joinID +
+					      "\r\n                   WHERE " + junction + "." + target.name + "_ref = $" + (parameters.length+1) + ")" + " AS " + joinID +
 					      "\r\n  ON " + joinID + "." + model.name + "_ref = " + model.name + "." + model.id );
+				parameters.push( value );
 			}
 			else
 			{
-				conditions.push( [f, operator, "$" + parameters.length+1].join(" ") );
+				conditions.push( [f, operator, "$" + (parameters.length+1)].join(" ") );
 				parameters.push( value );
 			}
 			
