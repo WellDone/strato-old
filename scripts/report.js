@@ -8,15 +8,11 @@ function ConstructReport( value ) {
   bytes[1] = 1; //currentHour
   bytes.writeUInt16BE( 49189, 2 ); //currentHour
   bytes[4] = 0; //hour count
-  bytes[5] = value || Math.floor((Math.random()*50)+1);; //event count
+  bytes[5] = value || Math.floor((Math.random()*50)+1); //event count
   bytes[6] = 4; //sensor type
   bytes[7] = 0; //unused
   for (var i=8; i<104;) {
-    if ( i!= 7+4*11 ) {
-      bytes.writeUInt32LE( 0, i )
-    } else {
-      bytes.writeUInt32BE( 256, i )
-    }
+    bytes.writeUInt32LE( Math.floor(Math.random()*100), i )
     i+=4;
   }
 
