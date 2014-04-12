@@ -6,17 +6,32 @@ define( [ 'jquery',
  	function render( monitor ) {
 		$( '#manage-content' ).html( template( monitor ) )
 
+		$('#deleteModal').modal( { show: false } );
+
 		$( '#clear-reports-button' ).click( function( e ) {
+			e = e || window.event;
 			e.preventDefault();
-		e.stopPropagation();
-		monitor.reports.forEach( function( r ) {
-			$.ajax({
-				url: '/api/v0/reports/' + r.id,
-				type: 'DELETE'
-			});
-		})
-		monitor.reports = [];
-		render( monitor )
+			e.stopPropagation();
+
+			$( '#deleteModal').modal('show');
+			var delFunc = function() {
+				monitor.reports.forEach( function( r ) {
+					$.ajax({
+						url: '/api/v0/reports/' + r.id,
+						type: 'DELETE'
+					});
+				})
+				monitor.reports = [];
+				render( monitor )
+				$( '#delete-modal').modal('hide');
+				//TODO: These shouldn't be needed, but they are.
+				$('body').removeClass('modal-open');
+				$('.modal-backdrop').remove();
+				$( '#actually-delete-button').off( 'click', delFunc );
+			}
+			
+			$( '#deleteModal').modal('show');
+			$( '#actually-delete-button').on( 'click', delFunc );
 		} )
 	}
 

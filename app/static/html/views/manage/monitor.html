@@ -74,3 +74,21 @@
   </div>
   <div class="tab-pane" id="alerts">...</div>
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="deleteModalLabel">Clear reports?</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to clear all reports for this monitor from the Strato system?  This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No, nevermind</button>
+        <button id="actually-delete-button" type="button" class="btn btn-danger" data-dismiss="modal">Yes, clear them</button>
+      </div>
+    </div>
+  </div>
+</div>

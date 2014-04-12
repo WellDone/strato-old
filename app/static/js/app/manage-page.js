@@ -69,7 +69,7 @@ define( [ 'jquery',
 
  			if ( self.permissions.create )
  			{
- 				dom.find( '#create-resource-button').click( function(e) {
+ 				dom.find( '#create-resource-form').submit( function(e) {
 					e.preventDefault();
 					e.stopPropagation();
 					var data = {};
@@ -110,7 +110,7 @@ define( [ 'jquery',
 			if ( self.permissions.del )
 			{
 				dom.find( 'a.deleteResource').click( function(e) {
-					var event = e || window.event;
+					e = e || window.event;
 					var id = $(this).parent().parent().attr('data-id');
 					var delFunc = function() {
 						$.ajax({
