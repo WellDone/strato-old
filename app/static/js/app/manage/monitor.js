@@ -4,8 +4,11 @@ define( [ 'jquery',
           'd3-timeline' ],
  function ( $, template, d3 ) {
  	return function( ctx ) {
- 		$.getJSON( '/api/v0/monitors/' + ctx.params.id, function ( monitor ) {
- 			$( '#manage-content' ).html( template( monitor ) )
+ 		$.getJSON( '/api/v0/monitors/' + ctx.params.id, function ( monitor ) { //TODO: parallelize
+ 			$.getJSON( '/api/v0/monitors/' + monitor.id + '/reports', function( reports ) {
+ 				monitor.reports = reports;
+ 				$( '#manage-content' ).html( template( monitor ) )
+ 			})
  		} );
  	}
  } );

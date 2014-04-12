@@ -86,7 +86,7 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 		params.fields.forEach( function( f ) {
 			if ( !resource.model.columns.hasOwnProperty( f ) || resource.model.columns[f].ref )
 				throw new Error( "Resource type '" + resource + "' has no local property '" + f + "'" );
-			out.fields.push( fields );
+			out.fields.push( f );
 		});
 	}
 	if ( out.fields.length === 0 ) {

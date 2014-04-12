@@ -26,8 +26,7 @@ function processReport( from, body, timestamp, output ) {
 		data: JSON.stringify( report )
 	};
 
-	console.log( data.r('reports') );
-	data.r('monitors').get( { where: { gsmid: from } }, function( err, result ) {
+	data.r('monitors').get( { fields: ['id','gsmid'], where: { gsmid: from } }, function( err, result ) {
 		if ( err )
 		{
 			output( err )
@@ -38,9 +37,8 @@ function processReport( from, body, timestamp, output ) {
 			output( "No monitor found" );
 			return;
 		}
-		console.log( result );
 		report.monitor = result[0].id;
-		data.r('reports').add( null, report, output );
+		data.r('reports').add( {}, report, output );
 	});
 }
 
