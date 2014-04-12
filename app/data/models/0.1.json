@@ -32,7 +32,7 @@
 			"id"        : "id                       | pkey",
 			"timestamp" : "timestamp                | required",
 			"monitor"   : "ref:monitors(reports)    | required",
-			"data"      : "string"
+			"data"      : "json"
 		},
 
 		"groups": {

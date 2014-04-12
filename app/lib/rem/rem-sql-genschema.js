@@ -30,6 +30,10 @@ function translateType( column )
 	{
 		return "timestamp";
 	}
+	else if ( column.type == 'json' )
+	{
+		return "json";
+	}
 	else if ( column.type == 'ref' )
 	{
 		if ( column.ref.manyToMany )

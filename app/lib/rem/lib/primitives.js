@@ -3,5 +3,6 @@ module.exports = {
 	"int": true,
 	"id": true,
 	"float": true,
-	"timestamp": true
+	"timestamp": true,
+	"json": true
 }
