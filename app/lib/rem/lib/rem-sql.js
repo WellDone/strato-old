@@ -32,6 +32,7 @@ function constructQuery( type, model, params, body)
 	{
 		var columns = [];
 		var conditions = [];
+		var tables = [ model.name ];
 
 		for ( var c in params.fields )
 		{
@@ -55,12 +56,9 @@ function constructQuery( type, model, params, body)
 			if ( model.columns[f].ref && !model.columns[f].ref.manyToMany )
 			{
 				var target = model.columns[f].ref.target;
-				var joinID = "joinTable" + joins.length;
-				joins.push( "LEFT JOIN ( " +
-				        "\r\n             SELECT " + target.id +
-				        "\r\n             FROM " + target.name + 
-				        "\r\n             WHERE " + target.id + " = $" + (parameters.length+1) + ")" + " AS " + joinID +
-					      "\r\n  ON " + model.name + "." + f + " " + operator + " " + joinID + "." + target.id );
+				tables.push( target.name );
+				conditions.push( model.name + "." + f + " " + operator + " " + target.name + "." + target.id );
+				conditions.push( target.name + "." + target.id + " = $" + (parameters.length+1) );
 				parameters.push( value );
 			}
 			else if ( model.columns[f].ref && model.columns[f].ref.manyToMany )
@@ -85,7 +83,7 @@ function constructQuery( type, model, params, body)
 			
 		}
 		query = "SELECT " + columns.join( ", \r\n\t" )
-		     + "\r\nFROM " + model.name
+		     + "\r\nFROM " + tables.join( ", " )
 		     + ( conditions.length?"\r\nWHERE " + conditions.join( "\r\n AND " ) : "" )
 		     + ( joins.length? "\r\n" + joins.join( "\r\n" ) : "" )
 		     + ";"

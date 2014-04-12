@@ -37,6 +37,7 @@
 				    <input type="datetime" class="form-control" id="filterEndDate" placeholder="EndDate">
 				  </div>
 				  <button type="submit" class="btn btn-primary">Filter</button>
+				  <button id="clear-reports-button" class="btn btn-danger">Clear</button>
 		    </form>
 		  </div>
 
@@ -44,14 +45,18 @@
 		  	<thead>
 			    <tr>
 			    	<th>Date</th>
-			    	<th>Value</th>
+			    	<th>Battery Voltage</th>
+			    	<th>Event Count</th>
+			    	<th>Values</th>
 			    </tr>
 			  </thead>
 			  <tbody>
 		    {{#each reports}}
 		    	<tr>
 		    		<td>{{timestamp}}</td>
+		    		<td>{{data.batteryVoltage}}</td>
 		    		<td>{{data.eventCount}}</td>
+		    		<td>{{data.buckets}}</td>
 		    	</tr>
 		    {{/each}}
 		    </tbody>

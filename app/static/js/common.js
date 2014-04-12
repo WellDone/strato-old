@@ -8,6 +8,7 @@ require.config({
 		Handlebars: 'handlebars',
 		bootstrap: 'bootstrap.min',
 		MarkerClusterer: 'markerclusterer_packed',
+		moment: 'moment.min',
 
 		text: '../require/text',
 		hbars: '../require/hbars',
