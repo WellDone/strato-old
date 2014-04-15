@@ -25,7 +25,7 @@
     "image_id": 1505447
   },
   {
-    "type": "virtualbox",
+    "type": "virtualbox-iso",
     "guest_os_type": "Ubuntu_64",
 
     "vboxmanage": [
@@ -34,8 +34,8 @@
 
     "disk_size" : 10000,
 
-    "iso_url": "http://releases.ubuntu.com/precise/ubuntu-12.04.3-server-amd64.iso",
-    "iso_checksum": "2cbe868812a871242cdcdd8f2fd6feb9",
+    "iso_url": "http://releases.ubuntu.com/precise/ubuntu-12.04.4-server-amd64.iso",
+    "iso_checksum": "e83adb9af4ec0a039e6a5c6e145a34de",
     "iso_checksum_type": "md5",
 
     "http_directory" : ".",
@@ -82,7 +82,7 @@
             "sudo chmod 0440 /etc/sudoers.d/{{user `ssh_name`}}"
           ]
         },
-        "virtualbox": {
+        "virtualbox-iso": {
           "inline": [
             "echo Setting up password-less sudo...",
             "echo wdadminpass | sudo -S sh -c 'echo \"{{user `ssh_name`}} ALL=(ALL)NOPASSWD:ALL\" > /etc/sudoers.d/{{user `ssh_name`}}'",

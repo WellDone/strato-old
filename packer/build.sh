@@ -7,7 +7,7 @@ usage: $0 [options] <builder>
 
 Builds a WellDone MoMo Server basebox using Packer.
 <builder>:
-   virtualbox
+   virtualbox-iso
    digitalocean
    amazon-ebs (untested)
 
@@ -62,8 +62,8 @@ shift $(($OPTIND - 1))
 
 BUILDER=$1
 case "$BUILDER" in
-	virtualbox)
-		VAGRANT_BOX_FILE="./packer_virtualbox_virtualbox.box"
+	virtualbox-iso)
+		VAGRANT_BOX_FILE="./packer_virtualbox-iso_virtualbox.box"
 		;;
 	digitalocean)
 		VAGRANT_BOX_FILE="./packer_digitalocean_digitalocean.box"

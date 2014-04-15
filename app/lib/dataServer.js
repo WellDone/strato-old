@@ -19,10 +19,32 @@ dataServer.prototype = {
       self.getReports( res, req.params.site )
     } );
 
-    this.app.get( '/sites/:site/reports', function( req, res ) {
-      res.writeHead( 200 );
+    this.app.get( path + '/monitors/:gsmid/clear', function( req, res ) {
+      console.log( "Deleting all reports for site " + req.params.monitors + "." );
+      var monitorid = null;
+      self.db.core.query( {
+        text: "SELECT ID FROM monitors WHERE GSMID=$1",
+        values: [req.params.gsmid]
+      })
+      .on( 'row', function( row ) {
+        monitorid = row.id;
+      } )
+      .on( 'end', function() {
+        if ( monitorid === null)
+          res.send( 404, "Monitor not found." );
 
-      res.end();
+        self.db.core.query( {
+          text: "DELETE FROM aggregate_reports r USING monitors m WHERE r.MonitorID=m.ID and m.GSMID=$1",
+          values: [req.params.gsmid] })
+        .on( 'error', function( err ) {
+          console.log( err );
+          res.send( 500, "Something bad happened." );
+        })
+        .on( 'end', function() {
+          serverEmitter.emit( 'monitor/' + monitorid + '/clear' );
+          res.send( 200, "All data deleted for monitor ID " + monitorid + " (GSMID " + req.params.gsmid + ")." );
+        })
+      } );
     })
 
     startSocketIO( io );
@@ -103,12 +125,12 @@ dataServer.prototype = {
   },
   getReports: function(res, siteID) {
     var reports = {};
-    var counts = {};
     this.db.core.query( "SELECT aggregate_reports.timestamp, aggregate_reports.eventcount, aggregate_reports.monitorid FROM aggregate_reports INNER JOIN monitors ON monitors.id = aggregate_reports.monitorid WHERE monitors.siteid = " + siteID )
       .on( 'row', function(row) {
         row.date = row.timestamp;
-        if (!reports[row.date]) { reports[row.date] = {}; counts[row.date] = 0; };
-        reports[row.date][counts[row.date]++] = row.eventcount;
+        if (!reports[row.date]) 
+          reports[row.date] = {};
+        reports[row.date][row.monitorid] = row.eventcount;
       })
       .on( 'end', function() {
         var reportArray = [];
@@ -142,6 +164,9 @@ function startSocketIO( io ) {
           monitors = [];
         monitors.push( monitorid );
         serverEmitter.on('monitor/' + monitorid + '/newReport', reportCallback );
+        serverEmitter.on('monitor/' + monitorid + '/clear', function() {
+          socket.emit( 'clear', monitorid );
+        } );
         socket.set( 'monitors', monitors, function() {
           console.log( "Socket is watching monitor " + monitorid );
         })
