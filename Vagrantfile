@@ -4,8 +4,10 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+Vagrant.require_version ">= 1.5.0"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "welldone_server"
+  config.vm.box = "welldone/strato-base"
+  config.vm.box_version = ">=0.1, < 1.0"
 
   config.ssh.username = "wdadmin"
 
