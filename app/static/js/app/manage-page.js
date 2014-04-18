@@ -69,7 +69,8 @@ define( [ 'jquery',
 
  			if ( self.permissions.create )
  			{
- 				dom.find( '#create-resource-form').submit( function(e) {
+ 				dom.find( '#create-resource-button').click( function(e) {
+ 					e = e || window.event;
 					e.preventDefault();
 					e.stopPropagation();
 					var data = {};

@@ -27,7 +27,7 @@
       {{/each}}
     </tbody>
     <tfoot>
-      <form id="create-resource-form">
+      <form>
       <tr id="create-resource-row" class="hidden">
       {{#each columns}}
         {{#if this.create }}
@@ -36,7 +36,7 @@
           <td></td>
         {{/if}}
       {{/each}}
-        <td ><button class="btn btn-primary" type="submit">Create</button></td>
+        <td ><button id="create-resource-button" class="btn btn-primary" type="submit">Create</button></td>
       </tr>
       </form>
       <tr id="plus-button-row" class="resource-manager">
