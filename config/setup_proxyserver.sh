@@ -9,6 +9,7 @@ mkdir -p /etc/welldone/ssl
 if [ "$APP_CONTEXT" == "DEVELOPMENT" ]; then
 	cp /welldone/config/proxy/development_server.key /etc/welldone/ssl/strato.welldone.org.key
 	cp /welldone/config/proxy/development_server.crt /etc/welldone/ssl/strato.welldone.org.crt
+fi
 nginx -t
 
 sudo service nginx reload
