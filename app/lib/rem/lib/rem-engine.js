@@ -58,9 +58,8 @@ REMEngine.prototype.serve = function( app, baseurl ) {
 	});
 	if ( this.backend.schema )
 		app.get( path.join( baseurl, '_schema' ), function( req, res ) {
-			var schema = self.backend.schema( self.model );
 			res.set('Content-Type', 'text/plain');
-			res.send( 200, schema );
+			res.send( 200, self.schemaString() );
 		});
 
 	for ( var i in this.resources )
@@ -107,6 +106,14 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 	
 	console.log( params, out );
 	return out;
+}
+
+REMEngine.prototype.schema = function() {
+	return this.backend.schema( this.model );
+}
+
+REMEngine.prototype.schemaString = function() {
+	return this.backend.schemaString( this.model );
 }
 
 REMEngine.prototype.sanitizeBody = function( resource, method, body )

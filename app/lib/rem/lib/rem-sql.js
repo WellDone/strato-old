@@ -223,6 +223,11 @@ rem_sql.prototype.del = function( model, type, params, body, output )
 rem_sql.prototype.schema = function( model )
 {
 	var schema = schemaGenerator( model );
+	return schema;
+}
+rem_sql.prototype.schemaString = function( model )
+{
+	var schema = this.schema( model );
 	var schemaString = "";
 	for ( var t in schema.tables ) {
 		schemaString += "CREATE TABLE " + t + " (" + schema.tables[t] + "\r\n);\r\n";
