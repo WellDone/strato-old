@@ -18,7 +18,7 @@ function processReport( from, body, timestamp, output ) {
 	catch ( e )
 	{
 		// TODO: Store the malformed report
-		return false;
+		output(e);
 	}
 
 	report = {
