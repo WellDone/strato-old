@@ -95,8 +95,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 
 Resource.prototype.proxy = function( fname, params, body, output )
 {
-	params = this.engine.sanitizeParams( this, params );
-	body = this.engine.sanitizeBody( this, fname, body )
+	console.log( arguments );
 	switch ( arguments.length )
 	{
 		case 2:
@@ -106,7 +105,16 @@ Resource.prototype.proxy = function( fname, params, body, output )
 			break;
 		case 3:
 			output = arguments[2];
-			body = null;
+			if ( fname == 'post' )
+			{
+				body = arguments[1];
+				params = null;
+			}
+			else
+			{
+				body = null;
+				params = arguments[1];
+			}
 			break;
 		case 4:
 			break;
@@ -115,6 +123,9 @@ Resource.prototype.proxy = function( fname, params, body, output )
 	}
 	try
 	{
+		console.log( fname, params, body, output );
+		params = this.engine.sanitizeParams( this, params );
+		body = this.engine.sanitizeBody( this, fname, body )
 		if ( !params )
 			this.engine.backend[fname]( this.model, this.name, null, body, output );
 		else if ( typeof params == 'object' )

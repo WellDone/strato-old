@@ -34,11 +34,34 @@ function processReport( from, body, timestamp, output ) {
 		}
 		if ( !result || result.length == 0 )
 		{
-			output( "No monitor found" );
-			return;
+			var monitor = {
+				name: from,
+				gsmid: from,
+				status: 0
+			}
+			data.r('monitors').add( monitor, function(err) {
+				if ( err )
+				{
+					output( err );
+					return;
+				}
+				data.r('monitors').get({fields: ['id', 'gsmid'], where: { gsmid: from } }, function( err, result) {
+					if ( err || !result || result.length == 0 )
+					{
+						output( err? err : "No monitor found" );
+						return;
+					}
+
+					report.monitor = result[0].id;
+					data.r('reports').add( report, output );
+				})
+			})
 		}
-		report.monitor = result[0].id;
-		data.r('reports').add( {}, report, output );
+		else
+		{
+			report.monitor = result[0].id;
+			data.r('reports').add( report, output );
+		}
 	});
 }
 

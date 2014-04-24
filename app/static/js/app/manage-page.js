@@ -92,20 +92,15 @@ define( [ 'jquery',
 				e.preventDefault();
 				e.stopPropagation();
 				var data = {};
-				var done = false;
 				dom.find( '#create-resource-row > td > input').each( function( i ) {
 					var el = $(this);
 					var name = el.attr('data-name');
 					var val = el.val();
-					if ( !val && !done )
+					if ( val && !val.length == 0 )
 					{
-						done = true;
-						alert( "Invalid value specified for " + name + "." );
+						data[name] = val;
 					}
-					data[name] = val;
 				})
-				if ( done )
-					return;
 				$.ajax({
 					url: self.url,
 					type: 'POST',
@@ -147,6 +142,7 @@ define( [ 'jquery',
 					dom.find( '#actually-delete-button').off( 'click', delFunc );
 				}
 				dom.find( '#deleteModal').modal('show');
+				dom.find( '#actually-delete-button').off( 'click' );
 				dom.find( '#actually-delete-button').on( 'click', delFunc );
 				e.stopPropagation();
 			});

@@ -10,7 +10,7 @@ define( [ 'jquery' ], function( $ ) {
 			searchForm.addClass('hidden');
 		},
 		showSearch: function() {
-			searchForm.removeClass('hidden');
+			//searchForm.removeClass('hidden');
 		}
 	}
 })

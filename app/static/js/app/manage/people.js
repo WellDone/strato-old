@@ -4,7 +4,7 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			raw: 'users',
 			pretty_singular: 'Person',
 			pretty_plural: 'People',
-			title: 'All of the People'
+			title: 'Strato Users'
 		},
 		columns: {
 			'fullname': 'Full Name',

@@ -15,6 +15,8 @@ define( ['jquery',
     	for ( var i = 0; i < monitors.length; ++i )
     	{
     		var loc = monitors[i].location;
+            if ( !loc )
+                continue;
     		var split = loc.indexOf(",");
     		if ( loc[0] != '(' || loc[loc.length-1] != ')' || split == -1 )
     			continue;

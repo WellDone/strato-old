@@ -7,7 +7,7 @@ var REMResource = require( './resource.js' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
-	'add': 'push',
+	'add': 'post',
 	'remove': 'del',
 	'update': 'put'
 }
@@ -80,6 +80,9 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 		order: 'default'
 	};
 
+	if ( !params )
+		return out;
+
 	if ( params.fields )
 	{
 		params.fields.forEach( function( f ) {
@@ -104,7 +107,6 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 	if ( params.id )
 		out.where[resource.model.id] = params.id;
 	
-	console.log( params, out );
 	return out;
 }
 
@@ -118,11 +120,12 @@ REMEngine.prototype.schemaString = function() {
 
 REMEngine.prototype.sanitizeBody = function( resource, method, body )
 {
+	console.log( body );
 	for ( var f in body )
 		if ( !resource.model.columns.hasOwnProperty( f ) )
 			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name + "'." );
 	for ( var c in resource.model.columns )
-		if ( method.toLowerCase() == 'post' && resource.model.columns[c].constraints.required && !body[c] )
+		if ( method.toLowerCase() == 'post' && resource.model.columns[c].constraints.required && !body[c] && body[c] !== 0 )
 			throw new Error( "Property '" + c + "' is required for type '" + resource.name + "'" );
 	return body;
 }

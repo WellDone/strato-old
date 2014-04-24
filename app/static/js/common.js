@@ -9,6 +9,7 @@ require.config({
 		bootstrap: 'bootstrap.min',
 		MarkerClusterer: 'markerclusterer_packed',
 		moment: 'moment.min',
+		rickshaw: 'rickshaw.min',
 
 		text: '../require/text',
 		hbars: '../require/hbars',
