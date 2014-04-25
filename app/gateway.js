@@ -36,8 +36,7 @@ function processReport( from, body, timestamp, output ) {
 		{
 			var monitor = {
 				name: from,
-				gsmid: from,
-				status: 0
+				gsmid: from
 			}
 			data.r('monitors').add( monitor, function(err) {
 				if ( err )
