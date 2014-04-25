@@ -61,7 +61,7 @@ define( [ 'jquery',
 					break; //this should be an error
 			}
 
-			var baseDate = moment( x.timestamp, 'YYYY MMMM Do h:mm:ss a' ).subtract( 's', step * x.data.interval.count )
+			var baseDate = moment( x.timestamp, 'YYYY MMMM DD h:mm:ss a' ).subtract( 's', step * x.data.interval.count )
 
 			for ( var i = 0; i < x.data.intervalAggregates.length; ++i )
 			{
@@ -108,6 +108,7 @@ define( [ 'jquery',
 			renderer: 'line',
 			stroke: true,
 			preserve: true,
+			interpolation: 'linear',
 			series: seriesData
 		} );
 
@@ -195,7 +196,7 @@ define( [ 'jquery',
 	 	$.getJSON( '/api/v0/monitors/' + id, function ( monitor ) { //TODO: parallelize
 			$.getJSON( '/api/v0/monitors/' + id + '/reports', function( reports ) {
 				reports.forEach( function( r ) {
-					r.timestamp = moment( r.timestamp ).format( 'YYYY MMMM Do h:mm:ss a' );
+					r.timestamp = moment( r.timestamp ).format( 'YYYY MMMM DD h:mm:ss a' );
 				})
 				monitor.reports = reports;
 				render( monitor )

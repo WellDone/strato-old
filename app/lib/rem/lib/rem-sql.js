@@ -197,7 +197,7 @@ rem_sql.prototype.put = function( model, type, params, body, output )
 {
 	this.assertValid();
 	var parsedFilter = parseFilter( model, params );
-	var parsedBody = parseBody( type, body );
+	var parsedBody = parseBody( body );
 	var parameters = parsedFilter.parameters.concat( parsedBody.parameters );
 
 	var assignmentStrings = [];

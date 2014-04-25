@@ -26,7 +26,7 @@ function ConstructReport( value ) {
   bytes.writeUInt16LE( 0, 8 ); //diagnostics1
   bytes.writeUInt16LE( 0, 10 ); //diagnostics2
   bytes[12] = 0x61; // count, min, max
-  bytes[13] = 0x05; // count, mean
+  bytes[13] = 0x04; // count, mean
   bytes[14] = 0x60;
   bytes[15] = 0x0A;
 

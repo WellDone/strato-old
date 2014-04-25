@@ -152,7 +152,50 @@ define( [ 'jquery',
 			dom.find( '.deleteResource' ).addClass( 'hidden' );
 		}
 
-		if ( !self.permissions.edit )
+		if ( self.permissions.edit )
+		{
+			dom.find( 'a.editResource' ).click( function(e) {
+				e = e || window.event;
+				var row = $(this).parent().parent();
+				var id = row.attr('data-id');
+				row.addClass( 'hidden' );
+				row.before( $('#edit-resource-row').detach() );
+				var oldData = {};
+				row.find('td').each( function( i ) {
+					if ( !self.columns[i] )
+						return;
+					oldData[self.columns[i].raw] = $( this ).text();
+				})
+				$('#edit-resource-row').find('td input').each( function( i ) {
+					var name = $( this ).attr( 'data-name' );
+					if ( oldData[ name ] )
+						$( this ).val( oldData[name] );
+				} );
+				$('#edit-resource-row').removeClass( 'hidden' );
+				$('#edit-resource-button').click( function(e) {
+					var newData = {};
+					$('#edit-resource-row').find('td input').each( function( i ) {
+						var name = $( this ).attr( 'data-name' );
+						var val = $( this ).val();
+						if ( val && val.length != 0 && ( !oldData[name] || oldData[name] != val ) )
+							newData[name] = val;
+					});
+					$.ajax({
+						url: self.url + '/' + id,
+						type: 'PUT',
+						data: newData,
+						complete: function(result) {
+							$('#edit-resource-row').addClass( 'hidden' );
+							row.removeClass( 'hidden' );
+							$('#edit-resource-button').off( 'click' );
+							self.render();
+						}
+					});
+				})
+				e.stopPropagation();
+			})
+		}
+		else
 		{
 			dom.find( '.editResource' ).addClass( 'hidden' );
 		}
