@@ -156,6 +156,9 @@ define( [ 'jquery',
 		{
 			dom.find( 'a.editResource' ).click( function(e) {
 				e = e || window.event;
+				e.stopPropagation();
+				if ( !$('#edit-resource-row').hasClass( 'hidden' ) )
+					return;
 				var row = $(this).parent().parent();
 				var id = row.attr('data-id');
 				row.addClass( 'hidden' );
@@ -192,7 +195,6 @@ define( [ 'jquery',
 						}
 					});
 				})
-				e.stopPropagation();
 			})
 		}
 		else
