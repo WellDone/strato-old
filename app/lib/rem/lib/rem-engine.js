@@ -77,8 +77,9 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 		fields: [],
 		where: {},
 		limit: 0,
-		order: 'default'
+		order: null
 	};
+	console.log( params );
 
 	if ( !params )
 		return out;
@@ -87,7 +88,7 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 	{
 		params.fields.forEach( function( f ) {
 			if ( !resource.model.columns.hasOwnProperty( f ) || resource.model.columns[f].ref )
-				throw new Error( "Resource type '" + resource + "' has no local property '" + f + "'" );
+				throw new Error( "Resource type '" + resource.name + "' has no local property '" + f + "'" );
 			out.fields.push( f );
 		});
 	}
@@ -106,6 +107,22 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 
 	if ( params.id )
 		out.where[resource.model.id] = params.id;
+
+	if ( params.order )
+	{
+		var flipped = false;
+		if ( params.order[0] == '-' )
+			flipped = true;
+
+		var column = (flipped)? params.order.substr( 1, params.order.length - 1 ) : params.order;
+		if ( !resource.model.columns.hasOwnProperty( column ) || resource.model.columns[column].ref )
+				throw new Error( "Resource type '" + resource.name + "' has no local property '" + column + "'" );
+
+		out.order = {
+			column: column,
+			direction: flipped? 'descending' : 'ascending'
+		}
+	}
 	
 	return out;
 }
@@ -120,7 +137,6 @@ REMEngine.prototype.schemaString = function() {
 
 REMEngine.prototype.sanitizeBody = function( resource, method, body )
 {
-	console.log( body );
 	for ( var f in body )
 		if ( !resource.model.columns.hasOwnProperty( f ) )
 			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name + "'." );
