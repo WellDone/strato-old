@@ -1,4 +1,4 @@
-var http = require( 'http' );
+var https = require( 'https' );
 
 //var b64str = "AQAsAAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 //console.log( b64str );
@@ -45,15 +45,16 @@ function ConstructReport( value ) {
 function SendFakeReport() {
   var options = {
     host: 'localhost',
-    port: 3000,
+    port: 3001,
     path: '/gateway/sms',
     headers: {
       'Content-Type': 'Application/json'
     },
     method: 'POST',
+    rejectUnauthorized: false,
     agent:false
   };
-  var req = http.request(options, function(res) {
+  var req = https.request(options, function(res) {
     setTimeout( SendFakeReport, 60000 );
     console.log( "OK" );
   });

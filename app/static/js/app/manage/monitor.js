@@ -194,7 +194,7 @@ define( [ 'jquery',
 
 	function init( id ) {
 	 	$.getJSON( '/api/v0/monitors/' + id, function ( monitor ) { //TODO: parallelize
-			$.getJSON( '/api/v0/monitors/' + id + '/reports', function( reports ) {
+			$.getJSON( '/api/v0/monitors/' + id + '/reports?order=timestamp', function( reports ) {
 				reports.forEach( function( r ) {
 					r.timestamp = moment( r.timestamp ).format( 'YYYY MMMM DD h:mm:ss a' );
 				})
