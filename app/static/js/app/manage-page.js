@@ -210,7 +210,7 @@ define( [ 'jquery',
  	}
  	Renderer.prototype.render = function() {
  		 var self = this;
- 		$.getJSON( this.url, function(data) {
+ 		$.getJSON( this.url + "?order=id", function(data) {
  			Renderer.prototype.renderData( data, self );
  	 	} ); 			
  	}
