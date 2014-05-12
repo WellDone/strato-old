@@ -4,9 +4,8 @@
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
+  padding-top: 50px !important;
 }
-
 
 /*
  * Global add-ons
@@ -16,6 +15,9 @@ body {
   background-color: #21ace3;
   border-bottom: 1px solid #21ace3;
   margin-bottom: 0px;
+}
+.navbar-nav {
+  margin-left: 4px !important;
 }
 .navbar-inverse .nav ul.dropdown-menu li a {
   color: #000000 !important;
@@ -52,6 +54,7 @@ body {
         padding-bottom: 0px;
     }
 }
+
 
 
 /*

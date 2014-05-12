@@ -82,10 +82,22 @@ function constructQuery( type, model, params, body)
 			}
 			
 		}
+
+		var order = "";
+		if ( params.order )
+		{
+			var direction = 'ASC'
+			if ( params.order.direction == 'descending' )
+				direction = 'DESC'
+			
+			order = "ORDER BY " + params.order.column + " " + direction;
+		}
+
 		query = "SELECT " + columns.join( ", \r\n\t" )
 		     + "\r\nFROM " + tables.join( ", " )
 		     + ( conditions.length?"\r\nWHERE " + conditions.join( "\r\n AND " ) : "" )
 		     + ( joins.length? "\r\n" + joins.join( "\r\n" ) : "" )
+		     + ( order.length? "\r\n" + order : "" )
 		     + ";"
 	}
 	else if ( type == "")
@@ -197,7 +209,7 @@ rem_sql.prototype.put = function( model, type, params, body, output )
 {
 	this.assertValid();
 	var parsedFilter = parseFilter( model, params );
-	var parsedBody = parseBody( type, body );
+	var parsedBody = parseBody( body );
 	var parameters = parsedFilter.parameters.concat( parsedBody.parameters );
 
 	var assignmentStrings = [];
@@ -223,6 +235,11 @@ rem_sql.prototype.del = function( model, type, params, body, output )
 rem_sql.prototype.schema = function( model )
 {
 	var schema = schemaGenerator( model );
+	return schema;
+}
+rem_sql.prototype.schemaString = function( model )
+{
+	var schema = this.schema( model );
 	var schemaString = "";
 	for ( var t in schema.tables ) {
 		schemaString += "CREATE TABLE " + t + " (" + schema.tables[t] + "\r\n);\r\n";

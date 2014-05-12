@@ -2,8 +2,9 @@ define( [ 'jquery',
 	'page',
 	'backbone',
 	'hbars!views/manage-page',
-	'hbars!views/manage/management-item' ],
-	function( $, page, backbone, pageTemplate, itemTemplate ) {
+	'hbars!views/manage/management-item',
+	'hbars!views/manage/management-edit' ],
+	function( $, page, backbone, pageTemplate, itemTemplate, editTemplate ) {
 		var Renderer = function( dom, args )
 		{
 			this.dom = dom;
@@ -50,23 +51,19 @@ define( [ 'jquery',
 			{
 				dom.find( '#create-resource-button').click( function(e) {
 					e = e || window.event;
+
 					e.preventDefault();
 					e.stopPropagation();
 					var data = {};
-					var done = false;
 					dom.find( '#create-resource-row > td > input').each( function( i ) {
 						var el = $(this);
 						var name = el.attr('data-name');
 						var val = el.val();
-						if ( !val && !done )
+						if ( val && !val.length == 0 )
 						{
-							done = true;
-							alert( "Invalid value specified for " + name + "." );
+							data[name] = val;
 						}
-						data[name] = val;
-					});
-					if ( done )
-						return;
+					})
 					$.ajax({
 						url: self.items.url,
 						type: 'POST',
@@ -90,9 +87,14 @@ define( [ 'jquery',
 		};
 		Renderer.prototype.render = function() {
 			var renderer = this;
+
 			var ManagementListItemView = Backbone.View.extend({
 				tagName: 'tr',
 				className: 'linkRow',
+
+				initialize: function() {
+					this.listenTo(this.model, "change", this.render);
+				},
 
 				render: function() {
 					var $el = $(this.el), self = this;
@@ -102,14 +104,17 @@ define( [ 'jquery',
 						page( "/manage/" + renderer.name.raw + "/" + self.model.attributes['id'] );
 						e.stopPropagation();
 					});
-					$el.html( itemTemplate( { columns: _.omit( this.model.attributes, "id" ) } ) );
+					$el.html( itemTemplate( { columns: _.omit( self.model.attributes, "id" ) } ) );
 
 					return this;
-				},
+				}
 			});
+
 			this.ManagementListView = Backbone.View.extend({
 				initialize: function() {
+					this.collection.on('change', this.render, this);
 					this.collection.on('add', this.render, this);
+					this.collection.on('remove', this.render, this);
 				},
 
 				render: function() {
@@ -129,6 +134,8 @@ define( [ 'jquery',
 						}
 					});
 
+					$el.append( editTemplate( { columns: renderer.columns } ) );
+
 					if ( renderer.permissions.del )
 					{
 						$( 'a.deleteResource').click( function(e) {
@@ -145,6 +152,7 @@ define( [ 'jquery',
 										$('.modal-backdrop').remove();
 
 										renderer.render();
+										renderer.items.fetch();
 									}
 								});
 								$( '#actually-delete-button').off( 'click', delFunc );
@@ -159,7 +167,53 @@ define( [ 'jquery',
 						$( '.deleteResource' ).addClass( 'hidden' );
 					}
 
-					if ( !renderer.permissions.edit )
+					if ( renderer.permissions.edit )
+					{
+						$( 'a.editResource' ).click( function(e) {
+							e = e || window.event;
+							e.stopPropagation();
+							if ( !$('#edit-resource-row').hasClass( 'hidden' ) )
+								return;
+							var row = $(this).parent().parent();
+							var id = row.attr('data-id');
+							row.addClass( 'hidden' );
+							row.before( $('#edit-resource-row').detach() );
+							var oldData = {};
+							row.find('td').each( function( i ) {
+								if ( !renderer.columns[i] )
+									return;
+								oldData[renderer.columns[i].raw] = $( this ).text();
+							})
+							$('#edit-resource-row').find('td input').each( function( i ) {
+								var name = $( this ).attr( 'data-name' );
+								if ( oldData[ name ] )
+									$( this ).val( oldData[name] );
+							} );
+							$('#edit-resource-row').removeClass( 'hidden' );
+							$('#edit-resource-button').click( function(e) {
+								var newData = {};
+								$('#edit-resource-row').find('td input').each( function( i ) {
+									var name = $( this ).attr( 'data-name' );
+									var val = $( this ).val();
+									if ( val && val.length != 0 && ( !oldData[name] || oldData[name] != val ) )
+										newData[name] = val;
+								});
+								$.ajax({
+									url: renderer.items.url + '/' + id,
+									type: 'PUT',
+									data: newData,
+									complete: function(result) {
+										$('#edit-resource-row').addClass( 'hidden' );
+										row.removeClass( 'hidden' );
+										$('#edit-resource-button').off( 'click' );
+										renderer.render();
+										renderer.items.fetch();
+									}
+								});
+							})
+						})
+					}
+					else
 					{
 						$( '.editResource' ).addClass( 'hidden' );
 					}
@@ -173,6 +227,7 @@ define( [ 'jquery',
 				}
 			});
 			this.itemList = new this.ManagementListView({ collection: this.items });
+			this.itemList.collection.comparator = "id";
 			Renderer.prototype.renderData( this );
 		};
 

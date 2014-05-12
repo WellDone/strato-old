@@ -1,30 +1,25 @@
 <h1 class="page-header">{{name}}</h1>
 
-<div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading">
-  	<h3 class="panel-title">Status History</h3>
-  </div>
+<!--<div class="panel panel-default">
   <div class="panel-body">
     <p><h4>Current Status: <span class="label label-success">Good</span></h4></p>
   </div>
-	<div class="list-group">
-		<a href="#" class="list-group-item list-group-item-success"><strong>May 15, 2014</strong> {{name}} hit the "success" threshhold</a>
-	  <a href="#" class="list-group-item list-group-item-danger"><strong>April 30, 2014</strong> {{name}} stopped functioning completely</a>
-	  <a href="#" class="list-group-item list-group-item-warning"><strong>April 14, 2014</strong> {{name}} functionality started changing</a>
-	  <a href="#" class="list-group-item list-group-item-success"><strong>March 30, 2014</strong> {{name}} hit the "success" threshhold</a>
-	  <a href="#" class="list-group-item list-group-item-info"><strong>March 24, 2014</strong> {{name}} came online</a>
-	</div>
-</div>
+</div>-->
+
 <!-- Nav tabs -->
 <ul class="nav nav-tabs">
-  <li><a href="#details" data-toggle="tab">Details</a></li>
-  <li class="active"><a href="#reports" data-toggle="tab">Reports</a></li>
-  <li><a href="#alerts" data-toggle="tab">Alerts</a></li>
+  <li class="active"><a href="#data" data-toggle="tab">Data</a></li>
+  <li><a href="#reports" data-toggle="tab">Reports</a></li>
 </ul>
 <div class="tab-content">
-	<div class="tab-pane" id="details">...</div>
-  <div class="tab-pane active" id="reports">
+	<div class="tab-pane active" id="data">
+		<div id="chart_container" style="padding:4px;">
+			<div id="chart"></div>
+			<div id="timeline"></div>
+			<div id="preview"></div>
+		</div>
+	</div>
+  <div class="tab-pane" id="reports">
   	<div class="panel panel-default">
 		  <div class="panel-body">
 		    <form class="form-inline" method="get">
@@ -47,7 +42,8 @@
 			    	<th>Date</th>
 			    	<th>Battery Voltage</th>
 			    	<th>Event Count</th>
-			    	<th>Values</th>
+			    	<th>Min</th>
+			    	<th>Max</th>
 			    </tr>
 			  </thead>
 			  <tbody>
@@ -55,8 +51,9 @@
 		    	<tr>
 		    		<td>{{timestamp}}</td>
 		    		<td>{{data.batteryVoltage}}</td>
-		    		<td>{{data.eventCount}}</td>
-		    		<td>{{data.buckets}}</td>
+		    		<td>{{data.bulkAggregates.count}}</td>
+		    		<td>{{data.bulkAggregates.min}}</td>
+		    		<td>{{data.bulkAggregates.max}}</td>
 		    	</tr>
 		    {{/each}}
 		    </tbody>
@@ -72,7 +69,6 @@
 		  </div>
 		</div>
   </div>
-  <div class="tab-pane" id="alerts">...</div>
 </div>
 
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">

@@ -7,7 +7,7 @@ var REMResource = require( './resource.js' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
-	'add': 'push',
+	'add': 'post',
 	'remove': 'del',
 	'update': 'put'
 }
@@ -58,9 +58,8 @@ REMEngine.prototype.serve = function( app, baseurl ) {
 	});
 	if ( this.backend.schema )
 		app.get( path.join( baseurl, '_schema' ), function( req, res ) {
-			var schema = self.backend.schema( self.model );
 			res.set('Content-Type', 'text/plain');
-			res.send( 200, schema );
+			res.send( 200, self.schemaString() );
 		});
 
 	for ( var i in this.resources )
@@ -78,14 +77,18 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 		fields: [],
 		where: {},
 		limit: 0,
-		order: 'default'
+		order: null
 	};
+	console.log( params );
+
+	if ( !params )
+		return out;
 
 	if ( params.fields )
 	{
 		params.fields.forEach( function( f ) {
 			if ( !resource.model.columns.hasOwnProperty( f ) || resource.model.columns[f].ref )
-				throw new Error( "Resource type '" + resource + "' has no local property '" + f + "'" );
+				throw new Error( "Resource type '" + resource.name + "' has no local property '" + f + "'" );
 			out.fields.push( f );
 		});
 	}
@@ -104,9 +107,32 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 
 	if ( params.id )
 		out.where[resource.model.id] = params.id;
+
+	if ( params.order )
+	{
+		var flipped = false;
+		if ( params.order[0] == '-' )
+			flipped = true;
+
+		var column = (flipped)? params.order.substr( 1, params.order.length - 1 ) : params.order;
+		if ( !resource.model.columns.hasOwnProperty( column ) || resource.model.columns[column].ref )
+				throw new Error( "Resource type '" + resource.name + "' has no local property '" + column + "'" );
+
+		out.order = {
+			column: column,
+			direction: flipped? 'descending' : 'ascending'
+		}
+	}
 	
-	console.log( params, out );
 	return out;
+}
+
+REMEngine.prototype.schema = function() {
+	return this.backend.schema( this.model );
+}
+
+REMEngine.prototype.schemaString = function() {
+	return this.backend.schemaString( this.model );
 }
 
 REMEngine.prototype.sanitizeBody = function( resource, method, body )
@@ -115,7 +141,7 @@ REMEngine.prototype.sanitizeBody = function( resource, method, body )
 		if ( !resource.model.columns.hasOwnProperty( f ) )
 			throw new Error( "Unrecognized column '" + f + "' for type '" + resource.name + "'." );
 	for ( var c in resource.model.columns )
-		if ( method.toLowerCase() == 'post' && resource.model.columns[c].constraints.required && !body[c] )
+		if ( method.toLowerCase() == 'post' && resource.model.columns[c].constraints.required && !body[c] && body[c] !== 0 )
 			throw new Error( "Property '" + c + "' is required for type '" + resource.name + "'" );
 	return body;
 }

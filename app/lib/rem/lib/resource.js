@@ -56,7 +56,13 @@ Resource.prototype.serve = function( app, baseurl ) {
 		var tryServe = function( f, isCollection, req, res ) {
 		  try
 			{
-				f( req.params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
+				var params = {};
+				for ( p in req.params )
+					params[p] = req.params[p];
+				for ( p in req.query )
+					params[p] = req.query[p]; // shallow
+
+				f( params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
 			}
 			catch (e)
 			{
@@ -84,6 +90,9 @@ Resource.prototype.serve = function( app, baseurl ) {
 			var isCollection = self.model.columns[c].ref.plural;
 			app.get( url + "/:id/" + c, function( c, req, res ) {
 				var params = { where: {} };
+				for ( p in req.query )
+					params[p] = req.query[p]; // shallow
+				
 				params.where[self.model.columns[c].ref.complement] = req.params.id;
 				var target = self.model.columns[c].ref.target.name;
 				console.log( target );
@@ -95,8 +104,6 @@ Resource.prototype.serve = function( app, baseurl ) {
 
 Resource.prototype.proxy = function( fname, params, body, output )
 {
-	params = this.engine.sanitizeParams( this, params );
-	body = this.engine.sanitizeBody( this, fname, body )
 	switch ( arguments.length )
 	{
 		case 2:
@@ -106,7 +113,16 @@ Resource.prototype.proxy = function( fname, params, body, output )
 			break;
 		case 3:
 			output = arguments[2];
-			body = null;
+			if ( fname == 'post' )
+			{
+				body = arguments[1];
+				params = null;
+			}
+			else
+			{
+				body = null;
+				params = arguments[1];
+			}
 			break;
 		case 4:
 			break;
@@ -115,6 +131,8 @@ Resource.prototype.proxy = function( fname, params, body, output )
 	}
 	try
 	{
+		params = this.engine.sanitizeParams( this, params );
+		body = this.engine.sanitizeBody( this, fname, body )
 		if ( !params )
 			this.engine.backend[fname]( this.model, this.name, null, body, output );
 		else if ( typeof params == 'object' )

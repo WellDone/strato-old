@@ -6,10 +6,8 @@ var dbEngine = require( '../lib/db.js' ),
 var data = require( '../lib/data' )(),
     schemaGenerator = require( "../lib/rem/rem-sql-genschema" );
 
-var schema = schemaGenerator( data.latest().model );
+var schema = data.backend.schema( data.latest().model );;
 schema.version = data.latest().version.join(".");
-
-console.log( schema );
 
 var force = config.hasCLFlag( "--force", "-f" );
 if ( force ) {
@@ -20,40 +18,33 @@ db.core.on( 'error', function( err ) {
   logger.error( "An error occurred.", err );
 } );
 
+var queryCount = 0;
 function q( query ) {
-  return db.core.query( query );;
+  var query = db.core.query( query );
+  ++queryCount;
+  query.on( 'end', function() {
+    --queryCount;
+    if ( queryCount <= 0 )
+      process.exit()
+  });
+  return query;
 }
 
-function dropAllTables() {
-  logger.info( "Deleting all tables..." );
-  Object.keys( schema.tables ).forEach( function( table ) {
-    q( "DROP TABLE IF EXISTS " + table + " CASCADE" );
-  });
+function dropSchema() {
+  logger.info( "Blowing away existing schema..." );
+  for ( var t in schema.tables ) {
+    q( "drop table if exists " + t + " cascade" );
+  }
+  for ( var i in schema.indices ) {
+    q( "drop table if exists " + i + " cascade" );
+  }
 }
 
-function createTables() {
-  Object.keys( schema.tables ).forEach( function( table ) {
-    q( "CREATE TABLE IF NOT EXISTS " + table + "(" + schema.tables[table] + ")" )
-      .on( 'end', function() {
-        logger.info( "Created table " + table );
-       } );
-  });
-}
-
-function dropAllIndices() {
-  logger.info( "Deleting all indices...");
-  Object.keys( schema.indices ).forEach( function( idx ) {
-    q( "DROP INDEX IF EXISTS " + idx );
-  });
-}
-
-function createIndices() {
-  Object.keys( schema.indices ).forEach( function( idx ) {
-    q( "CREATE INDEX " + idx + " " + schema.indices[idx] )
-      .on( 'end', function() {
-        logger.info( "Created index " + idx );
-      });
-  });
+function initSchema() {
+  q( data.latest().schemaString() )
+    .on( 'end', function() {
+      logger.info( "Database schema initialized." );
+    } ); 
 }
 
 function updateVersion() {
@@ -80,10 +71,8 @@ function doUpgradeFrom( currentVersion ) {
 var query = q("SELECT count(*) AS count FROM information_schema.tables WHERE table_name = 'dbinfo';" );
 query.on( 'row', function(row) {
   if ( row.count === 0 || force ) {
-    dropAllTables();
-    dropAllIndices();
-    createTables();
-    createIndices();
+    dropSchema();
+    initSchema();
     updateVersion();
   } else {
     var upgraded = false;
