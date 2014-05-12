@@ -89,6 +89,7 @@ define( [ 'jquery',
 			}
 		};
 		Renderer.prototype.render = function() {
+			var renderer = this;
 			var ManagementListItemView = Backbone.View.extend({
 				tagName: 'tr',
 				className: 'linkRow',
@@ -98,7 +99,7 @@ define( [ 'jquery',
 					$el.attr("data-id", self.model.attributes['id']);
 					$el.click( function (e) {
 						var event = e || window.event;
-						page( "/manage/" + args.name.raw + "/" + self.model.attributes['id'] );
+						page( "/manage/" + renderer.name.raw + "/" + self.model.attributes['id'] );
 						e.stopPropagation();
 					});
 					$el.html( itemTemplate( { columns: _.omit( this.model.attributes, "id" ) } ) );
@@ -106,7 +107,6 @@ define( [ 'jquery',
 					return this;
 				},
 			});
-			var renderer = this;
 			this.ManagementListView = Backbone.View.extend({
 				initialize: function() {
 					this.collection.on('add', this.render, this);
