@@ -8,6 +8,8 @@ var interval_types = ['second', 'minute', 'hour', 'day'];
 function parseReport( reportValue ) {
   var reportBytes = new Buffer( reportValue, 'base64' );
   var report = {};
+  if ( reportBytes.length == 0 )
+    throw new Error( "MoMo reports must be encoded as base64." );
   report.version = reportBytes[0];
   if ( report.version & 0x80 ) {
     // Registration
@@ -17,15 +19,14 @@ function parseReport( reportValue ) {
       report.errorCount = reportBytes[1];
       return report;
     } else {
-      console.log( "Unrecognized registration version." );
+      throw new Error( "Unrecognized registration version." );
       return;
     }
   }
   else if ( report.version == 1 ) //TODO: Make extensible
   {
     if ( reportBytes.length != 104 ) {
-      console.log( "Poorly formed report (version 1): " + reportValue + ".");
-      return;
+      throw new Error( "Poorly formed report (version 1)" );
     }
     report.currentHour = reportBytes[1]
     report.batteryVoltage = getBatteryVoltage( reportBytes.readUInt16LE(2) );
@@ -46,8 +47,7 @@ function parseReport( reportValue ) {
   else if ( report.version == 2 )
   {
     if ( reportBytes.length < 16 ) {
-      console.log( "Poorly formed report (version 2): " + reportValue + ".");
-      return;
+      throw new Error( "Poorly formed report (version 2)" );
     }
     report.sensor = reportBytes[1];
     report.sequence = reportBytes.readUInt16LE(2);
@@ -103,7 +103,7 @@ function parseReport( reportValue ) {
   }
   else
   {
-    throw new Error( "Unrecognized MoMo report version " + momoReportVersion + "." );
+    throw new Error( "Unrecognized MoMo report version " + report.version + "." );
   }
 }
 
