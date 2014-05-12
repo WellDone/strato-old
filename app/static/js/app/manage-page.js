@@ -29,6 +29,66 @@ define( [ 'jquery',
 				}
 				this.columns.push( column );
 			}
+		};
+		Renderer.prototype.renderData = function( self )
+		{
+			var dom = $(self.dom);
+			var filterText = dom.find('#filter-input').val();
+			var obj = {
+				name: self.name,
+				columns: self.columns,
+				filter: filterText
+			};
+			dom.html( pageTemplate( obj ) );
+
+			dom.find('#deleteModal').modal( { show: false } );
+
+			self.itemList.render();
+			dom.find('#filter-input').on( 'keyup', function() { self.itemList.render(); } );
+
+			if ( self.permissions.create )
+			{
+				dom.find( '#create-resource-button').click( function(e) {
+					e = e || window.event;
+					e.preventDefault();
+					e.stopPropagation();
+					var data = {};
+					var done = false;
+					dom.find( '#create-resource-row > td > input').each( function( i ) {
+						var el = $(this);
+						var name = el.attr('data-name');
+						var val = el.val();
+						if ( !val && !done )
+						{
+							done = true;
+							alert( "Invalid value specified for " + name + "." );
+						}
+						data[name] = val;
+					});
+					if ( done )
+						return;
+					$.ajax({
+						url: self.items.url,
+						type: 'POST',
+						data: data,
+						complete: function(result) {
+							// TODO: Display errors
+							self.render();
+							self.items.fetch();
+						}
+					});
+				});
+				dom.find( '#plus-button').click( function (e) {
+					dom.find( '#create-resource-row').removeClass( 'hidden' );
+					dom.find( '#plus-button-row').addClass( 'hidden' );
+				});
+			}
+			else
+			{
+				dom.find( '#plus-button-row' ).addClass( 'hidden' );
+			}
+		};
+		Renderer.prototype.render = function() {
 			var ManagementListItemView = Backbone.View.extend({
 				tagName: 'tr',
 				className: 'linkRow',
@@ -46,7 +106,7 @@ define( [ 'jquery',
 					return this;
 				},
 			});
-			renderer = this;
+			var renderer = this;
 			this.ManagementListView = Backbone.View.extend({
 				initialize: function() {
 					this.collection.on('add', this.render, this);
@@ -113,68 +173,7 @@ define( [ 'jquery',
 				}
 			});
 			this.itemList = new this.ManagementListView({ collection: this.items });
-		};
-		Renderer.prototype.renderData = function( self )
-		{
-			var dom = $(self.dom);
-			var filterText = dom.find('#filter-input').val();
-			var obj = {
-				name: self.name,
-				columns: self.columns,
-				filter: filterText
-			};
-			dom.html( pageTemplate( obj ) );
-
-			dom.find('#deleteModal').modal( { show: false } );
-
-			self.itemList.render();
-			dom.find('#filter-input').on( 'keyup', function() { self.itemList.render(); } );
-
-			if ( self.permissions.create )
-			{
-				dom.find( '#create-resource-button').click( function(e) {
-					e = e || window.event;
-					e.preventDefault();
-					e.stopPropagation();
-					var data = {};
-					var done = false;
-					dom.find( '#create-resource-row > td > input').each( function( i ) {
-						var el = $(this);
-						var name = el.attr('data-name');
-						var val = el.val();
-						if ( !val && !done )
-						{
-							done = true;
-							alert( "Invalid value specified for " + name + "." );
-						}
-						data[name] = val;
-					});
-					if ( done )
-						return;
-					$.ajax({
-						url: self.items.url,
-						type: 'POST',
-						data: data,
-						complete: function(result) {
-							// TODO: Display errors
-							self.render();
-							self.items.fetch();
-						}
-					});
-				});
-				dom.find( '#plus-button').click( function (e) {
-					dom.find( '#create-resource-row').removeClass( 'hidden' );
-					dom.find( '#plus-button-row').addClass( 'hidden' );
-				});
-			}
-			else
-			{
-				dom.find( '#plus-button-row' ).addClass( 'hidden' );
-			}
-		};
-		Renderer.prototype.render = function() {
-			var self = this;
-			Renderer.prototype.renderData( self );
+			Renderer.prototype.renderData( this );
 		};
 
 		return Renderer;
