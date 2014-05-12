@@ -40,7 +40,7 @@ define( [ 'jquery',
 		var data = {};
 		var aggCount = 0;
 		monitor.reports.forEach( function(x, r) {
-			if ( !x.data.intervalAggregates )
+			if ( !x.data || !x.data.intervalAggregates )
 				return;
 
 			var step = x.data.interval.step;
