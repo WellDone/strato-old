@@ -1,7 +1,8 @@
 define( [ 'jquery',
 	        'page',
-          'hbars!views/manage-page' ],
- function( $, page, template ) {
+          'hbars!views/manage-page',
+          'app/session' ],
+ function( $, page, template, session ) {
  	var Renderer = function( dom, args )
  	{
  		this.dom = dom;
@@ -101,7 +102,7 @@ define( [ 'jquery',
 						data[name] = val;
 					}
 				})
-				$.ajax({
+				session.request({
 					url: self.url,
 					type: 'POST',
 					data: data,
@@ -127,7 +128,7 @@ define( [ 'jquery',
 				e = e || window.event;
 				var id = $(this).parent().parent().attr('data-id');
 				var delFunc = function() {
-					$.ajax({
+					session.request({
 						url: self.url + '/' + id,
 						type: 'DELETE',
 						complete: function(result) {
@@ -183,7 +184,7 @@ define( [ 'jquery',
 						if ( val && val.length != 0 && ( !oldData[name] || oldData[name] != val ) )
 							newData[name] = val;
 					});
-					$.ajax({
+					session.request({
 						url: self.url + '/' + id,
 						type: 'PUT',
 						data: newData,
@@ -210,9 +211,9 @@ define( [ 'jquery',
  	}
  	Renderer.prototype.render = function() {
  		 var self = this;
- 		$.getJSON( this.url + "?order=id", function(data) {
+ 		session.getJSON( this.url + "?order=id", function(data) {
  			Renderer.prototype.renderData( data, self );
- 	 	} ); 			
+ 	 	} );
  	}
 
  	return Renderer;

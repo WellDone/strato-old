@@ -2,8 +2,9 @@ define( [ 'jquery',
           'hbars!views/manage/monitor',
           'moment',
           'd3',
-          'rickshaw' ],
- function ( $, template, moment, d3, Rickshaw ) {
+          'rickshaw',
+          'app/session' ],
+ function ( $, template, moment, d3, Rickshaw, session ) {
  	
  	function render( monitor ) {
 		$( '#manage-content' ).html( template( monitor ) )
@@ -193,8 +194,8 @@ define( [ 'jquery',
 	}
 
 	function init( id ) {
-	 	$.getJSON( '/api/v0/monitors/' + id, function ( monitor ) { //TODO: parallelize
-			$.getJSON( '/api/v0/monitors/' + id + '/reports?order=timestamp', function( reports ) {
+	 	session.getJSON( '/api/v0/monitors/' + id, function ( monitor ) { //TODO: parallelize
+			session.getJSON( '/api/v0/monitors/' + id + '/reports?order=timestamp', function( reports ) {
 				reports.forEach( function( r ) {
 					r.timestamp = moment( r.timestamp ).format( 'YYYY MMMM DD h:mm:ss a' );
 				})

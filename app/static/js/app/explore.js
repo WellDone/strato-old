@@ -2,14 +2,15 @@ define( ['jquery',
          'page',
          'hbars!views/explore',
          'app/navbar',
-         'app/explore/map'
-        ], function( $, page, htmlTemplate, navbar, map ) {
+         'app/explore/map',
+         'app/session'
+        ], function( $, page, htmlTemplate, navbar, map, session ) {
  	function exploreHandler( ctx, next ) {
  		navbar.showSearch();
 		$('#content').html( htmlTemplate() );
     map.initialize( document.getElementById("explore-map-canvas" ) );
 
-    $.getJSON( "/api/v0/monitors", function( monitors ) {
+    session.getJSON( "/api/v0/monitors", function( monitors ) {
     	map.clearMarkers();
     	var markers = [];
     	for ( var i = 0; i < monitors.length; ++i )
