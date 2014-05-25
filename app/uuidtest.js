@@ -6,6 +6,8 @@ var auth = new Authenticator( {
 	getPasswordSalt: true,
 	getAllRoles: true
 } )
-auth.encryptPassword( "password", { salt: "abcdefg"}, function( err, key ) {
-	console.log( key );
+
+
+auth.authenticateToken( "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6eyJuYW1lIjoidXNlciIsInJvbGVzIjpbImxheW1hbiJdfSwiaWF0IjoiMjAxNC0wNS0yNVQxMzowMDowOS41MDhaIiwiZXhwIjoxNDAxMDI2NDA5NTA4fQ.SXaA76NersAdTZVMi9MwdMS1uAEzfDFKfguUi38S_QE", function( err, id ) {
+	console.log( id );
 })

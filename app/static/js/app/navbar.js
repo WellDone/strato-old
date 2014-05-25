@@ -6,6 +6,23 @@ define( [ 'jquery', 'app/session' ], function( $, session ) {
 	searchForm.submit( onSearchSubmit );
 
 	var loginForm = $('#navbar-login-form');
+	function updateNavbar() {
+		if ( session.getData() )
+		{
+			$( '#navbar-profile-username' ).text( session.getData().user.name );
+			$( '#navbar-login' ).addClass( 'hidden' );
+			$( '#navbar-profile' ).removeClass( 'hidden' );
+		}
+		else
+		{
+			$( '#navbar-profile-username' ).text( "<anonymous>" );
+			$( '#navbar-login' ).removeClass( 'hidden' );
+			$( '#navbar-profile' ).addClass( 'hidden' );
+		}
+	}
+
+	updateNavbar();
+
 	function onLoginSubmit( e ) {
 		e.preventDefault();
 		var username = loginForm.find("input[name=username]").val();
@@ -14,19 +31,21 @@ define( [ 'jquery', 'app/session' ], function( $, session ) {
 		session.login( username, password, function( err ) {
 			if ( !err )
 			{
-				loginForm.addClass( 'hidden' );
-				session.request( {
-					url: "/api/v0/monitors",
-					type: "GET",
-					complete: function( result ) {
-						console.log( result );
-					}
-				})
+				updateNavbar();
 			}
 		} );
-
 	}
 	loginForm.submit( onLoginSubmit )
+
+	$('#navbar-profile-logout').click( function(e) {
+		e.preventDefault();
+		session.logout();
+		updateNavbar();
+	})
+	$('#navbar-profile-settings').click( function(e) {
+		e.preventDefault();
+		
+	})
 
 	return {
 		hideSearch: function() {

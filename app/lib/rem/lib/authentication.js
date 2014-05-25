@@ -51,11 +51,11 @@ Authenticator.prototype.authenticatePassword = function( identity, authData, pla
 			var now = new Date();
 			var payload = {
 				id: identity,
-				iat: now,
+				iat: now.valueOf(),
 				exp: getExpirationTime( now )
 			}
 			var token = jwt.encode( payload, jwtSecret );
-			return cb( null, token );
+			return cb( null, token, payload );
 		}
 		catch (e)
 		{
@@ -73,6 +73,8 @@ Authenticator.prototype.authenticateToken = function( token, cb ) {
 		if ( payload.exp && payload.exp <= new Date()
 			|| payload.iat && getExpirationTime( payload.iat ) <= new Date() )
 			return cb( "Expired token." )
+		console.log( payload );
+		console.log( (new Date()).getTime() );
 		return cb( null, payload.id );
 	}
 	catch (e)
@@ -102,7 +104,7 @@ Authenticator.prototype.login = function() {
 				encryptedPassword: this.proxy.getEncryptedPassword( req.body.user ),
 				salt: this.proxy.getPasswordSalt( req.body.user )
 			}
-			this.authenticatePassword( identity, opts, req.body.password, function( err, token ) {
+			this.authenticatePassword( identity, opts, req.body.password, function( err, token, payload ) {
 				if ( err || !token )
 				{
 					console.log( "Authenticator error: " + err )
@@ -111,7 +113,11 @@ Authenticator.prototype.login = function() {
 				}
 				else
 				{
-					res.send( 200, token );
+					var out = {
+						token: token,
+						data: payload
+					}
+					res.send( 200, out );
 				}
 			} )
 		}

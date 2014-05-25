@@ -19,7 +19,7 @@ define( [ 'jquery',
 			$( '#deleteModal').modal('show');
 			var delFunc = function() {
 				monitor.reports.forEach( function( r ) {
-					$.ajax({
+					session.request({
 						url: '/api/v0/reports/' + r.id,
 						type: 'DELETE'
 					});

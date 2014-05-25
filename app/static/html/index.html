@@ -37,7 +37,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/explore">Explore</a></li>
             <li><a href="/manage">Manage</a></li>
-            <li class="dropdown">
+            <li id="navbar-login" class="dropdown">
               <a href="/login"
                  class="dropdown-toggle"
                  data-toggle="dropdown">Sign In<b class="caret"></b>
@@ -53,14 +53,14 @@
                 </form>
               </div>
             </li>
-            <li class="dropdown hidden">
+            <li id="navbar-profile" class="dropdown hidden">
               <a href="#"
                  class="dropdown-toggle"
-                 data-toggle="dropdown"><b class="caret"></b>
+                 data-toggle="dropdown"><span id="navbar-profile-username"></span><b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="/profile/settings">Settings</a></li>
-                <li><a href="/logout">Log Out</a></li>
+                <li id='navbar-profile-settings'><a href="/profile/settings">Settings</a></li>
+                <li id='navbar-profile-logout'><a href="/logout">Log Out</a></li>
               </ul>
             </li>
           </ul>

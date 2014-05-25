@@ -1,5 +1,14 @@
 define( ['jquery'], function( $ ) {
-	var sessionToken = window.sessionStorage.token;
+	var sessionData = null;
+	try
+	{
+		if ( window.sessionStorage.auth )
+			sessionData = JSON.parse( window.sessionStorage.auth );
+	}
+	catch (e)
+	{
+		console.log( "Failed to parse auth data: " + window.sessionStorage.auth )
+	}
 	var login = function( username, password, cb ) {
 		$.ajax({
 			url: '/api/login',
@@ -11,10 +20,16 @@ define( ['jquery'], function( $ ) {
 			complete: function(result) {
 				if ( result.status == 200 )
 				{
-					sessionToken = result.responseText;
-					console.log( sessionToken );
-					window.sessionStorage.token = sessionToken;
-					cb( null );
+					loginResult = JSON.parse( result.responseText );
+
+					console.log( loginResult );
+					sessionData = {
+						token : loginResult.token,
+						expiration : new Date( loginResult.data.exp ),
+						user : loginResult.data.id
+					}
+					window.sessionStorage.auth = JSON.stringify( sessionData );
+					cb( null, sessionData.user );
 				}
 				else
 				{
@@ -23,12 +38,18 @@ define( ['jquery'], function( $ ) {
 			}
 		})
 	}
+	var logout = function() {
+		window.sessionStorage.auth = null;
+		sessionData = null;
+	}
 	var request = function( opts ) {
-		if ( sessionToken )
+		if ( sessionData )
 		{
 			if ( !opts.headers )
 				opts.headers = {};
-			opts.headers['Authorization'] = "Bearer " + sessionToken
+			opts.headers['Authorization'] = "Bearer " + sessionData.token
+
+			//TODO: Renew soon-to-expire tokens
 		}
 		return $.ajax( opts );
 	}
@@ -41,7 +62,9 @@ define( ['jquery'], function( $ ) {
 	}
 	return {
 		login: login,
+		logout: logout,
 		request: request,
-		getJSON: getJSON
+		getJSON: getJSON,
+		getData: function() { return sessionData; }
 	}
 })
