@@ -3,7 +3,11 @@ define( ['jquery'], function( $ ) {
 	try
 	{
 		if ( window.sessionStorage.auth )
+		{
 			sessionData = JSON.parse( window.sessionStorage.auth );
+			if ( sessionData.expiration >= new Date() )
+				sessionData = window.sessionStorage.auth = null;
+		}
 	}
 	catch (e)
 	{
@@ -65,6 +69,7 @@ define( ['jquery'], function( $ ) {
 		logout: logout,
 		request: request,
 		getJSON: getJSON,
-		getData: function() { return sessionData; }
+		exists: function() { return (sessionData != null); },
+		getUser: function() { return sessionData.user; }
 	}
 })

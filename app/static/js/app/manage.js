@@ -12,9 +12,12 @@ define( [ 'jquery',
           'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
-          'app/manage/people' ],
- function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler ) {
+          'app/manage/people',
+          'app/session' ],
+ function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, session ) {
  	function manageHandler( ctx, next ) {
+ 		if ( !session.exists() )
+ 			return false;
  		navbar.hideSearch()
 		$('#content').html( htmlTemplate() );
 		deactivate();

@@ -7,17 +7,21 @@ define( [ 'jquery', 'app/session' ], function( $, session ) {
 
 	var loginForm = $('#navbar-login-form');
 	function updateNavbar() {
-		if ( session.getData() )
+		if ( session.exists() )
 		{
-			$( '#navbar-profile-username' ).text( session.getData().user.name );
+			$( '#navbar-profile-username' ).text( session.getUser().name );
 			$( '#navbar-login' ).addClass( 'hidden' );
 			$( '#navbar-profile' ).removeClass( 'hidden' );
+			$( '#navbar-manage' ).removeClass( 'hidden' );
+			$( '#navbar-explore' ).removeClass( 'hidden' );
 		}
 		else
 		{
 			$( '#navbar-profile-username' ).text( "<anonymous>" );
 			$( '#navbar-login' ).removeClass( 'hidden' );
 			$( '#navbar-profile' ).addClass( 'hidden' );
+			$( '#navbar-manage' ).addClass( 'hidden' );
+			$( '#navbar-explore' ).addClass( 'hidden' );
 		}
 	}
 
