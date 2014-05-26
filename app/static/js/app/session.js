@@ -5,13 +5,15 @@ define( ['jquery'], function( $ ) {
 		if ( window.sessionStorage.auth )
 		{
 			sessionData = JSON.parse( window.sessionStorage.auth );
-			if ( sessionData.expiration >= new Date() )
+			if ( new Date( sessionData.expiration ) <= new Date() )
+			{
+				console.log( "Session has expired." );
 				sessionData = window.sessionStorage.auth = null;
+			}
 		}
 	}
 	catch (e)
 	{
-		console.log( "Failed to parse auth data: " + window.sessionStorage.auth )
 	}
 	var login = function( username, password, cb ) {
 		$.ajax({

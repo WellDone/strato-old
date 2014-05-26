@@ -1,4 +1,4 @@
-define( [ 'jquery', 'app/session' ], function( $, session ) {
+define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 	function onSearchSubmit( e ) {
 		e.preventDefault();
 	}
@@ -36,7 +36,10 @@ define( [ 'jquery', 'app/session' ], function( $, session ) {
 			if ( !err )
 			{
 				updateNavbar();
+				page( "/manage" );
 			}
+			loginForm.find("input[name=username]").val( "" );
+			loginForm.find("input[name=password]").val( "" );
 		} );
 	}
 	loginForm.submit( onLoginSubmit )
@@ -45,6 +48,7 @@ define( [ 'jquery', 'app/session' ], function( $, session ) {
 		e.preventDefault();
 		session.logout();
 		updateNavbar();
+		page( "/" );
 	})
 	$('#navbar-profile-settings').click( function(e) {
 		e.preventDefault();

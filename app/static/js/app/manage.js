@@ -17,7 +17,10 @@ define( [ 'jquery',
  function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, session ) {
  	function manageHandler( ctx, next ) {
  		if ( !session.exists() )
- 			return false;
+ 		{
+ 			page("/");
+ 			return;
+ 		}
  		navbar.hideSearch()
 		$('#content').html( htmlTemplate() );
 		deactivate();
@@ -26,17 +29,15 @@ define( [ 'jquery',
 			el.parentNode.classList.add('active');
 		next();
 	}
-	page( '/manage/*', manageHandler );
- 	
- 	page( '/manage/groups', groupsHandler );
- 	page( '/manage/groups/:id', singleGroupHandler );
+ 	page( '/manage/groups', manageHandler, groupsHandler );
+ 	page( '/manage/groups/:id', manageHandler, singleGroupHandler );
 
- 	page( '/manage/monitors', monitorsHandler );
-	page( '/manage/monitors/:id', singleMonitorHandler );
+ 	page( '/manage/monitors', manageHandler, monitorsHandler );
+	page( '/manage/monitors/:id', manageHandler, singleMonitorHandler );
 
-	page( '/manage/people', peopleHandler );
+	page( '/manage/people', manageHandler, peopleHandler );
 
-	page( '/manage', function() {
+	page( '/manage', manageHandler, function() {
 		page( '/manage/monitors' );
 	})
 	return manageHandler;
