@@ -10,6 +10,8 @@ require.config({
 		MarkerClusterer: 'markerclusterer_packed',
 		moment: 'moment.min',
 		rickshaw: 'rickshaw.min',
+		backbone: 'backbone-min',
+		underscore: 'underscore-min',
 
 		text: '../require/text',
 		hbars: '../require/hbars',
