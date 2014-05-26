@@ -1,6 +1,6 @@
 # WellDone Strato Data Portal
 
-Demo site available at http://strato.welldone.org.  It may be slightly out of date.
+Demo site available at http://strato.welldone.org.  It should reflect the [master](https://github.com/WellDone/Strato/tree/master) branch of this repository, whereas bleeding-edge, possibly-broken code is on the [dev](https://github.com/WellDone/Strato/tree/dev) branch.
 
 This portal is designed to complement WellDone's Mobile Monitor ([MoMo](http://www.github.com/welldone/MoMo-Firmware)) hardware remote monitoring platform.
 
