@@ -30,6 +30,13 @@ require.config({
 		},
 		MarkerClusterer: {
 			exports: 'MarkerClusterer'
-		}
+		},
+		underscore: {
+      exports: '_'
+    },
+    backbone: {
+      deps: ["underscore", "jquery"],
+      exports: "Backbone"
+    }
 	}
 });

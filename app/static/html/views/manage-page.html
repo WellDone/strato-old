@@ -1,7 +1,7 @@
 <h1 class="page-header">{{name.title}}</h1>
+<input id="filter-input" placeholder="Filter" type="text" class="form-control" style="width: 30%; margin-right: 15px; margin-left: auto" value="{{filter}}"/>
 <div class="table-responsive">
   <table class="table table-hover">
-    <input id="filter-input" placeholder="Filter" type="text" class="pull-right form-control" style="width: 30%; margin-right: 15px" value="{{filter}}"/>
     <thead>
       <tr>
         {{#each columns}}
@@ -10,32 +10,7 @@
         <th class="resource-manager"></th>
       </tr>
     </thead>
-    <tbody>
-      {{#each data}}
-        <tr class="linkRow" data-id="{{id}}">
-          {{#each columns}}
-            {{#if this.isRef}}
-              <td>
-              {{#each refs}}
-                <span class="label label-info">{{.}}</span>
-              {{/each}}
-            {{else}}
-              <td>{{.}}</td>
-            {{/if}}
-          {{/each}}
-          <td class="resource-manager"><a class="editResource">edit</a>&nbsp;<a data-toggle="modal" data-target="#deleteModal" class="deleteResource">delete</a></td>
-        </tr>
-      {{/each}}
-      <tr id="edit-resource-row" class="hidden">
-      {{#each columns}}
-        {{#if this.create }}
-          <td><input style="width:100%" type="text" data-name="{{this.raw}}" placeholder="{{this.create.placeholder}}"></input></td>
-        {{else}}
-          <td></td>
-        {{/if}}
-      {{/each}}
-        <td ><button id="edit-resource-button" class="btn btn-primary" type="submit">Update</button></td>
-      </tr>
+    <tbody id="managementItemTable">
     </tbody>
     <tfoot>
       <form>

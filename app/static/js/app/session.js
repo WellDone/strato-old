@@ -1,4 +1,4 @@
-define( ['jquery'], function( $ ) {
+define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 	var sessionData = null;
 	try
 	{
@@ -48,15 +48,18 @@ define( ['jquery'], function( $ ) {
 		window.sessionStorage.auth = null;
 		sessionData = null;
 	}
-	var request = function( opts ) {
+	var extendOpts = function( param ) {
+		var opts = _.clone(param || {});
 		if ( sessionData )
 		{
 			if ( !opts.headers )
 				opts.headers = {};
 			opts.headers['Authorization'] = "Bearer " + sessionData.token
-
-			//TODO: Renew soon-to-expire tokens
 		}
+		return opts;
+	}
+	var request = function( opts ) {
+		opts = extendOpts( opts );
 		return $.ajax( opts );
 	}
 	var getJSON = function( url, cb ) {
@@ -65,6 +68,11 @@ define( ['jquery'], function( $ ) {
 			type: "GET",
 			success: cb
 		});
+	}
+
+	Backbone.ajax = function(opts) {
+		opts = extendOpts( opts );
+		return Backbone.$.ajax(opts);
 	}
 	return {
 		login: login,
