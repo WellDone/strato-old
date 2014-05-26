@@ -18,7 +18,11 @@ function processReport( from, body, timestamp, output ) {
 	catch ( e )
 	{
 		// TODO: Store the malformed report
+		logger.error( "Failed to parse report." );
+		logger.error( "   Body: " + body );
+		logger.error( "  Error: " + e );
 		output(e);
+		return;
 	}
 
 	report = {

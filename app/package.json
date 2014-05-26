@@ -12,7 +12,11 @@
     "twilio": "x",
     "nano": "x",
     "fibers": "1.0.x",
-    "any-db-postgres": "~2.1.1"
+    "any-db-postgres": "~2.1.1",
+    "node-uuid": "~1.4.1",
+    "jwt-simple": "~0.2.0",
+    "lodash": "~2.4.1",
+    "moment": "^2.6.0"
   },
   "engines": {
     "node": "0.10.x",

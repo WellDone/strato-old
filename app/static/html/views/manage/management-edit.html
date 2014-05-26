@@ -1,0 +1,14 @@
+<tr id="edit-resource-row" class="hidden">
+{{#each columns}}
+  {{#unless this}}
+    <td></td>
+  {{else}}
+    {{#if this.create}}
+      <td><input style="width:100%" type="text" data-name="{{this.raw}}" placeholder="{{this.create.placeholder}}"></input></td>
+    {{else}}
+      <td></td>
+    {{/if}}
+  {{/unless}}
+{{/each}}
+  <td ><button id="edit-resource-button" class="btn btn-primary" type="submit">Update</button></td>
+</tr>

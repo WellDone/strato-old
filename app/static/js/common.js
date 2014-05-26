@@ -10,6 +10,8 @@ require.config({
 		MarkerClusterer: 'markerclusterer_packed',
 		moment: 'moment.min',
 		rickshaw: 'rickshaw.min',
+		backbone: 'backbone-min',
+		underscore: 'underscore-min',
 
 		text: '../require/text',
 		hbars: '../require/hbars',
@@ -30,6 +32,13 @@ require.config({
 		},
 		MarkerClusterer: {
 			exports: 'MarkerClusterer'
-		}
+		},
+		underscore: {
+      exports: '_'
+    },
+    backbone: {
+      deps: ["underscore", "jquery"],
+      exports: "Backbone"
+    }
 	}
 });
