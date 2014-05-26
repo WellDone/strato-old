@@ -50,10 +50,12 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 		updateNavbar();
 		page( "/" );
 	})
-	$('#navbar-profile-settings').click( function(e) {
-		e.preventDefault();
-		
-	})
+
+	$(function () {
+    $('#navbar-login-link').click(function () {
+        setTimeout(function(){loginForm.find("input[name=username]").focus();},0);
+    });
+	});
 
 	return {
 		hideSearch: function() {
