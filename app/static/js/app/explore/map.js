@@ -48,6 +48,8 @@ define( ['async!https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmm
 		this.refresh();
 	}
 	function clearMarkers() {
+		for ( var i = 0; i < this.markers.length; ++i )
+			this.markers[i].setMap(null);
 		this.markers = [];
 		if ( this.markerClusterer )
 		{

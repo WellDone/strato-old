@@ -1,5 +1,5 @@
-define( [ 'app/manage-page' ], function( Renderer ) {
-	var page = new Renderer( '#manage-content', {
+define( [ 'app/manage-page', 'app/session' ], function( Renderer, session ) {
+	var opts = {
 		name: {
 			raw: 'users',
 			pretty_singular: 'Person',
@@ -11,11 +11,17 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			'phone': 'Phone Number',
 			'email': 'Email'
 		},
-		create: {
+		prompts: {
 			'fullname': "User's full name...",
 			'phone': "Cell phone number...",
 			'email': "joe@smith.net"
 		}
-	})
-	return page.render.bind( page );
+	}
+
+	var page = new Renderer( '#manage-content', opts );
+	function render() {
+		page.setPermissions( session.resourcePermissions('users') );
+		page.render();
+	}
+	return render;
 } )

@@ -1,4 +1,4 @@
-define( [ 'app/manage-page' ], function( Renderer ) {
+define( [ 'app/manage-page', 'app/session' ], function( Renderer, session ) {
 	var page = new Renderer( '#manage-content', {
 		name: {
 			raw: 'groups',
@@ -10,9 +10,13 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			'name': 'Name',
 			'monitors': 'Monitors'
 		},
-		create: {
+		prompts: {
 			'name': "Group name..."
 		}
 	})
-	return page.render.bind( page );
+	function render() {
+		page.setPermissions( session.resourcePermissions( 'groups' ) );
+		page.render();
+	}
+	return render;
 } )

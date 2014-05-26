@@ -1,5 +1,4 @@
 var path = require( 'path' );
-var express = require( 'express' );
 
 var REM = require( './rem.js' );
 var Modeler = require( './modeler.js' );
@@ -40,11 +39,38 @@ function REMEngine( version, modelJSON, backend, options ) {
 	}
 }
 
-REMEngine.prototype.serve = function( app, baseurl ) {
-	app.use( baseurl, express.json() );
-	app.use( baseurl, express.urlencoded() );
-	//app.use( baseurl, express.timeout( 5000 ) );
+REMEngine.prototype._createAuthProxy = function() {
+	return {
+		findUser: function( user ) {
+			if ( user === "user" )
+				return {
+					name: user,
+					roles: ["layman"]
+				}
+			else if ( user === "admin" ) {
+				return {
+					name: user,
+					roles: ["master"]
+				}
+			}
+		}.bind( this ),
+		getEncryptedPassword: function( user ) {
+			return "+XbYLFLgI3/v6Rs2h4Q0XaPEuiTF4emrc0vDhqC0uqmbdpqhL8AbFPQwB4TNHk2ctujfvZvBociR5V1av9issg=="
+		}.bind( this ),
+		getPasswordSalt: function( user ) {
+			return "abcdefg"
+		}.bind( this ),
+		getAllRoles: function() {
+			return {
+				"layman":     ["GET"],
+				"apprentice": ["GET", "PUT", "PATCH"],
+				"master":     ["GET", "PUT", "POST", "PATCH", "DELETE"]
+			}
+		}.bind( this )
+	}
+}
 
+REMEngine.prototype.serve = function( app, baseurl ) {
 	var self = this;
 	app.get( path.join( baseurl, '_version' ), function( req, res ) {
 		res.send( 200, self.version.join('.') );
@@ -79,7 +105,6 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 		limit: 0,
 		order: null
 	};
-	console.log( params );
 
 	if ( !params )
 		return out;

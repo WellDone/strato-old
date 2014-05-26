@@ -9,4 +9,3 @@ var data = require( './lib/data' )();
 data.serve( server.app, '/api' );
 
 server.start();
-

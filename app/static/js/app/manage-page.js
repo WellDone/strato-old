@@ -1,10 +1,11 @@
 define( [ 'jquery',
-	'page',
-	'backbone',
-	'hbars!views/manage-page',
-	'hbars!views/manage/management-item',
-	'hbars!views/manage/management-edit' ],
-	function( $, page, backbone, pageTemplate, itemTemplate, editTemplate ) {
+					'page',
+					'backbone',
+					'app/session',
+					'hbars!views/manage-page',
+					'hbars!views/manage/management-item',
+					'hbars!views/manage/management-edit' ],
+	function( $, page, backbone, session, pageTemplate, itemTemplate, editTemplate ) {
 		var Renderer = function( dom, args )
 		{
 			this.dom = dom;
@@ -12,21 +13,15 @@ define( [ 'jquery',
 			if ( !this.name.raw )
 				throw new Error( "A name must be specified to the manage-page renderer." );
 			this.columns = [];
-			this.items = new Backbone.Collection();
+			this.items = new backbone.Collection();
 			this.items.url = '/api/v0/' + this.name.raw;
-			this.items.fetch();
-			this.permissions = {
-				readonly: args.readonly,
-				create: (!args.readonly && args.create),
-				edit: !args.readonly,
-				del: !args.readonly
-			};
+			this.setPermissions( null );
 			for ( var c in args.columns )
 			{
 				var column = { raw: c, pretty: args.columns[c] };
-				if ( args.create[c] )
+				if ( args.prompts && args.prompts[c] )
 				{
-					column.create = { placeholder: args.create[c] };
+					column.prompt = args.prompts[c];
 				}
 				this.columns.push( column );
 			}
@@ -64,7 +59,7 @@ define( [ 'jquery',
 							data[name] = val;
 						}
 					})
-					$.ajax({
+					session.request({
 						url: self.items.url,
 						type: 'POST',
 						data: data,
@@ -87,8 +82,9 @@ define( [ 'jquery',
 		};
 		Renderer.prototype.render = function() {
 			var renderer = this;
+			this.items.fetch();
 
-			var ManagementListItemView = Backbone.View.extend({
+			var ManagementListItemView = backbone.View.extend({
 				tagName: 'tr',
 				className: 'linkRow',
 
@@ -110,7 +106,7 @@ define( [ 'jquery',
 				}
 			});
 
-			this.ManagementListView = Backbone.View.extend({
+			this.ManagementListView = backbone.View.extend({
 				initialize: function() {
 					this.collection.on('change', this.render, this);
 					this.collection.on('add', this.render, this);
@@ -124,7 +120,7 @@ define( [ 'jquery',
 					var filterText = $('#filter-input').val();
 					this.collection.each(function(data) {
 						var matchedFilter = _.find( _.values( _.omit( data.attributes, "id" ) ), function( value ) {
-							return !filterText || filterText.length == 0 || value.toString().toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
+							return !filterText || filterText.length == 0 || ( value && value.toString().toLowerCase().indexOf(filterText.toLowerCase()) !== -1 );
 						} );
 						if ( matchedFilter )
 						{
@@ -142,7 +138,7 @@ define( [ 'jquery',
 							e = e || window.event;
 							var id = $(this).parent().parent().attr('data-id');
 							var delFunc = function() {
-								$.ajax({
+								session.request({
 									url: renderer.items.url + '/' + id,
 									type: 'DELETE',
 									complete: function(result) {
@@ -198,7 +194,7 @@ define( [ 'jquery',
 									if ( val && val.length != 0 && ( !oldData[name] || oldData[name] != val ) )
 										newData[name] = val;
 								});
-								$.ajax({
+								session.request({
 									url: renderer.items.url + '/' + id,
 									type: 'PUT',
 									data: newData,
@@ -230,6 +226,21 @@ define( [ 'jquery',
 			this.itemList.collection.comparator = "id";
 			Renderer.prototype.renderData( this );
 		};
+
+		Renderer.prototype.setPermissions = function( permissions ) {
+	 		if ( !permissions )
+	 		{
+	 			permissions = {
+	 				readonly: true
+	 			};
+	 		}
+	 		this.permissions = {
+	 			readonly: permissions.readonly,
+	 			create: (!permissions.readonly && permissions.create),
+	 			edit: (!permissions.readonly && permissions.edit),
+	 			del: (!permissions.readonly && permissions.del)
+	 		}
+	 	}
 
 		return Renderer;
 	});

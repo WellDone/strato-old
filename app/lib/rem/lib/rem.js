@@ -1,7 +1,9 @@
 var fs = require( 'fs' );
 var path = require( 'path' );
+var express = require( 'express' );
 
 var REMEngine = require( './rem-engine' );
+var Authenticator = require( './authentication' );
 var REMSQL;
 
 function REM( options ) {
@@ -46,6 +48,8 @@ function REM( options ) {
 	};
 
 	this.loadModels( this.options.path );
+
+	this.auth = new Authenticator( this.latest()._createAuthProxy() );
 }
 
 REM.prototype.loadModels = function( basePath, next )
@@ -200,6 +204,11 @@ REM.prototype.latest = function() {
 
 REM.prototype.serve = function( app, basePath )
 {
+	app.use( basePath, express.json() );
+	app.use( basePath, express.urlencoded() );
+	app.use( basePath, this.auth.middleware() );
+
+	app.post( basePath + "/login", this.auth.login() );
 	var self = this;
 	function serveVersion( versionString, versionObject )
 	{
