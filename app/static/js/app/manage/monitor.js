@@ -11,31 +11,39 @@ define( [ 'jquery',
 
 		$('#deleteModal').modal( { show: false } );
 
-		$( '#clear-reports-button' ).click( function( e ) {
-			e = e || window.event;
-			e.preventDefault();
-			e.stopPropagation();
+		if ( session.resourcePermissions('reports').del )
+		{
+			$( '#clear-reports-button' ).removeClass( 'hidden' );
+			$( '#clear-reports-button' ).click( function( e ) {
+				e = e || window.event;
+				e.preventDefault();
+				e.stopPropagation();
 
-			$( '#deleteModal').modal('show');
-			var delFunc = function() {
-				monitor.reports.forEach( function( r ) {
-					session.request({
-						url: '/api/v0/reports/' + r.id,
-						type: 'DELETE'
-					});
-				})
-				monitor.reports = [];
-				render( monitor )
-				$( '#delete-modal').modal('hide');
-				//TODO: These shouldn't be needed, but they are.
-				$('body').removeClass('modal-open');
-				$('.modal-backdrop').remove();
-				$( '#actually-delete-button').off( 'click', delFunc );
-			}
-			
-			$( '#deleteModal').modal('show');
-			$( '#actually-delete-button').on( 'click', delFunc );
-		} );
+				$( '#deleteModal').modal('show');
+				var delFunc = function() {
+					monitor.reports.forEach( function( r ) {
+						session.request({
+							url: '/api/v0/reports/' + r.id,
+							type: 'DELETE'
+						});
+					})
+					monitor.reports = [];
+					render( monitor )
+					$( '#delete-modal').modal('hide');
+					//TODO: These shouldn't be needed, but they are.
+					$('body').removeClass('modal-open');
+					$('.modal-backdrop').remove();
+					$( '#actually-delete-button').off( 'click', delFunc );
+				}
+				
+				$( '#deleteModal').modal('show');
+				$( '#actually-delete-button').on( 'click', delFunc );
+			} );
+		}
+		else
+		{
+			$( '#clear-reports-button' ).addClass( 'hidden' );
+		}
 
 		//var svg = dimple.newSvg('#chartContainer', 590, 400);
 		var data = {};
