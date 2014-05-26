@@ -120,7 +120,7 @@ define( [ 'jquery',
 					var filterText = $('#filter-input').val();
 					this.collection.each(function(data) {
 						var matchedFilter = _.find( _.values( _.omit( data.attributes, "id" ) ), function( value ) {
-							return !filterText || filterText.length == 0 || value.toString().toLowerCase().indexOf(filterText.toLowerCase()) !== -1;
+							return !filterText || filterText.length == 0 || ( value && value.toString().toLowerCase().indexOf(filterText.toLowerCase()) !== -1 );
 						} );
 						if ( matchedFilter )
 						{
