@@ -1,5 +1,5 @@
-define( [ 'app/manage-page' ], function( Renderer ) {
-	var page = new Renderer( '#manage-content', {
+define( [ 'app/manage-page', 'app/session' ], function( Renderer, session ) {
+	var opts = {
 		name: {
 			raw: 'monitors',
 			pretty_singular: 'Monitor',
@@ -11,11 +11,17 @@ define( [ 'app/manage-page' ], function( Renderer ) {
 			'location': 'Location',
 			'gsmid': 'SMS Number'
 		},
-		create: {
+		prompts: {
 			'name': "Monitor name...",
 			'location': "(lat,long)",
 			'gsmid': "+xxxxxxxxxxx"
 		}
-	})
-	return page.render.bind( page );
+	};
+	var page = new Renderer( '#manage-content', opts );
+
+	function render() {
+		page.setPermissions( session.resourcePermissions( 'monitors' ) );
+		page.render();
+	}
+	return render;
 } )

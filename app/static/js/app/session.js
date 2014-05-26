@@ -74,12 +74,32 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		opts = extendOpts( opts );
 		return Backbone.$.ajax(opts);
 	}
+
+	var resourcePermissions = function( resource ) {
+		var level = 0
+		if ( !this.getUser().roles )
+			level = 0;
+		else if ( this.getUser().roles.indexOf("master") != -1 )
+			level = 3;
+		else if ( this.getUser().roles.indexOf("apprentice") != -1 )
+			level = 2;
+		else if ( this.getUser().roles.indexOf("layman") != -1 )
+			level = 1;
+		
+		return {
+			readonly: ( level <= 1 ),
+			edit: ( level >= 2 ),
+			create: ( level >= 3 ),
+			del: ( level >= 3 ),
+		}
+	}
 	return {
 		login: login,
 		logout: logout,
 		request: request,
 		getJSON: getJSON,
 		exists: function() { return (sessionData != null); },
-		getUser: function() { return sessionData.user; }
+		getUser: function() { return sessionData.user; },
+		resourcePermissions: resourcePermissions
 	}
 })

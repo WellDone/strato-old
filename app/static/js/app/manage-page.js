@@ -15,18 +15,13 @@ define( [ 'jquery',
 			this.columns = [];
 			this.items = new backbone.Collection();
 			this.items.url = '/api/v0/' + this.name.raw;
-			this.permissions = {
-				readonly: args.readonly,
-				create: (!args.readonly && args.create),
-				edit: !args.readonly,
-				del: !args.readonly
-			};
+			this.setPermissions( null );
 			for ( var c in args.columns )
 			{
 				var column = { raw: c, pretty: args.columns[c] };
-				if ( args.create[c] )
+				if ( args.prompts && args.prompts[c] )
 				{
-					column.create = { placeholder: args.create[c] };
+					column.prompt = args.prompts[c];
 				}
 				this.columns.push( column );
 			}
@@ -231,6 +226,21 @@ define( [ 'jquery',
 			this.itemList.collection.comparator = "id";
 			Renderer.prototype.renderData( this );
 		};
+
+		Renderer.prototype.setPermissions = function( permissions ) {
+	 		if ( !permissions )
+	 		{
+	 			permissions = {
+	 				readonly: true
+	 			};
+	 		}
+	 		this.permissions = {
+	 			readonly: permissions.readonly,
+	 			create: (!permissions.readonly && permissions.create),
+	 			edit: (!permissions.readonly && permissions.edit),
+	 			del: (!permissions.readonly && permissions.del)
+	 		}
+	 	}
 
 		return Renderer;
 	});
