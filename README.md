@@ -9,7 +9,8 @@ This portal is designed to complement WellDone's Mobile Monitor ([MoMo](http://w
 To spin up a test application deployment using [Packer](http://www.packer.io) and [Vagrant](http://www.vagrantup.com):
 * Build a base box by running `build.sh -v virtualbox` from the 'packer' directory NOTE: This will install the insecure Vagrant public key, so don't use it for anything sensitive.
 * Run `vagrant up`
-* Profit - the server should be accessible at http://localhost:3000
+* Profit - the server should be accessible at https://localhost:3001
+* NOTE: Previously the server listened only on http (http://localhost:3000) - it still does, but will redirect to the default ssh port (https://localhost:443) which is different than the one Vagrant binds for http (3001).  Go directly to the https version to avoid this issue.
 
 To deploy a production or test box to a public cloud ([AWS](http://aws.amazon.com/) or [DigitalOcean](https://digitalocean.com/)):
 * Build a base box by running `build.sh <provider>` from the 'packer' directory, <provider> may be digitalocean or amazon-ebs (untested)
@@ -31,6 +32,8 @@ export TWILIO_NUMBER=+15555555555
 ```
 
 ## Database Migration
+
+*** DEPRECATED ***
 
 To create or upgrade the database, simply run the following command.  Before attempting the migration, make sure your DATABASE_URL environment variable is set up properly.
 
