@@ -61,6 +61,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 		},
 		showSearch: function() {
 			//searchForm.removeClass('hidden');
-		}
+		},
+		update: updateNavbar
 	}
 })
