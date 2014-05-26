@@ -10,7 +10,7 @@ To spin up a test application deployment using [Packer](http://www.packer.io) an
 * Build a base box by running `build.sh -v virtualbox` from the 'packer' directory NOTE: This will install the insecure Vagrant public key, so don't use it for anything sensitive.
 * Run `vagrant up`
 * Profit - the server should be accessible at https://localhost:3001
-* NOTE: Previously the server listened only on http (http://localhost:3000) - it still does, but will redirect to the default ssh port (https://localhost:443) which is different than the one Vagrant binds for http (3001).  Go directly to the https version to avoid this issue.
+* NOTE: Previously the server listened only on http (http://localhost:3000) - it still does, but will redirect to the default ssh port (https://localhost:443) which is different than the one Vagrant binds for https (3001).  Go directly to the https version to avoid this issue.
 
 To deploy a production or test box to a public cloud ([AWS](http://aws.amazon.com/) or [DigitalOcean](https://digitalocean.com/)):
 * Build a base box by running `build.sh <provider>` from the 'packer' directory, <provider> may be digitalocean or amazon-ebs (untested)
