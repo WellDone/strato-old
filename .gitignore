@@ -8,4 +8,7 @@ app/resources/css/*.css
 
 *.sublime-project
 *.sublime-workspace
+
+*.DS_Store
 vagrant
+
