@@ -109,6 +109,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 		}
 	}
 
+	//TODO: move to authentication.js
 	if ( this.name == this.engine.model.auth.resource )
 	{
 		app.post( url + "/:id/password", function( req, res ) {
@@ -155,6 +156,10 @@ Resource.prototype.serve = function( app, baseurl ) {
 			}
 		}.bind( this ) )
 		app.del( url + "/:id/password", function( req, res ) {
+			if ( !req.identity || !_.contains( req.identity.roles, 'master' ) )
+			{
+				return res.send( 403, "You are not authorized to perform this action." );
+			}
 			var new_password = crypto.randomBytes(12).toString('base64');
 			auth.encryptPassword( new_password, {}, function( err, encryptedPassword, salt ) {
 				if ( err )
