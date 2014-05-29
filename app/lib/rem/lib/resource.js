@@ -2,7 +2,7 @@ var path = require( 'path' );
 var _ = require( 'lodash' );
 var Modeler = require( './modeler')
 var auth = require( './authentication' );
-var mail = require("nodemailer").mail;
+var crypto = require( 'crypto' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
@@ -111,7 +111,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 
 	if ( this.name == this.engine.model.auth.resource )
 	{
-		app.post( url + "/:id/password/change", function( req, res ) {
+		app.post( url + "/:id/password", function( req, res ) {
 			if ( !req.identity || req.identity.user.id != req.params['id'] )
 			{
 				res.send( 403, "You may only change your own password." );
@@ -126,7 +126,8 @@ Resource.prototype.serve = function( app, baseurl ) {
 				}
 
 				this.engine.auth.authenticatePassword( req.identity.user, req.body.old_password, function( err, token ) {
-					if ( !err || !token ) {
+					if ( err || !token ) {
+						console.log( err );
 						return res.send( 403, "Invalid password." );
 					}
 					auth.encryptPassword( req.body.new_password, {}, function( err, encryptedPassword, salt ) {
@@ -134,8 +135,10 @@ Resource.prototype.serve = function( app, baseurl ) {
 						{
 							return res.send( 500, "Failed to encrypt password." );
 						}
-						var q = {};
-						q[this.engine.model.auth.login] = req.params['login'];
+						var q = { where: {
+								'id': req.params['id']
+							}
+						} ;
 						this.update( q, {
 							_encrypted_password: encryptedPassword,
 							_password_salt: salt
@@ -150,6 +153,30 @@ Resource.prototype.serve = function( app, baseurl ) {
 					}.bind( this ) );
 				}.bind( this ) );
 			}
+		}.bind( this ) )
+		app.del( url + "/:id/password", function( req, res ) {
+			var new_password = crypto.randomBytes(12).toString('base64');
+			auth.encryptPassword( new_password, {}, function( err, encryptedPassword, salt ) {
+				if ( err )
+				{
+					return res.send( 500, "Failed to encrypt password." );
+				}
+				var q = { where: {
+					'id': req.params['id']
+				} };
+				this.update( q, {
+					_encrypted_password: encryptedPassword,
+					_password_salt: salt
+				}, function( err, result ) {
+					if ( err )
+					{
+						console.log( err );
+						return res.send( 500, "Failed to update password." );
+					}
+					console.log( "Password set to : " + new_password );
+					return res.send( 200, "Successfully updated password." );
+				});
+			}.bind( this ) );
 		}.bind( this ) )
 	}
 }
