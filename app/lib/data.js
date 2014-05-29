@@ -13,7 +13,8 @@ module.exports = function( options )
 			url: config.dbConfig.core_url,
 			connectionPool: ( options.connectionPool || { min: 2, max: 10 } )
 		},
-		logger: logger
+		logger: logger,
+		jwtSecret: config.jwtSecret
 	});
 
 	if ( options.version || options.version === 0 )

@@ -3,6 +3,8 @@ var path = require( 'path' );
 var REM = require( './rem.js' );
 var Modeler = require( './modeler.js' );
 var REMResource = require( './resource.js' );
+var _ = require( 'lodash' );
+var Authenticator = require( './authentication' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
@@ -14,6 +16,8 @@ var verbAliases = {
 function REMEngine( version, modelJSON, backend, options ) {
 	this.options = options;
 	this.version = version;
+
+	this.auth = new Authenticator( this, this.options.jwtSecret );
 
 	this.backend = backend;
 	this.model = Modeler.create( modelJSON );
@@ -39,35 +43,37 @@ function REMEngine( version, modelJSON, backend, options ) {
 	}
 }
 
-REMEngine.prototype._createAuthProxy = function() {
-	return {
-		findUser: function( user ) {
-			if ( user === "user" )
-				return {
-					name: user,
-					roles: ["layman"]
-				}
-			else if ( user === "admin" ) {
-				return {
-					name: user,
-					roles: ["master"]
-				}
-			}
-		}.bind( this ),
-		getEncryptedPassword: function( user ) {
-			return "+XbYLFLgI3/v6Rs2h4Q0XaPEuiTF4emrc0vDhqC0uqmbdpqhL8AbFPQwB4TNHk2ctujfvZvBociR5V1av9issg=="
-		}.bind( this ),
-		getPasswordSalt: function( user ) {
-			return "abcdefg"
-		}.bind( this ),
-		getAllRoles: function() {
-			return {
-				"layman":     ["GET"],
-				"apprentice": ["GET", "PUT", "PATCH"],
-				"master":     ["GET", "PUT", "POST", "PATCH", "DELETE"]
-			}
-		}.bind( this )
-	}
+REMEngine.prototype.authenticate = function( login, cb ) {
+	var q = _.pick( login, this.model.auth.login );
+	if ( !q || !q[this.model.auth.login] )
+		return cb( "Invalid login field." );
+
+	login = q[this.model.auth.login];
+	this.resources[this.model.auth.resource].get( {
+		where: q,
+		withSensitive: true
+	}, function( err, users ) {
+		if ( err || !users || users.length != 1 ) {
+			return cb( "User not found.", null );
+		}
+		else {
+			var user = users[0];
+			return cb( null, {
+				identity: {
+					id: login,
+					user: _.omit( user, function( value, key ) {
+							return ( key[0] == '_' );
+						} ),
+					roles: (login=="admin")?["master"]:["layman"]
+				},
+				encryptedPassword: user._encrypted_password,
+				passwordSalt: user._password_salt
+			} );
+		}
+	}.bind( this ) );
+}
+REMEngine.prototype.authorize = function( resource, user, method, cb ) {
+	return cb( null, [] );
 }
 
 REMEngine.prototype.serve = function( app, baseurl ) {
@@ -112,7 +118,9 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 	if ( params.fields )
 	{
 		params.fields.forEach( function( f ) {
-			if ( !resource.model.columns.hasOwnProperty( f ) || resource.model.columns[f].ref )
+			if ( !resource.model.columns.hasOwnProperty( f )
+				|| resource.model.columns[f].ref 
+				|| ( !params.withSensitive && f[0] == '_' ) )
 				throw new Error( "Resource type '" + resource.name + "' has no local property '" + f + "'" );
 			out.fields.push( f );
 		});
@@ -120,7 +128,8 @@ REMEngine.prototype.sanitizeParams = function( resource, params ) {
 	if ( out.fields.length === 0 ) {
 		for ( var c in resource.model.columns )
 		{
-			if ( !resource.model.columns[c].ref )
+			if ( !resource.model.columns[c].ref
+				&& ( params.withSensitive || c[0] != '_' ) )
 				out.fields.push( c );
 		}
 	}

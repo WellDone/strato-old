@@ -4,10 +4,10 @@ var crypto = require( 'crypto' )
 var _ = require( 'lodash' )
 var moment = require( 'moment' )
 
-var jwtSecret = "3e387369-1e29-4adf-863c-e7a33632c3c0"
-
 var defaultIterations = 10000
 var keyLength = 64
+var passwordMinLength = 6
+var saltSize = 64
 
 var tokenLifetimeHours = 1;
 
@@ -16,65 +16,56 @@ function getExpirationTime( base ) {
 	return base.add( 'hours', tokenLifetimeHours ).valueOf();
 }
 
-var Authenticator = function( authProxy ) {
-	if ( !authProxy 
-		|| !authProxy.findUser 
-		|| !authProxy.getEncryptedPassword 
-		|| !authProxy.getPasswordSalt 
-		|| !authProxy.getAllRoles )
-		throw new Error( "Rubbish, we can't authenticate with this!" )
-
-	this.proxy = authProxy;
+var Authenticator = function( data, jwtSecret ) {
+	this.data = data;
+	this.jwtSecret = jwtSecret;
 }
-Authenticator.prototype.encryptPassword = function( plaintextPassword, options, cb ) {
-	if ( !plaintextPassword || plaintextPassword.length < 6 )
-		return cb( "Password does not meet the complexity requirements" );
-	options = options || {};
-	options.salt = options.salt || crypto.randomBytes(64);
-	options.iterations = options.iterations || defaultIterations;
-
-	crypto.pbkdf2( plaintextPassword, options.salt, options.iterations, keyLength, function( err, key ) {
-		if ( err )
-			return cb( err );
-		return cb( null, key.toString( 'base64' ) );
-	} );
-}
-Authenticator.prototype.authenticatePassword = function( identity, authData, plaintextPassword, cb ) {
-	if ( !identity || !authData.encryptedPassword )
+Authenticator.prototype.authenticatePassword = function( user, plaintextPassword, cb ) {
+	if ( !user )
 		return cb( "Invalid authentication function parameters." )
+	this.data.authenticate( user, function( err, auth ) {
+		if ( err || !auth || !auth.encryptedPassword )
+		{
+			console.log( "Authenticator error: user " + JSON.stringify( user ) + " invalid: " + err )
+			res.send( 401, "Invalid username or password." )
+			return;
+		}
 
-	this.encryptPassword( plaintextPassword, authData, function( err, key ) {
-		if ( key !== authData.encryptedPassword )
-			return cb( "Invalid password." );
-		try
-		{
-			var now = new Date();
-			var payload = {
-				id: identity,
-				iat: now.valueOf(),
-				exp: getExpirationTime( now )
+		var opts = {
+			encryptedPassword: auth.encryptedPassword,
+			salt: new Buffer( auth.passwordSalt, 'base64' )
+		}
+		Authenticator.encryptPassword( plaintextPassword, opts, function( err, key ) {
+			if ( key !== auth.encryptedPassword )
+				return cb( "Invalid password." );
+			try
+			{
+				var now = new Date();
+				var payload = {
+					id: auth.identity,
+					iat: now.valueOf(),
+					exp: getExpirationTime( now )
+				}
+				var token = jwt.encode( payload, this.jwtSecret );
+				return cb( null, token, payload );
 			}
-			var token = jwt.encode( payload, jwtSecret );
-			return cb( null, token, payload );
-		}
-		catch (e)
-		{
-			return cb( e );
-		}
-	})
+			catch (e)
+			{
+				return cb( e );
+			}
+		}.bind( this ) );
+	}.bind( this ) );
 }
 
 Authenticator.prototype.authenticateToken = function( token, cb ) {
 	try
 	{
-		var payload = jwt.decode( token, jwtSecret );
+		var payload = jwt.decode( token, this.jwtSecret );
 		if ( !payload.iat && !payload.exp )
 			return cb( "Invalid token." )
 		if ( payload.exp && payload.exp <= new Date()
 			|| payload.iat && getExpirationTime( payload.iat ) <= new Date() )
 			return cb( "Expired token." )
-		console.log( payload );
-		console.log( (new Date()).getTime() );
 		return cb( null, payload.id );
 	}
 	catch (e)
@@ -84,27 +75,17 @@ Authenticator.prototype.authenticateToken = function( token, cb ) {
 }
 
 Authenticator.prototype.login = function() {
+	var self
 	return function( req, res, next ) {
-		if ( !req.body || !req.body.user || !req.body.password )
+		if ( !req.body || !req.body.password )
 		{
 			res.send( 401, "Invalid login attempt." );
 			return;
 		}
 		else
 		{
-			var identity = this.proxy.findUser( req.body.user );
-			if ( !identity )
-			{
-				console.log( "Authenticator error: user '" + req.body.user + "' does not exist." )
-				res.send( 401, "Invalid username or password." )
-				return;
-			}
-
-			var opts = {
-				encryptedPassword: this.proxy.getEncryptedPassword( req.body.user ),
-				salt: this.proxy.getPasswordSalt( req.body.user )
-			}
-			this.authenticatePassword( identity, opts, req.body.password, function( err, token, payload ) {
+			var user = _.omit( req.body, 'password' );
+			this.authenticatePassword( user, req.body.password, function( err, token, payload ) {
 				if ( err || !token )
 				{
 					console.log( "Authenticator error: " + err )
@@ -119,51 +100,47 @@ Authenticator.prototype.login = function() {
 					}
 					res.send( 200, out );
 				}
-			} )
+			} );
 		}
 	}.bind( this );
 }
 
 Authenticator.prototype.authorize = function( req, res, next ) {
-	if ( !req.identity )
-	{
-		//TODO: anonymous
-		res.set( "WWW-Authenticate", "Bearer")
-		res.send( 401, "Authentication failed." );
-		return;
-	}
-
-	var rolePermissions = this.proxy.getAllRoles()
-	var authorized = false;
-	console.log( "method: " + req.method )
-	this.checkPermissions( rolePermissions, req.identity.roles, req.method, function(err) {
-		if ( !err )
-			authorized = true;
-	})
-	
-	if ( !authorized )
-	{
-		res.send( 403, "Unauthorized!" );
-		return;
-	}
-	
-	console.log( "Authorized for '" + req.method + "'" );
-	next()
+	this.data.authorize( req.path, req.identity, req.method, function( err, permissions ) {
+		if ( err || !permissions )
+		{
+			if ( err ) console.log( "Authorization error: " + err );
+			if ( req.identity ) {
+				res.send( 403, "Unauthorized!" );
+				return;
+			} else {
+				res.set( "WWW-Authenticate", "Bearer")
+				res.send( 401, "Authentication failed." );
+				return;
+			}
+		}
+		console.log( "Authorized for " + req.method + " " + req.path );
+		console.log( "Permissions: " + JSON.stringify( permissions ) );
+		req.permissions = permissions;
+		next();
+	} );
 };
 
 Authenticator.prototype.middleware = function() {
 	return function( req, res, next ) {
 		if ( req.path == '/login' )
 		{
-			// any one can login
+			// anyone can login
 			console.log( "login detected." );
 			next();
 			return;
 		}
+		
 		var nextAnonymous = function() {
-			console.log( "Not authorized (<anonymous>)" )
+			console.log( "No authentication (<anonymous>)" )
 			return this.authorize( req, res, next );
 		}.bind( this )
+
 		if ( !req.get('Authorization') )
 			return nextAnonymous();
 		var authHeader = req.get('Authorization').split( ' ' );
@@ -175,7 +152,7 @@ Authenticator.prototype.middleware = function() {
 			if ( !err && identity )
 			{
 				req.identity = identity;
-				console.log( "Authenticated as " + req.identity );
+				console.log( "Authenticated as " + req.identity.id );
 				return this.authorize( req, res, next );
 			}
 			else
@@ -203,8 +180,21 @@ Authenticator.prototype.checkPermissions = function( rolePermissions, roleList, 
 		return cb( "Permission denied." );
 }
 
-Authenticator.prototype.generateUUID = function() {
+Authenticator.generateUUID = function() {
 	return uuid.v4();
+}
+Authenticator.encryptPassword = function( plaintextPassword, options, cb ) {
+	if ( !plaintextPassword || plaintextPassword.length < passwordMinLength )
+		return cb( "Password does not meet the complexity requirements" );
+	options = options || {};
+	options.salt = options.salt || crypto.randomBytes(saltSize);
+	options.iterations = options.iterations || defaultIterations;
+
+	crypto.pbkdf2( plaintextPassword, options.salt, options.iterations, keyLength, function( err, key ) {
+		if ( err )
+			return cb( err );
+		return cb( null, key.toString( 'base64' ), options.salt.toString( 'base64' ), options.iterations );
+	} );
 }
 
 module.exports = Authenticator;

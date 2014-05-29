@@ -20,7 +20,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 			url: '/api/login',
 			type: 'POST',
 			data: {
-				'user': username,
+				'email': username,
 				'password': password
 			},
 			complete: function(result) {

@@ -1,5 +1,8 @@
 var path = require( 'path' );
+var _ = require( 'lodash' );
 var Modeler = require( './modeler')
+var auth = require( './authentication' );
+var mail = require("nodemailer").mail;
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
@@ -62,7 +65,11 @@ Resource.prototype.serve = function( app, baseurl ) {
 				for ( p in req.query )
 					params[p] = req.query[p]; // shallow
 
-				f( params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
+				params.withSensitive = false;
+				var body = _.omit( req.body, function( value, key ) {
+					return ( key[0] == '_' );
+				})
+				f( params, body, handleBackendResult.bind(null, req, res, isCollection) );
 			}
 			catch (e)
 			{
@@ -91,14 +98,84 @@ Resource.prototype.serve = function( app, baseurl ) {
 			app.get( url + "/:id/" + c, function( c, req, res ) {
 				var params = { where: {} };
 				for ( p in req.query )
-					params[p] = req.query[p]; // shallow
+					params.where[p] = req.query[p]; // shallow
+
+				params.withSensitive = false;
 				
 				params.where[self.model.columns[c].ref.complement] = req.params.id;
 				var target = self.model.columns[c].ref.target.name;
-				console.log( target );
 				self.engine.resource(target).get( params, handleBackendResult.bind( null, req, res, isCollection ) );
 			}.bind( self, c ) );
 		}
+	}
+
+	if ( this.name == this.engine.model.auth.resource )
+	{
+		app.post( url + "/:id/password/change", function( req, res ) {
+			if ( !req.identity || req.identity.user.id != req.params['id'] )
+			{
+				res.send( 403, "You may only change your own password." );
+				return;
+			}
+			else
+			{
+				if ( !req.body.new_password || !req.body.old_password )
+				{
+					res.send( 400, "No password specified." );
+					return;
+				}
+
+				this.engine.auth.authenticatePassword( req.identity.user, req.body.old_password, function( err, token ) {
+					if ( !err || !token ) {
+						return res.send( 403, "Invalid password." );
+					}
+					auth.encryptPassword( req.body.new_password, {}, function( err, encryptedPassword, salt ) {
+						if ( err )
+						{
+							return res.send( 500, "Failed to encrypt password." );
+						}
+						var q = {};
+						q[this.engine.model.auth.login] = req.params['login'];
+						this.update( q, {
+							_encrypted_password: encryptedPassword,
+							_password_salt: salt
+						}, function( err, result ) {
+							if ( err )
+							{
+								console.log( err );
+								return res.send( 500, "Failed to update password." );
+							}
+							return res.send( 200, "Successfully updated password." );
+						});
+					}.bind( this ) );
+				}.bind( this ) );
+			}
+		}.bind( this ) )
+	}
+}
+
+function stripSensitiveInfo( output, err, res )
+{
+	if ( err ) {
+		output( err );
+	}
+	else
+	{
+		if ( _.isArray( res ) )
+		{
+			res = _.map(res, function( o ) {
+				return _.omit( o, function( value, key ) {
+					return key[0] == '_';
+				} );
+			} );
+		}
+		else
+		{
+			res = _.omit( res, function( value, key ) {
+				return key[0] == '_';
+			} );
+		}
+		output( null, res );
 	}
 }
 
@@ -129,6 +206,9 @@ Resource.prototype.proxy = function( fname, params, body, output )
 		default:
 			throw new Error( "Invalid arguments." );
 	}
+
+	if ( !params || !params.withSensitive )
+		output = stripSensitiveInfo.bind( this, output );
 	try
 	{
 		params = this.engine.sanitizeParams( this, params );

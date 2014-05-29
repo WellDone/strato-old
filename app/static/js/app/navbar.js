@@ -9,7 +9,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 	function updateNavbar() {
 		if ( session.exists() )
 		{
-			$( '#navbar-profile-username' ).text( session.getUser().name );
+			$( '#navbar-profile-username' ).text( session.getUser().user.fullname );
 			$( '#navbar-login' ).addClass( 'hidden' );
 			$( '#navbar-profile' ).removeClass( 'hidden' );
 			$( '#navbar-manage' ).removeClass( 'hidden' );
