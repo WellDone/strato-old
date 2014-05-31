@@ -3,8 +3,8 @@
   {{#unless this}}
     <td></td>
   {{else}}
-    {{#if this.create}}
-      <td><input style="width:100%" type="text" data-name="{{this.raw}}" placeholder="{{this.create.placeholder}}"></input></td>
+    {{#if this.prompt}}
+      <td><input style="width:100%" type="text" data-name="{{this.raw}}" placeholder="{{this.prompt}}"></input></td>
     {{else}}
       <td></td>
     {{/if}}
