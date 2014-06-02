@@ -179,7 +179,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 						return res.send( 500, "Failed to update password." );
 					}
 					console.log( "Password set to : " + new_password );
-					return res.send( 200, "Successfully updated password." );
+					return res.send( 200, new_password );
 				});
 			}.bind( this ) );
 		}.bind( this ) )

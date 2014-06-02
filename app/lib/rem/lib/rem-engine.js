@@ -64,7 +64,7 @@ REMEngine.prototype.authenticate = function( login, cb ) {
 					user: _.omit( user, function( value, key ) {
 							return ( key[0] == '_' );
 						} ),
-					roles: (login=="admin")?["master"]:["layman"]
+					roles: (login=="austin@welldone.org")?["master"]:["layman"]
 				},
 				encryptedPassword: user._encrypted_password,
 				passwordSalt: user._password_salt
