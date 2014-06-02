@@ -7,12 +7,13 @@ define( ['jquery',
         ], function( $, page, htmlTemplate, navbar, map, session ) {
  	function exploreHandler( ctx, next ) {
  		navbar.showSearch();
-		$('#content').html( htmlTemplate() );
-        map.initialize( document.getElementById("explore-map-canvas" ), function( err ) {
+        $('#content').text("Loading...");
+		map.initialize( document.getElementById("explore-map-canvas" ), function( err ) {
             if ( err ) {
                 $('#content').text( "Failed to load the map, please try again later.")
                 return;
             }
+            $('#content').html( htmlTemplate() );
             session.request( {
                 url: "/api/v0/monitors",
                 success: function( monitors ) {
