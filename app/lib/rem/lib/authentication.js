@@ -27,7 +27,7 @@ Authenticator.prototype.authenticatePassword = function( user, plaintextPassword
 		if ( err || !auth || !auth.encryptedPassword )
 		{
 			console.log( "Authenticator error: user " + JSON.stringify( user ) + " invalid: " + err )
-			res.send( 401, "Invalid username or password." )
+			cb( "Invalid user." );
 			return;
 		}
 
@@ -36,8 +36,13 @@ Authenticator.prototype.authenticatePassword = function( user, plaintextPassword
 			salt: new Buffer( auth.passwordSalt, 'base64' )
 		}
 		Authenticator.encryptPassword( plaintextPassword, opts, function( err, key ) {
-			if ( key !== auth.encryptedPassword )
+			if ( err || key !== auth.encryptedPassword )
+			{
+				console.log( err );
+				console.log( key );
+				console.log( auth.encryptedPassword );
 				return cb( "Invalid password." );
+			}
 			try
 			{
 				var now = new Date();
@@ -99,6 +104,7 @@ Authenticator.prototype.login = function() {
 						data: payload
 					}
 					res.send( 200, out );
+					return;
 				}
 			} );
 		}

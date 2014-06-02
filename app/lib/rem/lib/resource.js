@@ -98,7 +98,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 			app.get( url + "/:id/" + c, function( c, req, res ) {
 				var params = { where: {} };
 				for ( p in req.query )
-					params.where[p] = req.query[p]; // shallow
+					params[p] = req.query[p]; // shallow
 
 				params.withSensitive = false;
 				
