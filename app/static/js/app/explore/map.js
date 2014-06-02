@@ -4,7 +4,7 @@ define( ['MarkerClusterer',
   function refreshMap() {
   	this.markerCluster = new MarkerClusterer(this.map, this.markers);
   }
-	function initializeMap( container ) {
+	function initializeMap( container, cb ) {
 		require( ['async!https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmmEu6a3sbSjVYgFVWbB_c&sensor=false',
 			        'app/mapStyle'],
 			function( _gmaps, mapStyle ) {
@@ -24,6 +24,10 @@ define( ['MarkerClusterer',
 				this.map = new google.maps.Map( container, this.mapOptions);
 				//map.mapTypes.set('overview-style', mapStyle);
 				this.refresh();
+				cb();
+	    },
+	    function( err ) {
+	    	cb( "Failed" );
 	    } );
 	};
 
