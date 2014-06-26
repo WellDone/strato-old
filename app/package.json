@@ -17,7 +17,8 @@
     "jwt-simple": "~0.2.0",
     "lodash": "~2.4.1",
     "moment": "^2.6.0",
-    "nodemailer": "^0.6.5"
+    "nodemailer": "^0.6.5",
+    "knex": "^0.6.18"
   },
   "engines": {
     "node": "0.10.x",

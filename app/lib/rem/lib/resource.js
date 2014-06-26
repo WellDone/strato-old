@@ -90,7 +90,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 	app.get( url + "/:id" , serveFunc( 'get' ) );
 	app.post( url         , serveFunc( 'post', true ) );
 	app.put( url + "/:id" , serveFunc( 'put' ) );
-	app.del( url + "/:id" , serveFunc( 'del' ) );
+	app.delete( url + "/:id" , serveFunc( 'del' ) );
 	for ( var c in self.model.columns )
 	{
 		if ( self.model.columns[c].ref ) {
@@ -254,6 +254,7 @@ Resource.prototype.proxy = function( fname, params, body, output )
 	}
 	catch (e)
 	{
+		console.log( "Unhandled exception!", e );
 		output( e );
 	}
 }
