@@ -12,6 +12,8 @@ define( [ 'jquery',
  		}) );
  		$('#dev-form').submit( function(e) {
  			e.preventDefault();
+ 			$('#dev-send').addClass('disabled');
+ 			
  			var method = $('#dev-method').val();
  			var url = $('#dev-url').val();
  			var body = $('#dev-body').val();
@@ -30,7 +32,6 @@ define( [ 'jquery',
  				data: body
  			}
  			console.log( opts );
- 			$('#dev-send').addClass('disabled');
  			opts.complete = function(result) {
  				var success = ( result.status == 200 || result.status == 302 );
  				var labelType = success? "label-success" : "label-warning";
