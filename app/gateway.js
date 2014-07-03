@@ -68,15 +68,15 @@ function processReport( from, body, timestamp, output ) {
 	});
 }
 
-function processSMS( req, res ) {
+function processSMS( req, res, gatewayVersion ) {
 	if ( !req.body )
 	{
 		res.send( 400, "Invalid request." );
 		return false;
 	}
 
-	var body = req.body.Body? req.body.Body : req.body.message;
-  var from = req.body.From? req.body.From : req.body.from;
+	var body = req.body.Body || req.body.message || req.body.text;
+  var from = req.body.From || req.body.from || req.body.msisdn;
   var timestamp = req.body.sent_timestamp;
   if (timestamp) {
     timestamp = parseInt(timestamp)
@@ -105,9 +105,10 @@ function processSMS( req, res ) {
 	    res.end();
 	  } );
 	} else {
-		res.writeHead( 400 );
+		res.writeHead( 200 );
 		res.write( "Malformed request." );
 		console.log( "Malformed request." );
+		console.log( req.body );
 		res.end();
 	}
 }
@@ -116,7 +117,7 @@ function processSMS( req, res ) {
 server.app.post( /^\/gateway\/([^\/]+)(\/\d+)?/, function( req, res ) {
 	if ( req.params[0].toLowerCase() == 'sms' )
 	{
-		processSMS( req, res );
+		processSMS( req, res, parseInt( req.params[1] ) );
 	}
 	else
 	{

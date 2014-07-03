@@ -7,7 +7,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 
 	var loginForm = $('#navbar-login-form');
 	function updateNavbar() {
-		if ( session.exists() )
+		if ( session.exists() && session.getUser().user && session.getUser().user.fullname )
 		{
 			$( '#navbar-profile-username' ).text( session.getUser().user.fullname );
 			$( '#navbar-login' ).addClass( 'hidden' );

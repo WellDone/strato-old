@@ -31,8 +31,8 @@ function ConstructReport( value ) {
   bytes[15] = 0x0A;
 
   bytes.writeUInt16LE( Math.floor(Math.random()*100)*10, 16 ) //count
-  bytes.writeUInt16LE( 65535, 18 )//Math.floor(Math.random()*200), 18 ) //min
-  bytes.writeUInt16LE( 0, 20 )//Math.floor(Math.random()*200)+800, 20 ) //max
+  bytes.writeUInt16LE( Math.floor(Math.random()*200), 18 ) //min
+  bytes.writeUInt16LE( Math.floor(Math.random()*200)+800, 20 ) //max
 
   for ( var i = 0; i < 10; ++i ) {
     bytes.writeUInt16LE( Math.floor(Math.random()*100), 22+(i*4) ) //count
@@ -44,8 +44,8 @@ function ConstructReport( value ) {
 
 function SendFakeReport() {
   var data = {
-    From: "+123456",
-    Body: ConstructReport()
+    msisdn: "+123456",
+    text: ConstructReport()
   }
   var payload = JSON.stringify( data )
   console.log( payload );
