@@ -99,7 +99,9 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		request: request,
 		getJSON: getJSON,
 		exists: function() { return (sessionData != null); },
-		getUser: function() { return sessionData.user; },
+		getUser: function() { return sessionData && sessionData.user; },
+		getExpiration: function() { return sessionData && sessionData.expiration; },
+		getToken: function() { return sessionData && sessionData.token; },
 		resourcePermissions: resourcePermissions
 	}
 })
