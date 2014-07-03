@@ -31,8 +31,8 @@ function ConstructReport( value ) {
   bytes[15] = 0x0A;
 
   bytes.writeUInt16LE( Math.floor(Math.random()*100)*10, 16 ) //count
-  bytes.writeUInt16LE( Math.floor(Math.random()*200), 18 ) //min
-  bytes.writeUInt16LE( Math.floor(Math.random()*200)+800, 20 ) //max
+  bytes.writeUInt16LE( 65535, 18 )//Math.floor(Math.random()*200), 18 ) //min
+  bytes.writeUInt16LE( 0, 20 )//Math.floor(Math.random()*200)+800, 20 ) //max
 
   for ( var i = 0; i < 10; ++i ) {
     bytes.writeUInt16LE( Math.floor(Math.random()*100), 22+(i*4) ) //count
@@ -43,33 +43,51 @@ function ConstructReport( value ) {
 }
 
 function SendFakeReport() {
-  var options = {
-    host: 'localhost',
-    port: 3001,
-    path: '/gateway/sms',
-    headers: {
-      'Content-Type': 'Application/json'
-    },
-    method: 'POST',
-    rejectUnauthorized: false,
-    agent:false
-  };
-  var req = https.request(options, function(res) {
-    setTimeout( SendFakeReport, 60000 );
-    console.log( "OK" );
-  });
-  req.on( 'error', function(e) {
-    console.log( "ERROR: " + e );
-  } )
-
   var data = {
     From: "+123456",
     Body: ConstructReport()
   }
   var payload = JSON.stringify( data )
   console.log( payload );
+  
+  var options = {
+    hostname: 'localhost',
+    port: 3001,
+    path: '/gateway/sms',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': payload.length
+    },
+    method: 'POST',
+    data: data,
+    rejectUnauthorized: false,
+    agent:false
+  };
+  var req = https.request(options, function(res) {
+    if ( res.statusCode == 200 )
+    {
+      console.log( "OK" );
+    }
+    else
+    {
+      console.log( "FAILED" );
+      console.log("statusCode: ", res.statusCode);
+      console.log("headers: ", res.headers);
+    }
+    res.on('data', function(d) {
+      process.stdout.write(d);
+    });
+    res.on('end', function() {
+      process.stdout.write('\n');
+    })
+    setTimeout( SendFakeReport, 60000 );
+  });
   req.write( payload )
   req.end();
+
+  req.on( 'error', function(e) {
+    console.log( "ERROR: " + e );
+  } )
 }
 
 SendFakeReport();

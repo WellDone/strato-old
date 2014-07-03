@@ -206,6 +206,10 @@ define( [ 'jquery',
 			session.getJSON( '/api/v0/monitors/' + id + '/reports?order=timestamp', function( reports ) {
 				reports.forEach( function( r ) {
 					r.timestamp = moment( r.timestamp ).format( 'YYYY MMMM DD h:mm:ss a' );
+					if ( r.data.bulkAggregates.min == 65535 )
+						r.data.bulkAggregates.min = "<none>"
+					if ( r.data.bulkAggregates.max == 0 )
+						r.data.bulkAggregates.max = "<none>"
 				})
 				monitor.reports = reports;
 				render( monitor )

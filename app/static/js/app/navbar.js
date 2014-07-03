@@ -9,7 +9,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 	function updateNavbar() {
 		if ( session.exists() )
 		{
-			$( '#navbar-profile-username' ).text( session.getUser().name );
+			$( '#navbar-profile-username' ).text( session.getUser().user.fullname );
 			$( '#navbar-login' ).addClass( 'hidden' );
 			$( '#navbar-profile' ).removeClass( 'hidden' );
 			$( '#navbar-manage' ).removeClass( 'hidden' );
@@ -50,10 +50,12 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 		updateNavbar();
 		page( "/" );
 	})
-	$('#navbar-profile-settings').click( function(e) {
-		e.preventDefault();
-		
-	})
+
+	$(function () {
+    $('#navbar-login-link').click(function () {
+        setTimeout(function(){loginForm.find("input[name=username]").focus();},0);
+    });
+	});
 
 	return {
 		hideSearch: function() {

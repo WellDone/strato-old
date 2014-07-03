@@ -135,6 +135,7 @@ var parse = function( input ) {
 		types: {},
 		resources: {},
 		top: {},
+		auth: null,
 		references: []
 	}
 
@@ -187,6 +188,19 @@ var parse = function( input ) {
 		model.resources[name] = resource;
 		if ( resource.public )
 			model.top[name] = resource;
+	}
+
+	if ( input.auth ) {
+		if ( !input.auth.resource || !input.auth.login )
+			throw new Error( "Invalid auth object in data model." );
+		if ( !model.resources[ input.auth.resource ] || !model.resources[ input.auth.resource ].columns[ input.auth.login ] )
+			throw new Error( "Resource or login column specified for data model authentication does not exist." );
+		model.auth = {
+			resource: input.auth.resource,
+			login: input.auth.login
+		};
+		model.resources[model.auth.resource].columns['_encrypted_password'] = parseColumnDescription( "string | size: 64" );
+		model.resources[model.auth.resource].columns['_password_salt'] = parseColumnDescription( "string | size: 64" );
 	}
 
 	for ( var d in model.references )

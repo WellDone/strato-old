@@ -14,8 +14,9 @@ define( [ 'jquery',
           'app/manage/monitors',
           'app/manage/monitor',
           'app/manage/people',
+          'app/manage/user',
           'app/session' ],
- function( $, page, navbar, htmlTemplate, loginTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, session ) {
+ function( $, page, navbar, htmlTemplate, loginTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, userHandler, session ) {
  	function renderChrome(path) {
  		$('#content').html( htmlTemplate() );
 		deactivate();
@@ -59,6 +60,7 @@ define( [ 'jquery',
 	page( '/manage/monitors/:id', manageHandler, singleMonitorHandler );
 
 	page( '/manage/people', manageHandler, peopleHandler );
+	page( '/manage/users/:id', manageHandler, userHandler );
 
 	page( '/manage', manageHandler, function() {
 		page( '/manage/monitors' );

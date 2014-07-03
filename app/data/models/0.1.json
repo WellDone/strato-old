@@ -59,5 +59,9 @@
 			"group_ref": "ref:groups(alerts)",
 			"user"     : "refset:users(alerts)"
 		}
+	},
+	"auth": {
+		"resource": "users",
+		"login": "email"
 	}
 }

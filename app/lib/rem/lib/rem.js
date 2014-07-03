@@ -48,8 +48,6 @@ function REM( options ) {
 	};
 
 	this.loadModels( this.options.path );
-
-	this.auth = new Authenticator( this.latest()._createAuthProxy() );
 }
 
 REM.prototype.loadModels = function( basePath, next )
@@ -206,9 +204,9 @@ REM.prototype.serve = function( app, basePath )
 {
 	app.use( basePath, express.json() );
 	app.use( basePath, express.urlencoded() );
-	app.use( basePath, this.auth.middleware() );
+	app.use( basePath, this.latest().auth.middleware() );
 
-	app.post( basePath + "/login", this.auth.login() );
+	app.post( basePath + "/login", this.latest().auth.login() );
 	var self = this;
 	function serveVersion( versionString, versionObject )
 	{

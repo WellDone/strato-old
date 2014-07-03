@@ -1,11 +1,28 @@
 var anyDB = require( 'any-db' );
+var Knex = require( 'knex' );
 var schemaGenerator = require( '../rem-sql-genschema' );
 
-var rem_sql = function( url, poolOptions, logger ) {
-	this.db = ( poolOptions ) ? anyDB.createPool( url, poolOptions ) : anyDB.createConnection( url );
-	this.db.on( 'error', function(err) {
-		throw err;
-	})
+var url = require( 'url' );
+
+var createDBOptions = function( uri, poolOptions ) {
+	var parsed = url.parse( uri );
+	var client = parsed.protocol.substr(0,parsed.protocol.length-1)
+	var options = {
+		client: client,
+		connection: {
+			host: parsed.hostname,
+			user: parsed.auth.split(':')[0],
+			password: parsed.auth.split(':')[1],
+			database: parsed.path.substr(1) // Skip the initial slash
+		}
+	}
+	if ( poolOptions )
+		options.pool = poolOptions;
+	return options;
+}
+var rem_sql = function( uri, pool, logger ) {
+	var options = createDBOptions( uri, pool );
+	this.db = Knex( options );
 	this.logger = logger;
 }
 
@@ -23,21 +40,20 @@ function makeJunctionTableName( ref )
 		return ref.target.name + "_to_" + ref.source.name;
 }
 
-function constructQuery( type, model, params, body)
+rem_sql.prototype.constructQuery = function( type, model, params, body)
 {
 	var query;
 	var parameters = [];
-	var joins = []
+	var joinCount = 0;
 	if ( type == "select" )
 	{
 		var columns = [];
-		var conditions = [];
-		var tables = [ model.name ];
-
 		for ( var c in params.fields )
 		{
 			columns.push( model.name + "." + params.fields[c] );
 		}
+		query = this.db.select( columns ).from( model.name );
+
 		for ( var f in params.where )
 		{
 			var operator;
@@ -56,10 +72,11 @@ function constructQuery( type, model, params, body)
 			if ( model.columns[f].ref && !model.columns[f].ref.manyToMany )
 			{
 				var target = model.columns[f].ref.target;
-				tables.push( target.name );
-				conditions.push( model.name + "." + f + " " + operator + " " + target.name + "." + target.id );
-				conditions.push( target.name + "." + target.id + " = $" + (parameters.length+1) );
-				parameters.push( value );
+				query.leftJoin( target.name,
+				                model.name + "." + f,
+				                operator,
+				                target.name + "." + target.id );
+				query.whereRaw( target.name + "." + target.id + " = ?", [value] );
 			}
 			else if ( model.columns[f].ref && model.columns[f].ref.manyToMany )
 			{
@@ -67,94 +84,54 @@ function constructQuery( type, model, params, body)
 					throw new Error( "Bad operator for many-to-many condition" )
 				var target = model.columns[f].ref.target;
 				var junction = makeJunctionTableName( model.columns[f].ref );
-				var joinID = "joinTable" + joins.length;
-				joins.push( "RIGHT OUTER JOIN ( " + 
-					      "\r\n                   SELECT " + junction + "." + model.name + "_ref" +
-					      "\r\n                   FROM " + junction + 
-					      "\r\n                   WHERE " + junction + "." + target.name + "_ref = $" + (parameters.length+1) + ")" + " AS " + joinID +
-					      "\r\n  ON " + joinID + "." + model.name + "_ref = " + model.name + "." + model.id );
-				parameters.push( value );
+				var joinID = "joinTable" + joinCount;
+				query.rightOuterJoin( this.db.select( model.name + "_ref" )
+					                           .from( junction )
+					                           .whereRaw( target.name + "_ref = ?", [value] )
+					                    .as( joinID ),
+					joinID + "." + model.name + "_ref",
+					model.name + "." + model.id );
+				++joinCount
 			}
 			else
 			{
-				conditions.push( [f, operator, "$" + (parameters.length+1)].join(" ") );
-				parameters.push( value );
+				query.whereRaw( [f, operator, "?"].join(" "), [value] );
 			}
 			
 		}
 
-		var order = "";
 		if ( params.order )
 		{
 			var direction = 'ASC'
 			if ( params.order.direction == 'descending' )
 				direction = 'DESC'
 			
-			order = "ORDER BY " + params.order.column + " " + direction;
+			query.orderBy( params.order.column, direction )
+			//order = "ORDER BY " + params.order.column + " " + direction;
 		}
-
-		query = "SELECT " + columns.join( ", \r\n\t" )
-		     + "\r\nFROM " + tables.join( ", " )
-		     + ( conditions.length?"\r\nWHERE " + conditions.join( "\r\n AND " ) : "" )
-		     + ( joins.length? "\r\n" + joins.join( "\r\n" ) : "" )
-		     + ( order.length? "\r\n" + order : "" )
-		     + ";"
+		return query;
 	}
 	else if ( type == "")
 	{}
-
-	return {
-		sql: query,
-		parameters: parameters
-	}
 }
 
-function parseFilter( model, params )
+function applyFilter( query, params )
 {
-	var columns = Object.keys( model.columns );
-
-	var conditions = [];
-	var parameters = [];
 	if ( params && params.where )
 	{
 		for ( var f in params.where )
 		{
 			if ( typeof params.where[f] == 'object' )
 			{
-				conditions.push( f + params.where[f].operator + "$" + (parameters.length+1) );
-				parameters.push( params.where[f].value );
+				query.whereRaw( f + params.where[f].operator + "?", [params.where[f].value] );
 			}
 			else
 			{
-				conditions.push( f + "=$" + (parameters.length+1) );
-				parameters.push( params.where[f] );
+				query.whereRaw( f + "=?", params.where[f] );
 			}
 		}
 	}
-	var condition = (conditions.length > 0)? " WHERE " + conditions.join(' AND ') : ""
-	return {
-		columns: columns,
-		condition: condition,
-		parameters: parameters
-	}
-}
-function parseBody( body )
-{
-	var columns = [];
-	var parameters = [];
-	var valueArgs = [];
-	for ( var i in body )
-	{
-		columns.push( i );
-		parameters.push( body[i] );
-		valueArgs.push( "$" + parameters.length );
-	}
-
-	return {
-		columns: columns,
-		parameters: parameters,
-		valueArgs: valueArgs
-	}
+	return query;
 }
 function transformRow( model, row ) {
 	for ( var c in model.columns )
@@ -167,20 +144,14 @@ function transformRow( model, row ) {
 	}
 	return row;
 }
-rem_sql.prototype.streamQueryResults = function( sql, parameters, transform, output )
+rem_sql.prototype.streamQueryResults = function( query, transform, output )
 {
-	this.logger.info( "Running SQL query:\r\n", sql, "\r\nparameters: [ " + parameters.toString() + " ]" );
-	
-	var result = [];
+	this.logger.info( "Executing SQL: ", query.toSQL().sql )
 	var self = this;
-	this.db.query( sql, parameters )
-	.on( 'data', function( row ) {
-		result.push( transform( row ) );
-	} )
-	.on( 'end', function() {
-		output( null, result );
-	} )
-	.on( 'error', function( err ) {
+	//this.db.query( sql, parameters )
+	query.then( function( results ) {
+		output( null, results );
+	}).catch( function( err ) {
 		self.logger.error( err );
 		output( "Database query failed. " + err.toString() );
 	})
@@ -189,9 +160,9 @@ rem_sql.prototype.get = function( model, type, params, body, output )
 {
 	this.assertValid();	
 
-	var query = constructQuery( "select", model, params, body );
+	var query = this.constructQuery( "select", model, params, body );
 
-	this.streamQueryResults( query.sql, query.parameters, transformRow.bind( null, model ), output );
+	this.streamQueryResults( query, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.post = function( model, type, params, body, output )
@@ -199,37 +170,25 @@ rem_sql.prototype.post = function( model, type, params, body, output )
 	this.assertValid();
 	if ( params && params.length )
 		throw new Error( "Conditions are not allowed when doing a POST to a resource collection." );
-	var parsedBody = parseBody( body );
 
-	var sql = "INSERT INTO " + type + " (" + parsedBody.columns.join(", ") + ") VALUES (" + parsedBody.valueArgs.join(", ") + ")";
-	this.streamQueryResults( sql, parsedBody.parameters, transformRow.bind( null, model ), output );
+	var query = this.db.insert( body ).into( type );
+	this.streamQueryResults( query, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.put = function( model, type, params, body, output )
 {
 	this.assertValid();
-	var parsedFilter = parseFilter( model, params );
-	var parsedBody = parseBody( body );
-	var parameters = parsedFilter.parameters.concat( parsedBody.parameters );
 
-	var assignmentStrings = [];
-	for ( var i = 0; i < parsedBody.columns.length; ++i )
-	{
-		var j = (i+parsedFilter.parameters.length+1);
-		assignmentStrings.push( parsedBody.columns[i] + "=$"+ j );
-	}
-
-	var sql = "UPDATE " + type + " SET " + assignmentStrings.join( ", " ) + parsedFilter.condition;
-	this.streamQueryResults( sql, parameters, transformRow.bind( null, model ), output );
+	var query = applyFilter( this.db( type ).update( body ), params );
+	this.streamQueryResults( query, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.del = function( model, type, params, body, output )
 {
 	this.assertValid();
-	var parsedFilter = parseFilter( model, params );
 
-	var sql = "DELETE FROM " + type + parsedFilter.condition;
-	this.streamQueryResults( sql, parsedFilter.parameters, transformRow.bind( null, model ), output );
+	var query = applyFilter( this.db( type ), params ).del()
+	this.streamQueryResults( query, transformRow.bind( null, model ), output );
 }
 
 rem_sql.prototype.schema = function( model )

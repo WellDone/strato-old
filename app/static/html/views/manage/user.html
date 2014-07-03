@@ -1,0 +1,27 @@
+<h1 class="page-header">{{fullname}}</h1>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p><h4>Email: {{email}}</h4></p>
+    <p><h4>Phone: {{phone}}</h4></p>
+    <p><button id="reset-password-button" class="btn btn-danger pull-right hidden">Reset Password</button>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="deleteModalLabel">Clear reports?</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to reset {{fullname}}'s password?  The user's previous password will no longer be valid.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No, nevermind</button>
+        <button id="actually-delete-button" type="button" class="btn btn-danger" data-dismiss="modal">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>

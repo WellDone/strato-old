@@ -1,5 +1,8 @@
 var path = require( 'path' );
+var _ = require( 'lodash' );
 var Modeler = require( './modeler')
+var auth = require( './authentication' );
+var crypto = require( 'crypto' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
@@ -62,7 +65,11 @@ Resource.prototype.serve = function( app, baseurl ) {
 				for ( p in req.query )
 					params[p] = req.query[p]; // shallow
 
-				f( params, req.body, handleBackendResult.bind(null, req, res, isCollection) );
+				params.withSensitive = false;
+				var body = _.omit( req.body, function( value, key ) {
+					return ( key[0] == '_' );
+				})
+				f( params, body, handleBackendResult.bind(null, req, res, isCollection) );
 			}
 			catch (e)
 			{
@@ -83,7 +90,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 	app.get( url + "/:id" , serveFunc( 'get' ) );
 	app.post( url         , serveFunc( 'post', true ) );
 	app.put( url + "/:id" , serveFunc( 'put' ) );
-	app.del( url + "/:id" , serveFunc( 'del' ) );
+	app.delete( url + "/:id" , serveFunc( 'del' ) );
 	for ( var c in self.model.columns )
 	{
 		if ( self.model.columns[c].ref ) {
@@ -92,13 +99,115 @@ Resource.prototype.serve = function( app, baseurl ) {
 				var params = { where: {} };
 				for ( p in req.query )
 					params[p] = req.query[p]; // shallow
+
+				params.withSensitive = false;
 				
 				params.where[self.model.columns[c].ref.complement] = req.params.id;
 				var target = self.model.columns[c].ref.target.name;
-				console.log( target );
 				self.engine.resource(target).get( params, handleBackendResult.bind( null, req, res, isCollection ) );
 			}.bind( self, c ) );
 		}
+	}
+
+	//TODO: move to authentication.js
+	if ( this.name == this.engine.model.auth.resource )
+	{
+		app.post( url + "/:id/password", function( req, res ) {
+			if ( !req.identity || req.identity.user.id != req.params['id'] )
+			{
+				res.send( 403, "You may only change your own password." );
+				return;
+			}
+			else
+			{
+				if ( !req.body.new_password || !req.body.old_password )
+				{
+					res.send( 400, "No password specified." );
+					return;
+				}
+
+				this.engine.auth.authenticatePassword( req.identity.user, req.body.old_password, function( err, token ) {
+					if ( err || !token ) {
+						console.log( err );
+						return res.send( 403, "Invalid password." );
+					}
+					auth.encryptPassword( req.body.new_password, {}, function( err, encryptedPassword, salt ) {
+						if ( err )
+						{
+							return res.send( 500, "Failed to encrypt password." );
+						}
+						var q = { where: {
+								'id': req.params['id']
+							}
+						} ;
+						this.update( q, {
+							_encrypted_password: encryptedPassword,
+							_password_salt: salt
+						}, function( err, result ) {
+							if ( err )
+							{
+								console.log( err );
+								return res.send( 500, "Failed to update password." );
+							}
+							return res.send( 200, "Successfully updated password." );
+						});
+					}.bind( this ) );
+				}.bind( this ) );
+			}
+		}.bind( this ) )
+		app.del( url + "/:id/password", function( req, res ) {
+			if ( !req.identity || !_.contains( req.identity.roles, 'master' ) )
+			{
+				return res.send( 403, "You are not authorized to perform this action." );
+			}
+			var new_password = crypto.randomBytes(12).toString('base64');
+			auth.encryptPassword( new_password, {}, function( err, encryptedPassword, salt ) {
+				if ( err )
+				{
+					return res.send( 500, "Failed to encrypt password." );
+				}
+				var q = { where: {
+					'id': req.params['id']
+				} };
+				this.update( q, {
+					_encrypted_password: encryptedPassword,
+					_password_salt: salt
+				}, function( err, result ) {
+					if ( err )
+					{
+						console.log( err );
+						return res.send( 500, "Failed to update password." );
+					}
+					console.log( "Password set to : " + new_password );
+					return res.send( 200, new_password );
+				});
+			}.bind( this ) );
+		}.bind( this ) )
+	}
+}
+
+function stripSensitiveInfo( output, err, res )
+{
+	if ( err ) {
+		output( err );
+	}
+	else
+	{
+		if ( _.isArray( res ) )
+		{
+			res = _.map(res, function( o ) {
+				return _.omit( o, function( value, key ) {
+					return key[0] == '_';
+				} );
+			} );
+		}
+		else
+		{
+			res = _.omit( res, function( value, key ) {
+				return key[0] == '_';
+			} );
+		}
+		output( null, res );
 	}
 }
 
@@ -129,6 +238,9 @@ Resource.prototype.proxy = function( fname, params, body, output )
 		default:
 			throw new Error( "Invalid arguments." );
 	}
+
+	if ( !params || !params.withSensitive )
+		output = stripSensitiveInfo.bind( this, output );
 	try
 	{
 		params = this.engine.sanitizeParams( this, params );
@@ -142,6 +254,7 @@ Resource.prototype.proxy = function( fname, params, body, output )
 	}
 	catch (e)
 	{
+		console.log( "Unhandled exception!", e );
 		output( e );
 	}
 }

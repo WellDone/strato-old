@@ -1,28 +1,35 @@
-define( ['async!https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmmEu6a3sbSjVYgFVWbB_c&sensor=false',
-         'app/mapStyle',
-         'MarkerClusterer',
+define( ['MarkerClusterer',
          'page'
-        ], function( _gmaps, mapStyle, MarkerClusterer, page ) {
+        ], function( MarkerClusterer, page ) {
   function refreshMap() {
   	this.markerCluster = new MarkerClusterer(this.map, this.markers);
   }
-	function initializeMap( container ) {
-		this.mapOptions = {
-			center: new google.maps.LatLng(9.4969, 36.8961),
-			zoom: 3,
-			//mapTypeId: 'overview-style',
-			draggable:true,
-			streetViewControl:false,
-			mapTypeControl:false,
-			//zoomControl:false,
-			panControl:false /*,
-			scrollwheel:false,
-			disableDoubleClickZoom:true*/
-		};
+	function initializeMap( container, cb ) {
+		var self = this;
+		require( ['async!https://maps.google.com/maps/api/js?v=3&key=AIzaSyAjsPeRR5wIJrmmEu6a3sbSjVYgFVWbB_c&sensor=false',
+			        'app/mapStyle'],
+			function( _gmaps, mapStyle ) {
+	      self.mapOptions = {
+					center: new google.maps.LatLng(9.4969, 36.8961),
+					zoom: 3,
+					//mapTypeId: 'overview-style',
+					draggable:true,
+					streetViewControl:false,
+					mapTypeControl:false,
+					//zoomControl:false,
+					panControl:false /*,
+					scrollwheel:false,
+					disableDoubleClickZoom:true*/
+				};
 
-		this.map = new google.maps.Map( container, this.mapOptions);
-		//map.mapTypes.set('overview-style', mapStyle);
-		this.refresh();
+				self.map = new google.maps.Map( container, self.mapOptions);
+				//map.mapTypes.set('overview-style', mapStyle);
+				self.refresh();
+				cb();
+	    },
+	    function( err ) {
+	    	cb( "Failed" );
+	    } );
 	};
 
 	function handleEvent( event, handler ) {
