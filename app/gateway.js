@@ -69,14 +69,14 @@ function processReport( from, body, timestamp, output ) {
 }
 
 function processSMS( req, res, gatewayVersion ) {
-	if ( !req.body )
+	if ( req.method == 'POST' && !req.body || req.method == 'GET' && !req.query )
 	{
 		res.send( 400, "Invalid request." );
 		return false;
 	}
 
-	var body = req.body.Body || req.body.message || req.body.text;
-  var from = req.body.From || req.body.from || req.body.msisdn;
+	var body = req.query.text || req.body.Body || req.body.message || req.body.text;
+  var from = req.query.msisdn || req.body.From || req.body.from || req.body.msisdn;
   var timestamp = req.body.sent_timestamp;
   if (timestamp) {
     timestamp = parseInt(timestamp)
@@ -114,9 +114,14 @@ function processSMS( req, res, gatewayVersion ) {
 }
 
 // /gateway/<type> or /gateway/<type>/<version>
-server.app.post( /^\/gateway\/([^\/]+)(\/\d+)?/, function( req, res ) {
+server.app.all( /^\/gateway\/([^\/]+)(\/\d+)?/, function( req, res ) {
 	if ( req.params[0].toLowerCase() == 'sms' )
 	{
+		if ( req.method != 'POST' && req.method != 'GET' )
+		{
+			res.send( 404, "Invalid gateway HTTP method." );
+			return;
+		}
 		processSMS( req, res, parseInt( req.params[1] ) );
 	}
 	else
