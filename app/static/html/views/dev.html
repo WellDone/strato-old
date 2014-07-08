@@ -1,0 +1,25 @@
+<div style="padding:5px;">
+	<div>
+	{{#if exists}}
+		<strong>User       : </strong> {{user.fullname}} | {{user.email}}<br/>
+		<strong>Expiration :</strong> {{expiration}}<br/>
+		<strong>Token      :</strong> <input style='width:100%' type='text' value='{{token}}' readonly='true'></input>
+	{{else}}
+		<strong>No session!</strong>
+	{{/if}}
+	</div>
+<h4>Custom API Requests</h4>
+	<form id='dev-form'>
+		<select id='dev-method'>
+		  <option value="GET">GET</option>
+		  <option value="POST">POST</option>
+		  <option value="PUT">PUT</option>
+		  <option value="DELETE">DELETE</option>
+		</select>
+		<input id='dev-url' type='text' value='/api/v0/' style='width:640px;'></input><br/>
+		<label>Body:</label><br/>
+		<textarea id='dev-body' style='width:100%;height:80px;'></textarea>
+		<br/><button id='dev-send' type='submit' class='btn btn-primary'>Send Request</button>
+	</form>
+	<div id='dev-output' style='height:400px;overflow:scroll;border:1px solid black; margin-top:10px;'></div>
+</div>
