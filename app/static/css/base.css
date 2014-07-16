@@ -105,3 +105,13 @@ body {
 tbody tr {
   cursor: pointer;
 }
+
+/*
+ * Dev JSON display
+ */
+pre.dev {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+span.dev.string { color: green; }
+span.dev.number { color: darkorange; }
+span.dev.boolean { color: blue; }
+span.dev.null { color: magenta; }
+span.dev.key { color: red; }

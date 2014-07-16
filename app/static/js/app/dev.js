@@ -26,6 +26,9 @@ define( [ 'jquery',
  					//PASS
  				}
  			}
+ 			var outputDiv = $('<div></div>');
+ 			$('#dev-output').prepend( outputDiv );
+ 			outputDiv.html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>&nbsp" );
  			var opts = {
  				type: method,
  				url: url,
@@ -35,9 +38,37 @@ define( [ 'jquery',
  			opts.complete = function(result) {
  				var success = ( result.status == 200 || result.status == 302 );
  				var labelType = success? "label-success" : "label-warning";
- 				$('#dev-output').html( result.responseText + "<br/>" + $('#dev-output').html() );
- 				$('#dev-output').html( "<br/><span class='label " + labelType + "'>" + result.status + "</span>&nbsp;" + $('#dev-output').html() );
-				$('#dev-output').html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>" + $('#dev-output').html() );
+ 				var text = result.responseText;
+ 				try {
+ 					text = JSON.parse( text );
+ 				}
+ 				catch (e)
+ 				{
+ 					console.log( e );
+ 				}
+ 				if ( typeof text != "string" )
+ 				{
+ 					text = JSON.stringify( text, undefined, 2 );
+ 					text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			    text = text.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+			        var cls = 'dev number';
+			        if (/^"/.test(match)) {
+			            if (/:$/.test(match)) {
+			                cls = 'dev key';
+			            } else {
+			                cls = 'dev string';
+			            }
+			        } else if (/true|false/.test(match)) {
+			            cls = 'dev boolean';
+			        } else if (/null/.test(match)) {
+			            cls = 'dev null';
+			        }
+			        return '<span class="' + cls + '">' + match + '</span>';
+			    });
+ 				}
+		    text = "<pre class='dev'>" + text + "</pre>";
+		    var statusLabel = "<span class='label " + labelType + "'>" + result.status + "</span>"
+ 				outputDiv.html( outputDiv.html() + statusLabel + text );
 				console.log( result );
 				$('#dev-send').removeClass('disabled');
 			}
