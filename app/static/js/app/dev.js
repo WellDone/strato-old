@@ -10,6 +10,10 @@ define( [ 'jquery',
  			expiration: session.getExpiration(),
  			token: session.getToken()
  		}) );
+ 		$('#dev-link-clear').click( function(e) {
+ 			e.preventDefault();
+ 			$('#dev-output').html("");
+ 		})
  		$('#dev-form').submit( function(e) {
  			e.preventDefault();
  			$('#dev-send').addClass('disabled');
