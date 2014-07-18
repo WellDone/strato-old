@@ -105,3 +105,13 @@ body {
 tbody tr {
   cursor: pointer;
 }
+
+/*
+ * Dev JSON display
+ */
+/*pre.pretty-json {outline: 1px solid #ccc; padding: 5px; margin: 5px; }*/
+pre.pretty-json span.string { color: green; }
+pre.pretty-json span.number { color: darkorange; }
+pre.pretty-json span.boolean { color: blue; }
+pre.pretty-json span.null { color: magenta; }
+pre.pretty-json span.key { color: red; }
