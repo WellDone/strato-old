@@ -104,6 +104,7 @@ define( [ 'jquery',
  					pretty: res.responseText,
  					raw: res.responseText,
  					timestamp: startTime.toLocaleString(),
+ 					size: res.getResponseHeader('Content-Length') || 0,
  					latency: endTime.valueOf() - startTime.valueOf()
  				}
  				try {
