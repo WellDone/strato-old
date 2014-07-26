@@ -16,10 +16,13 @@
 		  <option value="PUT">PUT</option>
 		  <option value="DELETE">DELETE</option>
 		</select>
-		<input id='dev-url' type='text' value='/api/v0/' style='width:640px;'></input><br/>
-		<label>Body:</label><br/>
-		<textarea id='dev-body' style='width:100%;height:80px;'></textarea>
+		<input id='dev-url' type='text' value='/api/v0/' style='max-width:640px;width:100%'></input><br/>
+		<div id='dev-body-container' class='hidden'>
+			<label>Body:</label><br/>
+			<textarea id='dev-body' style='width:100%;height:80px;'></textarea>
+		</div>
 		<br/><button id='dev-send' type='submit' class='btn btn-primary'>Send Request</button>
 	</form>
 	<div id='dev-output' style='height:400px;overflow:scroll;border:1px solid black; margin-top:10px;'></div>
+	<div style="width:100%"><a href="#" class="pull-right" id="dev-link-clear">clear</a></div>
 </div>

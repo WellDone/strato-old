@@ -44,8 +44,8 @@ function ConstructReport( value ) {
 
 function SendFakeReport() {
   var data = {
-    msisdn: "+123456",
-    text: ConstructReport()
+    From: "+123456",
+    Body: ConstructReport()
   }
   var payload = JSON.stringify( data )
   console.log( payload );
@@ -53,7 +53,7 @@ function SendFakeReport() {
   var options = {
     hostname: 'localhost',
     port: 3001,
-    path: '/gateway/sms',
+    path: '/gateway/twilio',
     headers: {
       'Content-Type': 'application/json',
       'Content-Length': payload.length
@@ -64,11 +64,7 @@ function SendFakeReport() {
     agent:false
   };
   var req = https.request(options, function(res) {
-    if ( res.statusCode == 200 )
-    {
-      console.log( "OK" );
-    }
-    else
+    if ( res.statusCode != 200 )
     {
       console.log( "FAILED" );
       console.log("statusCode: ", res.statusCode);

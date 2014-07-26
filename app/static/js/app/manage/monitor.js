@@ -48,6 +48,8 @@ define( [ 'jquery',
 		//var svg = dimple.newSvg('#chartContainer', 590, 400);
 		var data = {};
 		var aggCount = 0;
+		data['volume (L)'] = [];
+		++aggCount;
 		monitor.reports.forEach( function(x, r) {
 			if ( !x.data || !x.data.intervalAggregates )
 				return;
@@ -75,20 +77,24 @@ define( [ 'jquery',
 			for ( var i = 0; i < x.data.intervalAggregates.length; ++i )
 			{
 				var date = baseDate.add( 's', step ).unix();
-				for ( var a in x.data.intervalAggregates[i] )
-				{
-					if ( a == 'count' )
-						continue;
-					if ( !data[a] )
-					{
-						data[a] = [];
-						++aggCount;
-					}
-					data[a].push( {
-						x: date,
-						y: x.data.intervalAggregates[i][a]
-					} );
-				}
+				data['volume (L)'].push( {
+					x: date,
+					y: x.data.intervalAggregates[i]['mean'] * x.data.intervalAggregates[i]['count'] / 65
+				} );
+				// for ( var a in x.data.intervalAggregates[i] )
+				// {
+				// 	if ( a == 'count' )
+				// 		continue;
+				// 	if ( !data[a] )
+				// 	{
+				// 		data[a] = [];
+				// 		++aggCount;
+				// 	}
+				// 	data[a].push( {
+				// 		x: date,
+				// 		y: x.data.intervalAggregates[i][a]
+				// 	} );
+				// }
 			}
 		} );
 
@@ -98,7 +104,7 @@ define( [ 'jquery',
 			return;
 		}
     
-    var palette = new Rickshaw.Color.Palette( { scheme: 'classic9' } );
+    var palette = new Rickshaw.Color.Palette();
 
 		// instantiate our graph!
 		var seriesData = [];
