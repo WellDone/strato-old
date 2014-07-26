@@ -128,7 +128,7 @@ define( [ 'jquery',
 		} );
 
 		graph.window.xMax = graph.dataDomain()[1];
-		graph.window.xMin = graph.window.xMax - 60;
+		graph.window.xMin = graph.window.xMax - (24*60*60); // One day
 
 		graph.render();
 
