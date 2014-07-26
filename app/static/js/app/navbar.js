@@ -23,6 +23,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 			$( '#navbar-manage' ).addClass( 'hidden' );
 			$( '#navbar-explore' ).addClass( 'hidden' );
 		}
+		$('#alert-login-error').addClass('hidden');
 	}
 
 	updateNavbar();
@@ -40,6 +41,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 			}
 			loginForm.find("input[name=username]").val( "" );
 			loginForm.find("input[name=password]").val( "" );
+			$('#alert-login-error').text(err).removeClass('hidden');
 		} );
 	}
 	loginForm.submit( onLoginSubmit )
