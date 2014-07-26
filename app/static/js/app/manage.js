@@ -8,15 +8,15 @@ define( [ 'jquery',
 					'page',
 					'app/navbar',
 					'hbars!views/manage',
-					'hbars!views/login',
           'app/manage/groups',
           'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
           'app/manage/people',
           'app/manage/user',
+          'app/loginForm',
           'app/session' ],
- function( $, page, navbar, htmlTemplate, loginTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, userHandler, session ) {
+ function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, userHandler, loginForm, session ) {
  	function renderChrome(path) {
  		$('#content').html( htmlTemplate() );
 		deactivate();
@@ -29,25 +29,7 @@ define( [ 'jquery',
 
  		if ( !session.exists() )
  		{
- 			$('#content').html( loginTemplate() )
- 			var loginForm = $('#login-form');
- 			function onLoginSubmit( e ) {
-				e.preventDefault();
-				var username = loginForm.find("input[name=username]").val();
-				var password = loginForm.find("input[name=password]").val();
-
-				session.login( username, password, function( err ) {
-					if ( !err )
-					{
-						navbar.update();
-						renderChrome( ctx.path );
-						next()
-					}
-					loginForm.find("input[name=username]").val( "" );
-					loginForm.find("input[name=password]").val( "" );
-				} );
-			}
-			loginForm.submit( onLoginSubmit )
+ 			loginForm.display( $('#content') )
  			return;
  		}
  		renderChrome( ctx.path )

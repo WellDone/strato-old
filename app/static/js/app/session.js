@@ -8,7 +8,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 			if ( new Date( sessionData.expiration ) <= new Date() )
 			{
 				console.log( "Session has expired." );
-				sessionData = window.sessionStorage.auth = null;
+				sessionData.token = window.sessionStorage.auth.token = null;
 			}
 		}
 	}
@@ -98,7 +98,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		logout: logout,
 		request: request,
 		getJSON: getJSON,
-		exists: function() { return (sessionData != null); },
+		exists: function() { return sessionData && sessionData.token != null; },
 		getUser: function() { return sessionData && sessionData.user; },
 		getExpiration: function() { return sessionData && sessionData.expiration; },
 		getToken: function() { return sessionData && sessionData.token; },
