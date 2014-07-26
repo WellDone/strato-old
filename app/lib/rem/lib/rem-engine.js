@@ -49,6 +49,7 @@ REMEngine.prototype.authenticate = function( login, cb ) {
 		return cb( "Invalid login field." );
 
 	login = q[this.model.auth.login];
+
 	this.resources[this.model.auth.resource].get( {
 		where: q,
 		withSensitive: true
@@ -64,7 +65,7 @@ REMEngine.prototype.authenticate = function( login, cb ) {
 					user: _.omit( user, function( value, key ) {
 							return ( key[0] == '_' );
 						} ),
-					roles: (login=="austin@welldone.org")?["master"]:["layman"]
+					roles: (login=="admin")?["master"]:["layman"]
 				},
 				encryptedPassword: user._encrypted_password,
 				passwordSalt: user._password_salt

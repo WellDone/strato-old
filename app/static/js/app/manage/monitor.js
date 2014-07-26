@@ -98,7 +98,7 @@ define( [ 'jquery',
 			}
 		} );
 
-		if ( aggCount === 0 )
+		if ( !data['volume (L)'] || data['volume (L)'].length == 0 )
 		{
 			$('#chart_container').html( "No data available..." );
 			return;
