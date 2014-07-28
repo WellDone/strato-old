@@ -205,6 +205,20 @@ define( [ 'jquery',
     // myChart.addSeries(["aggregate"], dimple.plot.bar);
     // myChart.addLegend(60, 10, 500, 20, "right");
     // myChart.draw();
+
+    var chartResizer = function( windowSize, e ) {
+    	e.preventDefault();
+    	
+    	graph.window.xMax = graph.dataDomain()[1];
+			graph.window.xMin = graph.window.xMax - (windowSize);
+
+			graph.render();
+    }
+
+    $( '#chart_control' ).find( "[href='#year']" ).click( chartResizer.bind( null, 24*60*60*365 ) );
+    $( '#chart_control' ).find( "[href='#month']" ).click( chartResizer.bind( null, 24*60*60*30 ) );
+    $( '#chart_control' ).find( "[href='#week']" ).click( chartResizer.bind( null, 24*60*60*7 ) );
+    $( '#chart_control' ).find( "[href='#day']" ).click( chartResizer.bind( null, 24*60*60 ) );
 	}
 
 	function init( id ) {
