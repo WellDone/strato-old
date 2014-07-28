@@ -49,8 +49,9 @@ define( [ 'jquery',
 	page( '/manage/people', manageHandler, peopleHandler );
 	page( '/manage/users/:id', manageHandler, userHandler );
 
-	page( '/manage', manageHandler, function() {
-		page( '/manage/monitors' );
+	page( '/manage', manageHandler, function( ctx ) {
+		page.show( '/manage/monitors' );
+		ctx.unhandled = true;
 	})
 	return manageHandler;
  } );
