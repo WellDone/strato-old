@@ -28,6 +28,7 @@ define( ['jquery', 'hbars!views/loginForm', 'app/session', 'page'],
 				}
 
 				passwordInput.parent().removeClass( 'has-error');
+				container.find('#login-form-error').addClass('hidden')
 				session.login( email, password, function( err ) {
 					if ( !err )
 					{
@@ -35,7 +36,12 @@ define( ['jquery', 'hbars!views/loginForm', 'app/session', 'page'],
 						if ( redirect )
 							page( redirect );
 					}
-					passwordInput.val( "" ).parent().addClass( 'has-error');
+
+					passwordInput.val( "" );
+					if ( err.status == 401 )
+						passwordInput.parent().addClass( 'has-error');
+					else
+						container.find('#login-form-error').removeClass('hidden').html( '<strong>Error ' + err.status + '</strong> ' + err.statusText );
 				} );
 			}
 			this.loginForm.submit( onLoginSubmit )

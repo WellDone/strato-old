@@ -39,7 +39,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 				}
 				else
 				{
-					cb( result.statusText );
+					cb( result );
 				}
 			}
 		})
