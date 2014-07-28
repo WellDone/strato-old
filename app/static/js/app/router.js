@@ -12,7 +12,7 @@ define( [ 'jquery',
 		page( '/dev', dev );
 
 		page( '*', function() {
-			
+			$('#content').text("Oops!  We couldn't find what you were looking for!");
 		})
 
 		page();

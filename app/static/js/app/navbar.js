@@ -6,7 +6,7 @@ define( [ 'jquery', 'app/session', 'page', 'app/loginForm' ], function( $, sessi
 	searchForm.submit( onSearchSubmit );
 
 	function updateNavbar() {
-		loginForm.display( $( '#navbar-login-dropdown' ) )
+		loginForm.display( $( '#navbar-login-dropdown' ), '/manage' )
 		if ( session.exists() && session.getUser().user && session.getUser().user.fullname )
 		{
 			$( '#navbar-profile-username' ).text( session.getUser().user.fullname );

@@ -62,11 +62,12 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		opts = extendOpts( opts );
 		return $.ajax( opts );
 	}
-	var getJSON = function( url, cb ) {
+	var getJSON = function( url, successcb, failurecb ) {
 		this.request( {
 			url: url,
 			type: "GET",
-			success: cb
+			success: successcb,
+			error: failurecb
 		});
 	}
 

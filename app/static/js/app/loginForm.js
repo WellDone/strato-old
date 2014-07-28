@@ -2,7 +2,7 @@ define( ['jquery', 'hbars!views/loginForm', 'app/session', 'page'],
  function( $, loginTemplate, session, page ) {
  	return {
  		loginForm: null,
- 		display: function( container ) {
+ 		display: function( container, redirect ) {
  			container = $( container );
 			container.html( loginTemplate() );
 			this.loginForm = container.find( "#login-form" );
@@ -32,7 +32,8 @@ define( ['jquery', 'hbars!views/loginForm', 'app/session', 'page'],
 					if ( !err )
 					{
 						require('app/navbar').update();
-						page( "/manage" );
+						if ( redirect )
+							page( redirect );
 					}
 					passwordInput.val( "" ).parent().addClass( 'has-error');
 				} );

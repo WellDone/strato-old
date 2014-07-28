@@ -20,7 +20,12 @@ define( [ 'jquery',
  	function renderChrome(path) {
  		$('#content').html( htmlTemplate() );
 		deactivate();
-		var el = document.querySelector('.nav-sidebar [href="'+path+'"]');
+		var basePath = path.substring(1);
+		basePath = basePath.substring( basePath.indexOf( '/' ) + 1, basePath.length );
+		var index = basePath.indexOf( '/' );
+		basePath = basePath.substring( 0, (index != -1)? index : basePath.length );
+
+		var el = document.querySelector('.nav-sidebar [href="/manage/'+basePath+'"]');
 		if ( el )
 			el.parentNode.classList.add('active');
  	}
@@ -29,7 +34,7 @@ define( [ 'jquery',
 
  		if ( !session.exists() )
  		{
- 			loginForm.display( $('#content') )
+ 			loginForm.display( $('#content'), ctx.path )
  			return;
  		}
  		renderChrome( ctx.path )

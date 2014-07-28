@@ -188,13 +188,13 @@ define( [ 'jquery',
 
 		yAxis.render();
 
-		/*var previewXAxis = new Rickshaw.Graph.Axis.Time({
-			graph: preview.previews[0],
+		var previewXAxis = new Rickshaw.Graph.Axis.Time({
+			graph: graph,
 			timeFixture: new Rickshaw.Fixtures.Time.Local(),
 			ticksTreatment: ticksTreatment
 		});
 
-		previewXAxis.render();*/
+		previewXAxis.render();
 
     // var myChart = new dimple.chart(svg, data);
     // myChart.setBounds(60, 30, 505, 305);
@@ -234,6 +234,12 @@ define( [ 'jquery',
 				monitor.reports = reports;
 				render( monitor )
 			});
+		},
+		function( err ) {
+			if ( err.status == 404 )
+				$('#manage-content').html( "Monitor not found!  <br/><br/><a href='/manage/monitors'>List all monitors</a>" );
+			else
+				$('#manage-content').html( "An unexpected error occurred. This event has been recorded and WellDone Technical Support is on the case.")
 		} );
 	}
 
