@@ -87,7 +87,7 @@ define( [ 'jquery',
  			}
  			var outputDiv = $('<div></div>');
  			$('#dev-output').prepend( outputDiv );
- 			outputDiv.html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>&nbsp" );
+ 			outputDiv.html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>&nbsp<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span>" );
  			var opts = {
  				type: method,
  				url: url,
