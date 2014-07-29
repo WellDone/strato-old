@@ -8,9 +8,10 @@ var Authenticator = require( './authentication' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
-	'add': 'post',
-	'remove': 'del',
-	'update': 'put'
+	'create': 'post',
+	'read'  : 'get',
+	'update': 'put',
+	'delete': 'del'
 }
 
 function REMEngine( version, modelJSON, backend, options ) {

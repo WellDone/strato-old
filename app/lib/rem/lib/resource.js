@@ -6,9 +6,10 @@ var crypto = require( 'crypto' );
 
 var verbs = [ 'get', 'post', 'del', 'put' ]
 var verbAliases = {
-	'add': 'post',
-	'remove': 'del',
-	'update': 'put'
+	'create': 'post',
+	'read'  : 'get',
+	'update': 'put',
+	'delete': 'del'
 }
 
 var Resource = function( name, model, engine ) {
@@ -156,7 +157,7 @@ Resource.prototype.serve = function( app, baseurl ) {
 			}
 		}.bind( this ) )
 		app.del( url + "/:id/password", function( req, res ) {
-			if ( !req.identity || !_.contains( req.identity.roles, 'master' ) )
+			if ( false )//!req.identity || !_.contains( req.identity.roles, 'master' ) )
 			{
 				return res.send( 403, "You are not authorized to perform this action." );
 			}
