@@ -3,8 +3,9 @@ define( [ 'jquery',
           'moment',
           'd3',
           'rickshaw',
-          'app/session' ],
- function ( $, template, moment, d3, Rickshaw, session ) {
+          'app/session',
+          'app/alerts' ],
+ function ( $, template, moment, d3, Rickshaw, session, alerts ) {
  	
  	function render( monitor ) {
 		$( '#manage-content' ).html( template( monitor ) )

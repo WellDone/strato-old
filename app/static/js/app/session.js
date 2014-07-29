@@ -1,4 +1,4 @@
-define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
+define( ['jquery', 'underscore', 'backbone', 'app/alerts'], function( $, _, Backbone, alerts ) {
 	var sessionData = null;
 	try
 	{
@@ -48,7 +48,14 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		window.sessionStorage.auth = null;
 		sessionData = null;
 	}
-	var extendOpts = function( param ) {
+	var displayErrorCallback = function( next, result ) {
+		alerts.error( "<strong>Error " + result.status + " </strong>" + result.statusText );
+		if ( next )
+			next( result );
+	}
+	var extendOpts = function( param, displayError ) {
+		if ( displayError !== false )
+			displayError = true;
 		var opts = _.clone(param || {});
 		if ( sessionData )
 		{
@@ -56,10 +63,12 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 				opts.headers = {};
 			opts.headers['Authorization'] = "Bearer " + sessionData.token
 		}
+		if ( displayError )
+			opts.error = displayErrorCallback.bind( null, opts.error );
 		return opts;
 	}
-	var request = function( opts ) {
-		opts = extendOpts( opts );
+	var request = function( opts, displayError ) {
+		opts = extendOpts( opts, displayError );
 		return $.ajax( opts );
 	}
 	var getJSON = function( url, successcb, failurecb ) {
@@ -67,7 +76,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 			url: url,
 			type: "GET",
 			success: successcb,
-			error: failurecb
+			error: failurecb || displayErrorCallback.bind( null, null )
 		});
 	}
 

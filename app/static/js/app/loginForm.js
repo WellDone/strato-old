@@ -35,6 +35,7 @@ define( ['jquery', 'hbars!views/loginForm', 'app/session', 'page'],
 						require('app/navbar').update();
 						if ( redirect )
 							page( redirect );
+						return;
 					}
 
 					passwordInput.val( "" );

@@ -100,7 +100,7 @@ define( [ 'jquery',
  					method: method,
  					url: url,
  					statusCode: res.status,
- 					labelType: success? "label-success" : "label-warning",
+ 					labelType: success? "label-success" : "label-danger",
  					pretty: res.responseText,
  					raw: res.responseText,
  					timestamp: startTime.toLocaleString(),
@@ -139,7 +139,7 @@ define( [ 'jquery',
  				outputDiv.find('a.request-repeat').click( repeatRequestClick );
 				$('#dev-send').removeClass('disabled');
 			}
- 			session.request( opts )
+ 			session.request( opts, false )
  		})
  	}
 	return devhandler;

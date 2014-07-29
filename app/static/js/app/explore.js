@@ -48,7 +48,6 @@ define( ['jquery',
                     map.clearMarkers();
                 }
             } );
-            next();
         } );
 	}
 
