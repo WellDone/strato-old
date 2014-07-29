@@ -118,7 +118,7 @@ REM.prototype.addEngine = function( versions, engine )
 	this.engines.push( engine );
 
 	var latest = this.latest();
-	var verbs = [ 'get', 'post', 'del', 'put', 'add', 'remove', 'update' ]
+	var verbs = [ 'get', 'post', 'del', 'put', 'create', 'read', 'update', 'delete' ]
 	for ( var f in verbs )
 	{
 		var v = verbs[f];

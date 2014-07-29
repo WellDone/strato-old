@@ -199,8 +199,8 @@ var parse = function( input ) {
 			resource: input.auth.resource,
 			login: input.auth.login
 		};
-		model.resources[model.auth.resource].columns['_encrypted_password'] = parseColumnDescription( "string | size: 64" );
-		model.resources[model.auth.resource].columns['_password_salt'] = parseColumnDescription( "string | size: 64" );
+		model.resources[model.auth.resource].columns['_encrypted_password'] = parseColumnDescription( "string | size: 88" );
+		model.resources[model.auth.resource].columns['_password_salt'] = parseColumnDescription( "string | size: 88" );
 	}
 
 	for ( var d in model.references )

@@ -54,6 +54,37 @@ define( [ 'jquery',
  			else
  				$('#dev-body-container').removeClass('hidden');
  		}
+ 	function prettifyJSON( json ) {
+ 		try {
+			json = JSON.parse( json );
+		}
+		catch (e)
+		{
+		}
+		if ( typeof json != "string" )
+		{
+			json = JSON.stringify( json, undefined, 2 );
+			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    	json = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, 
+    	 function (match) {
+        var cls = 'dev number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'dev key';
+            } else {
+                cls = 'dev string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'dev boolean';
+        } else if (/null/.test(match)) {
+            cls = 'dev null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    	 }
+    	);
+		}
+		return json;
+ 	}
  	var devhandler = function( ctx, next ) {
  		$('#content').html( templatePage({
  			exists: session.exists(),
@@ -67,6 +98,23 @@ define( [ 'jquery',
  		})
  		$('#dev-method').change( updateBodyAllowed )
  		$('#dev-method').val('GET');
+ 		$('#dev-body').keyup( function(e) {
+ 			if ( $(this).val().length === 0 )
+ 			{
+ 				$('#dev-body-validjson-container').addClass( 'hidden' );
+ 				return;
+ 			}
+ 			
+ 			$('#dev-body-validjson-container').removeClass( 'hidden' );
+ 			try {
+ 				JSON.parse( $(this).val() );
+ 				$('#dev-body-validjson-icon').removeClass('glyphicon-remove');
+ 				$('#dev-body-validjson-icon').addClass('glyphicon-ok');
+ 			} catch (e) {
+ 				$('#dev-body-validjson-icon').removeClass('glyphicon-ok');
+ 				$('#dev-body-validjson-icon').addClass('glyphicon-remove');
+ 			}
+ 		} );
  		$('#dev-form').submit( function(e) {
  			e.preventDefault();
  			$('#dev-send').addClass('disabled');
@@ -76,7 +124,7 @@ define( [ 'jquery',
  			
  			var method = $('#dev-method').val();
  			var url = $('#dev-url').val();
- 			var body = $('#dev-body').val();
+ 			var body = $('#dev-body').hasClass('hidden')? '' : $('#dev-body').val();
  			if ( body )
  			{
  				try {
@@ -116,38 +164,12 @@ define( [ 'jquery',
  					statusCode: res.status,
  					statusText: res.statusText,
  					labelType: success? "label-success" : "label-danger",
- 					request: opts.data,
- 					pretty: res.responseText,
+ 					request: prettifyJSON( opts.data ),
+ 					pretty: prettifyJSON( res.responseText ),
  					meta: res.getAllResponseHeaders(),
  					timestamp: startTime.toLocaleString(),
  					size: size,
  					latency: endTime.valueOf() - startTime.valueOf()
- 				}
- 				try {
- 					templateData.pretty = JSON.parse( templateData.pretty );
- 				}
- 				catch (e)
- 				{
- 				}
- 				if ( typeof templateData.pretty != "string" )
- 				{
- 					templateData.pretty = JSON.stringify( templateData.pretty, undefined, 2 );
- 					templateData.pretty = templateData.pretty.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			    templateData.pretty = templateData.pretty.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-			        var cls = 'dev number';
-			        if (/^"/.test(match)) {
-			            if (/:$/.test(match)) {
-			                cls = 'dev key';
-			            } else {
-			                cls = 'dev string';
-			            }
-			        } else if (/true|false/.test(match)) {
-			            cls = 'dev boolean';
-			        } else if (/null/.test(match)) {
-			            cls = 'dev null';
-			        }
-			        return '<span class="' + cls + '">' + match + '</span>';
-			    });
  				}
  				outputDiv.html( templateQueryResponse( templateData ) );
  				outputDiv.find('div.text-select').click( selectTextClick );
