@@ -61,7 +61,7 @@ else
 	SSH_CMD="ssh $TARGET_MACHINE"
 
 	echo "Downloading Git..."
-	$SSH_CMD "sudo apt-get install -y git" 2>1 >> deploy.log
+	$SSH_CMD "sudo apt-get update && sudo apt-get install -y git" 2>&1 >> deploy.log
 	if [ $? -ne 0 ]; then
 		echo "Failed!"
 		exit 1
@@ -75,7 +75,7 @@ else
 	          git checkout master
 	          git pull
 	          cd app
-	          npm update" 2>1 >> deploy.log
+	          npm update" 2>&1 >> deploy.log
 	if [ $? -ne 0 ]; then
 		echo "Failed!"
 		exit 1
@@ -83,17 +83,17 @@ else
 	echo "Backing up existing files..."
 	$SSH_CMD "sudo mkdir -p /welldone
 	          rm -rf /welldone_backup
-	          sudo mv -f /welldone /welldone_backup" 2>1 >> deploy.log
+	          sudo mv -f /welldone /welldone_backup" 2>&1 >> deploy.log
 	if [ $? -ne 0 ]; then
 		echo "Failed!"
 		exit 1
 	fi
 	echo "Hotswapping..."
 	$SSH_CMD "sudo mv -f /welldone_tmp/strato /welldone
-            sudo rm -rf /welldone_tmp /welldone_backup" 2>1 >> deploy.log
+            sudo rm -rf /welldone_tmp /welldone_backup" 2>&1 >> deploy.log
   if [ $? -ne 0 ]; then
   	echo "Failed!  Restoring..."
-		$SSH_CMD "sudo mv -f /welldone_backup /welldone" 2>1 >> deploy.log
+		$SSH_CMD "sudo mv -f /welldone_backup /welldone" 2>&1 >> deploy.log
 		exit 1
 	fi
 
@@ -101,7 +101,7 @@ fi
 
 if [ -n "$PROVISION" ]; then
 	echo "Provisioning server"
-	$SSH_CMD "sudo bash -c 'export APP_CONTEXT=$APP_CONTEXT; /welldone/config/provision.sh'" 2>1 >> deploy.log
+	$SSH_CMD "sudo bash -c 'export APP_CONTEXT=$APP_CONTEXT; /welldone/config/provision.sh'" 2>&1 >> deploy.log
 fi
 
 echo "Restarting the process..."
@@ -112,10 +112,10 @@ $SSH_CMD "set -e
           chmod +x ./control/initdb.sh
           sudo -u postgres bash -c './control/initdb.sh $CLEAN'
           chmod +x ./control/start.sh
-          sudo -u application bash -c 'export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone; ./control/start.sh'" 2>1 >> deploy.log
+          sudo -u application bash -c 'export DATABASE_URL=tcp://dbadmin:GikmnmJKDOB3@localhost:5432/welldone; ./control/start.sh'" 2>&1 >> deploy.log
 if [ $? -ne 0 ]; then
 	echo "Failed!  Recovering..."
-	$SSH_CMD "sudo mv -f /welldone_backup /welldone" 2>1 >> deploy.log
+	$SSH_CMD "sudo mv -f /welldone_backup /welldone" 2>&1 >> deploy.log
 	exit 1
 fi
 
