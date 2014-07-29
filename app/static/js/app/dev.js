@@ -96,10 +96,18 @@ define( [ 'jquery',
  			requestHistory.push( opts );
  			var startTime = new Date();
  			opts.complete = function(res) {
- 				console.log( res );
- 				console.log( res.getAllResponseHeaders() );
  				var success = ( res.status >= 200 && res.status < 300 );
  				var endTime = new Date();
+ 				var size = res.responseText.length;
+ 				if ( size >= 1024 )
+ 				{
+ 					size = '' + ( res.responseText.length / 1024 );
+ 					size = size.substring( 0, size.indexOf('.') + 2 ) + ' KB'
+ 				}
+ 				else
+ 				{
+ 					size = res.responseText.length + ' B';
+ 				}
  				var templateData = {
  					id: requestHistory.length,
  					method: method,
@@ -111,7 +119,7 @@ define( [ 'jquery',
  					pretty: res.responseText,
  					meta: res.getAllResponseHeaders(),
  					timestamp: startTime.toLocaleString(),
- 					size: res.getResponseHeader('Content-Length') || 0,
+ 					size: size,
  					latency: endTime.valueOf() - startTime.valueOf()
  				}
  				try {
