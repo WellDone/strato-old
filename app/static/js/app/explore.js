@@ -13,7 +13,6 @@ define( ['jquery',
                 $('#content').text( "Failed to load the map, please try again later.")
                 return;
             }
-            $('#explore-loading').hide();
             session.request( {
                 url: "/api/v0/monitors",
                 success: function( monitors ) {

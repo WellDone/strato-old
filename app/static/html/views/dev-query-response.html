@@ -1,8 +1,25 @@
-<strong>&gt;&nbsp;<span class='method'>{{method}}</span> <span class='url'>{{url}}</span></strong>&nbsp;<span class='label {{labelType}}'>{{statusCode}}</span>&nbsp;{{size}}b,&nbsp;{{latency}}ms (<span class='date'>{{timestamp}}</span>)
+<strong>&gt;&nbsp;<span class='method'>{{method}}</span> <span class='url'>{{url}}</span></strong>&nbsp;<span class='label {{labelType}}'>{{statusCode}} {{statusText}}</span>&nbsp;{{size}}b,&nbsp;{{latency}}ms (<span class='date'>{{timestamp}}</span>)
 <div class='pull-right' style='mergin-right:4px;'>
 	<a href='#' class='text-select'>select</a>
 	<a href='#' class='request-repeat'>repeat</a>
 	<a href='#' class='response-toggle'>hide</a>
 </div>
 <br/>
-<pre class='pretty-json'>{{{pretty}}}</pre>
+<div class="request-details">
+	<ul class="nav nav-tabs">
+		<li><a href="#{{id}}-request" data-toggle="tab">Request Body</a></li>
+		<li><a href="#{{id}}-meta" data-toggle="tab">Response Headers</a></li>
+		<li class="active"><a href="#{{id}}-response" data-toggle="tab">Response Body</a></li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane" id="{{id}}-request">
+			<pre id="requestData" class='pretty-json'>{{{request}}}</pre>
+		</div>
+		<div class="tab-pane" id="{{id}}-meta">
+			<pre id="responseMeta" class='pretty-json'>{{{meta}}}</pre>
+		</div>
+		<div class="tab-pane active" id="{{id}}-response">
+			<pre id="responseText" class='pretty-json'>{{{pretty}}}</pre>
+		</div>
+	</div>
+</div>

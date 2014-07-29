@@ -4,10 +4,11 @@ define( [ 'jquery',
           'hbars!views/dev',
           'hbars!views/dev-query-response' ],
  function( $, page, session, templatePage, templateQueryResponse ) {
+ 	var requestHistory = [];
  	function selectTextClick(e) {
 	 	e.preventDefault();
 
-	 	var textElement = $(this).parent().siblings('pre');  
+	 	var textElement = $(this).parent().siblings('.request-details').find('pre#response');  
 
 	  if (document.body.createTextRange) { // ms
 	    var range = document.body.createTextRange();
@@ -24,7 +25,7 @@ define( [ 'jquery',
   function toggleResponseClick(e) {
   	e.preventDefault();
 
-  	var textElement = $(this).parent().siblings('pre');
+  	var textElement = $(this).parent().siblings('.request-details');
   	var selectElement = $(this).siblings('a.text-select');
   	if ( textElement.hasClass('hidden') )
   	{
@@ -68,7 +69,7 @@ define( [ 'jquery',
  		$('#dev-form').submit( function(e) {
  			e.preventDefault();
  			$('#dev-send').addClass('disabled');
- 			$('#dev-output').find('pre.pretty-json').addClass('hidden');
+ 			$('#dev-output').find('.request-details').addClass('hidden');
  			$('#dev-output').find('a.response-toggle').text('show');
  			$('#dev-output').find('a.text-select').addClass('hidden');
  			
@@ -92,17 +93,23 @@ define( [ 'jquery',
  				url: url,
  				data: body
  			}
+ 			requestHistory.push( opts );
  			var startTime = new Date();
  			opts.complete = function(res) {
- 				var success = ( res.status == 200 || res.status == 302 );
+ 				console.log( res );
+ 				console.log( res.getAllResponseHeaders() );
+ 				var success = ( res.status >= 200 && res.status < 300 );
  				var endTime = new Date();
  				var templateData = {
+ 					id: requestHistory.length,
  					method: method,
  					url: url,
  					statusCode: res.status,
+ 					statusText: res.statusText,
  					labelType: success? "label-success" : "label-danger",
+ 					request: opts.data,
  					pretty: res.responseText,
- 					raw: res.responseText,
+ 					meta: res.getAllResponseHeaders(),
  					timestamp: startTime.toLocaleString(),
  					size: res.getResponseHeader('Content-Length') || 0,
  					latency: endTime.valueOf() - startTime.valueOf()
