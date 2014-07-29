@@ -4,10 +4,11 @@ define( [ 'jquery',
           'hbars!views/dev',
           'hbars!views/dev-query-response' ],
  function( $, page, session, templatePage, templateQueryResponse ) {
+ 	var requestHistory = [];
  	function selectTextClick(e) {
 	 	e.preventDefault();
 
-	 	var textElement = $(this).parent().siblings('pre');  
+	 	var textElement = $(this).siblings('pre#responseText');
 
 	  if (document.body.createTextRange) { // ms
 	    var range = document.body.createTextRange();
@@ -24,19 +25,18 @@ define( [ 'jquery',
   function toggleResponseClick(e) {
   	e.preventDefault();
 
-  	var textElement = $(this).parent().siblings('pre');
-  	var selectElement = $(this).siblings('a.text-select');
-  	if ( textElement.hasClass('hidden') )
+  	var detailsElement = $(this).parent().siblings('.request-details');
+  	if ( detailsElement.hasClass('hidden') )
   	{
-  		textElement.removeClass('hidden');
-  		selectElement.removeClass('hidden');
-  		$(this).text("hide");
+  		detailsElement.removeClass('hidden');
+  		$(this).removeClass('glyphicon-plus');
+  		$(this).addClass('glyphicon-minus');
   	}
   	else
   	{
-  		textElement.addClass('hidden');
-  		selectElement.addClass('hidden');
-  		$(this).text("show");
+  		detailsElement.addClass('hidden');
+  		$(this).removeClass('glyphicon-minus');
+  		$(this).addClass('glyphicon-plus');
   	}
   }
   function repeatRequestClick(e) {
@@ -44,6 +44,8 @@ define( [ 'jquery',
 
   	$('#dev-method').val( $(this).parent().parent().find('span.method').text() );
   	$('#dev-url').val( $(this).parent().parent().find('span.url').text() );
+  	$('#dev-body').val( $(this).parent().parent().parent().find('pre#requestData').text() );
+  	$('#dev-url').focus();
   	updateBodyAllowed();
   }
   function updateBodyAllowed(e) {
@@ -68,8 +70,8 @@ define( [ 'jquery',
  		$('#dev-form').submit( function(e) {
  			e.preventDefault();
  			$('#dev-send').addClass('disabled');
- 			$('#dev-output').find('pre.pretty-json').addClass('hidden');
- 			$('#dev-output').find('a.response-toggle').text('show');
+ 			$('#dev-output').find('.request-details').addClass('hidden');
+  		$('#dev-output').find('span.response-toggle').addClass('glyphicon-plus').removeClass('glyphicon-minus');
  			$('#dev-output').find('a.text-select').addClass('hidden');
  			
  			var method = $('#dev-method').val();
@@ -86,25 +88,39 @@ define( [ 'jquery',
  			}
  			var outputDiv = $('<div></div>');
  			$('#dev-output').prepend( outputDiv );
- 			outputDiv.html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>&nbsp" );
+ 			outputDiv.html( "<span style='margin-left:5px;' class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span><strong>&nbsp;" + method + " " + url + "</strong>" );
  			var opts = {
  				type: method,
  				url: url,
  				data: body
  			}
+ 			requestHistory.push( opts );
  			var startTime = new Date();
  			opts.complete = function(res) {
- 				var success = ( res.status == 200 || res.status == 302 );
+ 				var success = ( res.status >= 200 && res.status < 300 );
  				var endTime = new Date();
+ 				var size = res.responseText.length;
+ 				if ( size >= 1024 )
+ 				{
+ 					size = '' + ( res.responseText.length / 1024 );
+ 					size = size.substring( 0, size.indexOf('.') + 2 ) + ' KB'
+ 				}
+ 				else
+ 				{
+ 					size = res.responseText.length + ' B';
+ 				}
  				var templateData = {
+ 					id: requestHistory.length,
  					method: method,
  					url: url,
  					statusCode: res.status,
- 					labelType: success? "label-success" : "label-warning",
+ 					statusText: res.statusText,
+ 					labelType: success? "label-success" : "label-danger",
+ 					request: opts.data,
  					pretty: res.responseText,
- 					raw: res.responseText,
+ 					meta: res.getAllResponseHeaders(),
  					timestamp: startTime.toLocaleString(),
- 					size: res.getResponseHeader('Content-Length') || 0,
+ 					size: size,
  					latency: endTime.valueOf() - startTime.valueOf()
  				}
  				try {
@@ -134,12 +150,12 @@ define( [ 'jquery',
 			    });
  				}
  				outputDiv.html( templateQueryResponse( templateData ) );
- 				outputDiv.find('a.text-select').click( selectTextClick );
- 				outputDiv.find('a.response-toggle').click( toggleResponseClick );
+ 				outputDiv.find('div.text-select').click( selectTextClick );
+ 				outputDiv.find('span.response-toggle').click( toggleResponseClick );
  				outputDiv.find('a.request-repeat').click( repeatRequestClick );
 				$('#dev-send').removeClass('disabled');
 			}
- 			session.request( opts )
+ 			session.request( opts, false )
  		})
  	}
 	return devhandler;

@@ -1,4 +1,4 @@
-define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
+define( ['jquery', 'underscore', 'backbone', 'app/alerts'], function( $, _, Backbone, alerts ) {
 	var sessionData = null;
 	try
 	{
@@ -8,7 +8,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 			if ( new Date( sessionData.expiration ) <= new Date() )
 			{
 				console.log( "Session has expired." );
-				sessionData = window.sessionStorage.auth = null;
+				sessionData.token = window.sessionStorage.auth.token = null;
 			}
 		}
 	}
@@ -39,7 +39,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 				}
 				else
 				{
-					cb( result.statusText );
+					cb( result );
 				}
 			}
 		})
@@ -48,7 +48,14 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		window.sessionStorage.auth = null;
 		sessionData = null;
 	}
-	var extendOpts = function( param ) {
+	var displayErrorCallback = function( next, result ) {
+		alerts.error( "<strong>Error " + result.status + " </strong>" + result.statusText );
+		if ( next )
+			next( result );
+	}
+	var extendOpts = function( param, displayError ) {
+		if ( displayError !== false )
+			displayError = true;
 		var opts = _.clone(param || {});
 		if ( sessionData )
 		{
@@ -56,17 +63,20 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 				opts.headers = {};
 			opts.headers['Authorization'] = "Bearer " + sessionData.token
 		}
+		if ( displayError )
+			opts.error = displayErrorCallback.bind( null, opts.error );
 		return opts;
 	}
-	var request = function( opts ) {
-		opts = extendOpts( opts );
+	var request = function( opts, displayError ) {
+		opts = extendOpts( opts, displayError );
 		return $.ajax( opts );
 	}
-	var getJSON = function( url, cb ) {
+	var getJSON = function( url, successcb, failurecb ) {
 		this.request( {
 			url: url,
 			type: "GET",
-			success: cb
+			success: successcb,
+			error: failurecb || displayErrorCallback.bind( null, null )
 		});
 	}
 
@@ -98,7 +108,7 @@ define( ['jquery', 'underscore', 'backbone'], function( $, _, Backbone ) {
 		logout: logout,
 		request: request,
 		getJSON: getJSON,
-		exists: function() { return (sessionData != null); },
+		exists: function() { return sessionData && sessionData.token != null; },
 		getUser: function() { return sessionData && sessionData.user; },
 		getExpiration: function() { return sessionData && sessionData.expiration; },
 		getToken: function() { return sessionData && sessionData.token; },

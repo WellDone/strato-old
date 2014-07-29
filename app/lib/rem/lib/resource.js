@@ -43,7 +43,7 @@ function handleBackendResult( req, res, isCollection, err, responseData ) {
 			}
 			else if ( req.method == 'POST' )
 			{
-					res.send( 302, "Resource created." );
+					res.send( 201, "Resource created." );
 			}
 			else
 			{

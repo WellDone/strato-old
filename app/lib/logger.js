@@ -17,26 +17,18 @@ if ( config.DEBUG ) {
 
 logger.serve = function( app, path ) {
   var logger = this.logger;
-  var logFile = this.logFile;
-  app.get( path + "/log.json", function( req, res ) {
-    res.sendfile( logFile );
+  app.get( path + "/api/out.log", function( req, res ) {
+    res.sendfile( '/home/application/api/out.log' );
   });
-  //TODO: Use socket.io se we can stream to a browser.
-  /*
-  app.get( path + "/log.stream", function( req, res ) {
-    logger.log( "info", "requested log!!");
-    if ( !req.query.start && req.query.start !== 0 ) { req.query.start = -1; }
-    res.writeHead(206, {
-      'Content-Type': 'text/plain'
-    });
-    res.write( "<h1>Streaming the log...</h1><br/>", "utf8" );
-    logger.log( "info", "streaming...");
-    logger.stream({ start: req.query.start }).on( 'log', function(log) {
-      res.write( log + "<br/>", "utf8" );
-    })
-    logger.debug( "debug stream connected");
+  app.get( path + "/api/err.log", function( req, res ) {
+    res.sendfile( '/home/application/api/err.log' );
   });
-*/
+  app.get( path + "/gateway/out.log", function( req, res ) {
+    res.sendfile( '/home/application/gateway/out.log' );
+  });
+  app.get( path + "/gateway/err.log", function( req, res ) {
+    res.sendfile( '/home/application/gateway/err.log' );
+  });
 }
 
 logger.start = function() {

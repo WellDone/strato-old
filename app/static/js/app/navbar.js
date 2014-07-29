@@ -1,12 +1,12 @@
-define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
+define( [ 'jquery', 'app/session', 'page', 'app/loginForm' ], function( $, session, page, loginForm ) {
 	function onSearchSubmit( e ) {
 		e.preventDefault();
 	}
 	var searchForm = $('#navbar-search-form');
 	searchForm.submit( onSearchSubmit );
 
-	var loginForm = $('#navbar-login-form');
 	function updateNavbar() {
+		loginForm.display( $( '#navbar-login-dropdown' ), '/manage' )
 		if ( session.exists() && session.getUser().user && session.getUser().user.fullname )
 		{
 			$( '#navbar-profile-username' ).text( session.getUser().user.fullname );
@@ -27,23 +27,6 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 
 	updateNavbar();
 
-	function onLoginSubmit( e ) {
-		e.preventDefault();
-		var username = loginForm.find("input[name=username]").val();
-		var password = loginForm.find("input[name=password]").val();
-
-		session.login( username, password, function( err ) {
-			if ( !err )
-			{
-				updateNavbar();
-				page( "/manage" );
-			}
-			loginForm.find("input[name=username]").val( "" );
-			loginForm.find("input[name=password]").val( "" );
-		} );
-	}
-	loginForm.submit( onLoginSubmit )
-
 	$('#navbar-profile-logout').click( function(e) {
 		e.preventDefault();
 		session.logout();
@@ -53,7 +36,7 @@ define( [ 'jquery', 'app/session', 'page' ], function( $, session, page ) {
 
 	$(function () {
     $('#navbar-login-link').click(function () {
-        setTimeout(function(){loginForm.find("input[name=username]").focus();},0);
+        loginForm.focus();
     });
 	});
 

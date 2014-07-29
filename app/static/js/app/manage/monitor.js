@@ -3,8 +3,9 @@ define( [ 'jquery',
           'moment',
           'd3',
           'rickshaw',
-          'app/session' ],
- function ( $, template, moment, d3, Rickshaw, session ) {
+          'app/session',
+          'app/alerts' ],
+ function ( $, template, moment, d3, Rickshaw, session, alerts ) {
  	
  	function render( monitor ) {
 		$( '#manage-content' ).html( template( monitor ) )
@@ -48,6 +49,8 @@ define( [ 'jquery',
 		//var svg = dimple.newSvg('#chartContainer', 590, 400);
 		var data = {};
 		var aggCount = 0;
+		data['volume (L)'] = [];
+		++aggCount;
 		monitor.reports.forEach( function(x, r) {
 			if ( !x.data || !x.data.intervalAggregates )
 				return;
@@ -75,30 +78,34 @@ define( [ 'jquery',
 			for ( var i = 0; i < x.data.intervalAggregates.length; ++i )
 			{
 				var date = baseDate.add( 's', step ).unix();
-				for ( var a in x.data.intervalAggregates[i] )
-				{
-					if ( a == 'count' )
-						continue;
-					if ( !data[a] )
-					{
-						data[a] = [];
-						++aggCount;
-					}
-					data[a].push( {
-						x: date,
-						y: x.data.intervalAggregates[i][a]
-					} );
-				}
+				data['volume (L)'].push( {
+					x: date,
+					y: x.data.intervalAggregates[i]['mean'] * x.data.intervalAggregates[i]['count'] / 65
+				} );
+				// for ( var a in x.data.intervalAggregates[i] )
+				// {
+				// 	if ( a == 'count' )
+				// 		continue;
+				// 	if ( !data[a] )
+				// 	{
+				// 		data[a] = [];
+				// 		++aggCount;
+				// 	}
+				// 	data[a].push( {
+				// 		x: date,
+				// 		y: x.data.intervalAggregates[i][a]
+				// 	} );
+				// }
 			}
 		} );
 
-		if ( aggCount === 0 )
+		if ( !data['volume (L)'] || data['volume (L)'].length == 0 )
 		{
 			$('#chart_container').html( "No data available..." );
 			return;
 		}
     
-    var palette = new Rickshaw.Color.Palette( { scheme: 'classic9' } );
+    var palette = new Rickshaw.Color.Palette();
 
 		// instantiate our graph!
 		var seriesData = [];
@@ -122,7 +129,7 @@ define( [ 'jquery',
 		} );
 
 		graph.window.xMax = graph.dataDomain()[1];
-		graph.window.xMin = graph.window.xMax - 60;
+		graph.window.xMin = graph.window.xMax - (24*60*60); // One day
 
 		graph.render();
 
@@ -182,13 +189,13 @@ define( [ 'jquery',
 
 		yAxis.render();
 
-		/*var previewXAxis = new Rickshaw.Graph.Axis.Time({
-			graph: preview.previews[0],
+		var previewXAxis = new Rickshaw.Graph.Axis.Time({
+			graph: graph,
 			timeFixture: new Rickshaw.Fixtures.Time.Local(),
 			ticksTreatment: ticksTreatment
 		});
 
-		previewXAxis.render();*/
+		previewXAxis.render();
 
     // var myChart = new dimple.chart(svg, data);
     // myChart.setBounds(60, 30, 505, 305);
@@ -199,6 +206,20 @@ define( [ 'jquery',
     // myChart.addSeries(["aggregate"], dimple.plot.bar);
     // myChart.addLegend(60, 10, 500, 20, "right");
     // myChart.draw();
+
+    var chartResizer = function( windowSize, e ) {
+    	e.preventDefault();
+    	
+    	graph.window.xMax = graph.dataDomain()[1];
+			graph.window.xMin = graph.window.xMax - (windowSize);
+
+			graph.render();
+    }
+
+    $( '#chart_control' ).find( "[href='#year']" ).click( chartResizer.bind( null, 24*60*60*365 ) );
+    $( '#chart_control' ).find( "[href='#month']" ).click( chartResizer.bind( null, 24*60*60*30 ) );
+    $( '#chart_control' ).find( "[href='#week']" ).click( chartResizer.bind( null, 24*60*60*7 ) );
+    $( '#chart_control' ).find( "[href='#day']" ).click( chartResizer.bind( null, 24*60*60 ) );
 	}
 
 	function init( id ) {
@@ -214,6 +235,12 @@ define( [ 'jquery',
 				monitor.reports = reports;
 				render( monitor )
 			});
+		},
+		function( err ) {
+			if ( err.status == 404 )
+				$('#manage-content').html( "Monitor not found!  <br/><br/><a href='/manage/monitors'>List all monitors</a>" );
+			else
+				$('#manage-content').html( "An unexpected error occurred. This event has been recorded and WellDone Technical Support is on the case.")
 		} );
 	}
 

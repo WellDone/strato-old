@@ -2,7 +2,6 @@
   "name": "Strato",
   "description": "WellDone Strato server and data portal",
   "version": "0.3.0",
-
   "author": "Austin McGee <austin@welldone.org>",
   "keywords": [
     "strato",
@@ -13,14 +12,12 @@
     "evaluation",
     "analytics"
   ],
-
-  "repository": { 
+  "repository": {
     "type": "git",
     "url": "https://github.com/welldone/strato"
   },
   "bugs": "https://github.com/welldone/strato/issues",
   "license": "MIT",
-
   "dependencies": {
     "express": "3.x",
     "stylus": "*",
@@ -37,7 +34,8 @@
     "lodash": "~2.4.1",
     "moment": "^2.6.0",
     "nodemailer": "^0.6.5",
-    "knex": "^0.6.18"
+    "knex": "^0.6.18",
+    "csv": "^0.4.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1"
