@@ -8,7 +8,7 @@ define( [ 'jquery',
  	function selectTextClick(e) {
 	 	e.preventDefault();
 
-	 	var textElement = $(this).parent().siblings('.request-details').find('pre#response');  
+	 	var textElement = $(this).siblings('pre#responseText');
 
 	  if (document.body.createTextRange) { // ms
 	    var range = document.body.createTextRange();
@@ -25,19 +25,18 @@ define( [ 'jquery',
   function toggleResponseClick(e) {
   	e.preventDefault();
 
-  	var textElement = $(this).parent().siblings('.request-details');
-  	var selectElement = $(this).siblings('a.text-select');
-  	if ( textElement.hasClass('hidden') )
+  	var detailsElement = $(this).parent().siblings('.request-details');
+  	if ( detailsElement.hasClass('hidden') )
   	{
-  		textElement.removeClass('hidden');
-  		selectElement.removeClass('hidden');
-  		$(this).text("hide");
+  		detailsElement.removeClass('hidden');
+  		$(this).removeClass('glyphicon-plus');
+  		$(this).addClass('glyphicon-minus');
   	}
   	else
   	{
-  		textElement.addClass('hidden');
-  		selectElement.addClass('hidden');
-  		$(this).text("show");
+  		detailsElement.addClass('hidden');
+  		$(this).removeClass('glyphicon-minus');
+  		$(this).addClass('glyphicon-plus');
   	}
   }
   function repeatRequestClick(e) {
@@ -45,6 +44,8 @@ define( [ 'jquery',
 
   	$('#dev-method').val( $(this).parent().parent().find('span.method').text() );
   	$('#dev-url').val( $(this).parent().parent().find('span.url').text() );
+  	$('#dev-body').val( $(this).parent().parent().parent().find('pre#requestData').text() );
+  	$('#dev-url').focus();
   	updateBodyAllowed();
   }
   function updateBodyAllowed(e) {
@@ -70,7 +71,7 @@ define( [ 'jquery',
  			e.preventDefault();
  			$('#dev-send').addClass('disabled');
  			$('#dev-output').find('.request-details').addClass('hidden');
- 			$('#dev-output').find('a.response-toggle').text('show');
+  		$('#dev-output').find('span.response-toggle').addClass('glyphicon-plus').removeClass('glyphicon-minus');
  			$('#dev-output').find('a.text-select').addClass('hidden');
  			
  			var method = $('#dev-method').val();
@@ -87,7 +88,7 @@ define( [ 'jquery',
  			}
  			var outputDiv = $('<div></div>');
  			$('#dev-output').prepend( outputDiv );
- 			outputDiv.html( "<strong>&gt;&nbsp;" + method + " " + url + "</strong>&nbsp<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span>" );
+ 			outputDiv.html( "<span style='margin-left:5px;' class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span><strong>&nbsp;" + method + " " + url + "</strong>" );
  			var opts = {
  				type: method,
  				url: url,
@@ -149,8 +150,8 @@ define( [ 'jquery',
 			    });
  				}
  				outputDiv.html( templateQueryResponse( templateData ) );
- 				outputDiv.find('a.text-select').click( selectTextClick );
- 				outputDiv.find('a.response-toggle').click( toggleResponseClick );
+ 				outputDiv.find('div.text-select').click( selectTextClick );
+ 				outputDiv.find('span.response-toggle').click( toggleResponseClick );
  				outputDiv.find('a.request-repeat').click( repeatRequestClick );
 				$('#dev-send').removeClass('disabled');
 			}
