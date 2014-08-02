@@ -3,7 +3,7 @@
 usage()
 {
 cat << EOF
-usage: $0 [OPTIONS] <TARGET> [[<repo>:]<branch>]
+usage: $0 [OPTIONS] <TARGET> [[<repo>@]<branch>]
 
 OPTIONS (all optional):
    -h     Show this message
@@ -60,7 +60,7 @@ fi
 TARGET="$1"
 if [ -n "$2" ]; then
 	GIT_ARG="$2"
-	GIT_DELIM=`echo $GIT_ARG | sed -n "s/:.*//p" | wc -c`
+	GIT_DELIM=`echo $GIT_ARG | sed -n "s/@.*//p" | wc -c`
 	
 	if [ $GIT_DELIM -ne 0 ]; then
 		GITREPO=${GIT_ARG:0:(GIT_DELIM-1)}
@@ -78,13 +78,13 @@ elif [ $TARGET == "local" ]; then
 else
 	SSH_CMD="ssh $TARGET"
 
-	echo "Downloading Git..."
+	echo "Installing Git..."
 	$SSH_CMD "sudo apt-get update && sudo apt-get install -y git" 2>>deploy.log 1>>deploy.log
 	if [ $? -ne 0 ]; then
 		echo "Failed!"
 		exit 1
 	fi
-	echo "Downloading Strato from GitHub..."
+	echo "Downloading source..."
 	$SSH_CMD "sudo mkdir -p /welldone_tmp
 	          sudo chmod a+rw /welldone_tmp
 	          cd /welldone_tmp
@@ -122,7 +122,7 @@ if [ -n "$PROVISION" ]; then
 	$SSH_CMD "sudo bash -c 'export APP_CONTEXT=$APP_CONTEXT; /welldone/config/provision.sh'" 2>>deploy.log 1>>deploy.log
 fi
 
-echo "Restarting the process..."
+echo "Restarting the process(es)..."
 $SSH_CMD "set -e
           cd /welldone/app
           sudo service nginx restart
