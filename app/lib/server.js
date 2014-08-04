@@ -19,6 +19,7 @@ function Server( name, options ) {
 
 	this.app.use( express.json() );
 	this.app.use( express.urlencoded() );
+	this.app.use( express.compress() );
 
 	this.app.use(function(req, res, next){
 	  logger.info('%s %s', req.method, req.url );

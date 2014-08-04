@@ -16,6 +16,7 @@ require.config({
 		text: '../require/text',
 		hbars: '../require/hbars',
 		async: '../require/async',
+		'bootstrap-growl': 'jquery.bootstrap-growl.min',
 
 		views: '/static/html/views'
 	},

@@ -7,6 +7,8 @@ Auth.encryptPassword( "password", {}, function( err, pwd, salt ) {
     console.log( "ERROR: " + err );
     return;
   }
+  console.log( pwd, pwd.length );
+  console.log( salt, salt.length );
   data.post( 'users', {withSensitive: true}, { fullname: "Admin", "email": "admin", "_encrypted_password": pwd, "_password_salt": salt }, function( err ) {
     if ( err ) {
       console.log( "Seeding admin user failed!", err );

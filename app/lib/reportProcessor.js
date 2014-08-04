@@ -47,7 +47,7 @@ function processReport( body, from, timestamp, callback ) {
 				name: from,
 				gsmid: from
 			}
-			data.r('monitors').add( monitor, function(err) {
+			data.r('monitors').create( monitor, function(err) {
 				if ( err )
 				{
 					return output( err );
@@ -59,14 +59,14 @@ function processReport( body, from, timestamp, callback ) {
 					}
 
 					report.monitor = result[0].id;
-					data.r('reports').add( report, output );
+					data.r('reports').create( report, output );
 				})
 			})
 		}
 		else
 		{
 			report.monitor = result[0].id;
-			data.r('reports').add( report, output );
+			data.r('reports').create( report, output );
 		}
 	});
 }

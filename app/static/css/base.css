@@ -115,3 +115,39 @@ pre.pretty-json span.number { color: darkorange; }
 pre.pretty-json span.boolean { color: blue; }
 pre.pretty-json span.null { color: magenta; }
 pre.pretty-json span.key { color: red; }
+
+.glyphicon-refresh-animate {
+    -animation: spin 1s infinite linear;
+    -webkit-animation: spin2 1s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}
+
+.floating-select-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  display: block;
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #777;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #e1e1e8;
+  border-radius: 0 4px 0 4px;
+}
+
+.nav-tabs.nav-tabs-sm>li>a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  line-height: 1
+}

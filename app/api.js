@@ -7,5 +7,6 @@ var server = new Server( 'api', {} );
 var data = require( './lib/data' )();
 
 data.serve( server.app, '/api' );
+logger.serve( server.app, '/api/debug' );
 
 server.start();

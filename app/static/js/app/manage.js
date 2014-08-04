@@ -8,19 +8,24 @@ define( [ 'jquery',
 					'page',
 					'app/navbar',
 					'hbars!views/manage',
-					'hbars!views/login',
           'app/manage/groups',
           'app/manage/group',
           'app/manage/monitors',
           'app/manage/monitor',
           'app/manage/people',
           'app/manage/user',
+          'app/loginForm',
           'app/session' ],
- function( $, page, navbar, htmlTemplate, loginTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, userHandler, session ) {
+ function( $, page, navbar, htmlTemplate, groupsHandler, singleGroupHandler, monitorsHandler, singleMonitorHandler, peopleHandler, userHandler, loginForm, session ) {
  	function renderChrome(path) {
  		$('#content').html( htmlTemplate() );
 		deactivate();
-		var el = document.querySelector('.nav-sidebar [href="'+path+'"]');
+		var basePath = path.substring(1);
+		basePath = basePath.substring( basePath.indexOf( '/' ) + 1, basePath.length );
+		var index = basePath.indexOf( '/' );
+		basePath = basePath.substring( 0, (index != -1)? index : basePath.length );
+
+		var el = document.querySelector('.nav-sidebar [href="/manage/'+basePath+'"]');
 		if ( el )
 			el.parentNode.classList.add('active');
  	}
@@ -29,25 +34,7 @@ define( [ 'jquery',
 
  		if ( !session.exists() )
  		{
- 			$('#content').html( loginTemplate() )
- 			var loginForm = $('#login-form');
- 			function onLoginSubmit( e ) {
-				e.preventDefault();
-				var username = loginForm.find("input[name=username]").val();
-				var password = loginForm.find("input[name=password]").val();
-
-				session.login( username, password, function( err ) {
-					if ( !err )
-					{
-						navbar.update();
-						renderChrome( ctx.path );
-						next()
-					}
-					loginForm.find("input[name=username]").val( "" );
-					loginForm.find("input[name=password]").val( "" );
-				} );
-			}
-			loginForm.submit( onLoginSubmit )
+ 			loginForm.display( $('#content'), ctx.path )
  			return;
  		}
  		renderChrome( ctx.path )
@@ -62,8 +49,9 @@ define( [ 'jquery',
 	page( '/manage/people', manageHandler, peopleHandler );
 	page( '/manage/users/:id', manageHandler, userHandler );
 
-	page( '/manage', manageHandler, function() {
-		page( '/manage/monitors' );
+	page( '/manage', manageHandler, function( ctx ) {
+		page.show( '/manage/monitors' );
+		ctx.unhandled = true;
 	})
 	return manageHandler;
  } );
