@@ -49,7 +49,7 @@ define( [ 'jquery',
 		//var svg = dimple.newSvg('#chartContainer', 590, 400);
 		var data = {};
 		var aggCount = 0;
-		data['volume (L)'] = [];
+		data['flow (L/s)'] = [];
 		++aggCount;
 		monitor.reports.forEach( function(x, r) {
 			if ( !x.data || !x.data.intervalAggregates )
@@ -78,9 +78,9 @@ define( [ 'jquery',
 			for ( var i = 0; i < x.data.intervalAggregates.length; ++i )
 			{
 				var date = baseDate.add( 's', step ).unix();
-				data['volume (L)'].push( {
+				data['flow (L/s)'].push( {
 					x: date,
-					y: x.data.intervalAggregates[i]['mean'] * x.data.intervalAggregates[i]['count'] / 65
+					y: x.data.intervalAggregates[i]['mean'] * 2 / 65
 				} );
 				// for ( var a in x.data.intervalAggregates[i] )
 				// {
@@ -99,7 +99,7 @@ define( [ 'jquery',
 			}
 		} );
 
-		if ( !data['volume (L)'] || data['volume (L)'].length == 0 )
+		if ( !data['flow (L/s)'] || data['flow (L/s)'].length == 0 )
 		{
 			$('#chart_container').html( "No data available..." );
 			return;
