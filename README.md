@@ -1,4 +1,5 @@
 # WellDone Strato Data Portal
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/WellDone/Strato?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Demo site available at http://strato.welldone.org.  It should reflect the [master](https://github.com/WellDone/Strato/tree/master) branch of this repository, whereas bleeding-edge, possibly-broken code is on the [dev](https://github.com/WellDone/Strato/tree/dev) branch.
 
